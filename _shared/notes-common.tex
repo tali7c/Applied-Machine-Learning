@@ -89,7 +89,12 @@
       \IfFileExists{../../../../../public/_shared/aml-sources.tex}{%
         \input{../../../../../public/_shared/aml-sources.tex}%
       }{%
-        \input{aml-sources.tex}%
+        % Top-level public documents live at `public/<doc>/latex/`.
+        \IfFileExists{../../_shared/aml-sources.tex}{%
+          \input{../../_shared/aml-sources.tex}%
+        }{%
+          \input{aml-sources.tex}%
+        }%
       }%
     }%
   }%

@@ -1,0 +1,558 @@
+\documentclass[11pt]{article}
+
+\input{../../_shared/notes-common.tex}
+
+\usepackage{longtable}
+
+\title{Applied Machine Learning (CSAI2017P)\\[4pt]
+       \large Student Course Handbook}
+\author{Dr.\ Tofik Ali \\ School of Computer Science, UPES Dehradun}
+\date{B.Tech CSE (AI \& ML), Semester IV \quad\textbullet\quad Autumn 2026}
+
+\begin{document}
+\maketitle
+
+\begin{keyidea}[What this handbook is]
+Everything you need to know about how this course runs: what you will learn,
+how you will be assessed, when each thing is due, and where to get help.
+
+Keep it. Almost every question you are likely to ask this semester is answered
+somewhere in these pages. Anything that changes will be announced on the LMS and
+this document reissued.
+\end{keyidea}
+
+\tableofcontents
+\newpage
+
+% =========================================================================
+\section{The course at a glance}
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Course title & Applied Machine Learning \\
+Course code & CSAI2017 (theory) \textbullet\ \textbf{CSAI2017P} (theory + lab) \\
+Credits (L-T-P-C) & 4-0-1-5 \\
+Programme & B.Tech CSE (Artificial Intelligence \& Machine Learning) \\
+Semester & IV \\
+Session & Autumn 2026, AY 2026-27 (confirm on the timetable) \\
+Units & 7 \\
+Theory & 24 lecture packages across 40 sessions \\
+Laboratory & 15 experiments \\
+Prerequisites & Elements of AI \& ML (CSAI2018); Python Programming (CSEG1021) \\
+Faculty & Dr.\ Tofik Ali \\
+Repository & \url{https://github.com/tali7c/Applied-Machine-Learning} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Course outcomes}
+
+By the end of the course you should be able to:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{CO1} --- Understand the core concepts and techniques of machine
+    learning and artificial intelligence.
+  \item \textbf{CO2} --- Develop machine learning models using popular libraries
+    and frameworks.
+  \item \textbf{CO3} --- Evaluate the performance of machine learning models
+    using appropriate metrics.
+  \item \textbf{CO4} --- Apply machine learning to various real-world problems
+    and domains.
+\end{itemize}
+
+\subsection{What you will actually be able to do}
+
+By the end of the semester you will have built, from scratch, a housing-price
+predictor, a stock forecaster, a churn model, a digit recogniser, a spam filter,
+a credit scorer, an anomaly detector, a breast-cancer diagnostic model and a
+crop-disease classifier --- and, more importantly, you will be able to tell when
+one of them is lying to you.
+
+\newpage
+% =========================================================================
+\section{Syllabus}
+
+The order is deliberate. Units II and III come early because once you know
+\textbf{what quantity we are minimising} and \textbf{how the minimisation is
+carried out}, every method in Units V--VII is a variation on one theme rather
+than a new thing to memorise.
+
+\begin{longtable}{@{}p{0.6cm}p{3.2cm}p{1.7cm}p{8.9cm}@{}}
+\toprule
+\textbf{} & \textbf{Unit} & \textbf{Sessions} & \textbf{Content}\\
+\midrule
+\endhead
+I & Introduction & 2 &
+Overview of machine learning and its applications. Types of machine learning:
+supervised, unsupervised, reinforcement. Python and its libraries for ML
+(NumPy, pandas, scikit-learn).\\[4pt]
+
+II & Loss Functions & 2 &
+Mean Squared Error, Mean Absolute Error, Huber loss. Binary, Categorical and
+Sparse Categorical Cross-Entropy. Hinge loss (SVM loss), Triplet loss.\\[4pt]
+
+III & Optimizer Functions & 4 &
+Stochastic gradient descent. Mini-batch gradient descent. Momentum. Adagrad.
+Adam. RMSprop. Adadelta. Numerical practice.\\[4pt]
+
+IV & Data Preprocessing & 6 &
+Data cleaning; handling missing data and outliers; data transformation. Feature
+engineering, scaling and encoding. Data reduction and dimensionality reduction;
+feature selection. Train--test splitting and cross-validation. Handling
+imbalanced data.\\[4pt]
+
+V & Regression & 7 &
+Introduction to regression. Simple linear regression and its proof. Least-squares
+estimation; line of best fit. Maximum likelihood estimation. $R^2$; model
+adequacy; over-fitting and its detection. Logistic regression. Multiple linear
+regression and coefficient interpretation. Ridge and lasso regularization.\\[4pt]
+
+VI & Classification & 12 &
+ML classifiers and instance-based learning. K-Nearest Neighbour. Decision trees;
+information gain; ID3. Bayesian algorithms. Ensembles: bagging, boosting, random
+forests. Neural networks; activation functions; multi-layer perceptron;
+backpropagation. Support vector machines. Model evaluation; ROC and AUC.\\[4pt]
+
+VII & Clustering Techniques & 7 &
+Introduction to clustering; cluster statistics and applications. Similarity and
+dissimilarity; data types in clustering. Hierarchical clustering and HAC;
+linkage methods; cluster distance measures. K-means; K-medoids; CLARA.
+Density-based methods; DBSCAN.\\
+\bottomrule
+\end{longtable}
+
+\noindent Total: \textbf{40 theory sessions}, including two assessment sessions
+and a final revision session.
+
+\begin{caution}[About the session counts]
+The unit contents above are the official syllabus. The \emph{per-unit session
+counts} are this course's planned allocation of the available contact sessions,
+not a figure from the Academic Handbook, and they may shift by a session or two
+as the semester runs. Treat them as a guide to the relative weight of each unit,
+not as a contract.
+\end{caution}
+
+\newpage
+% =========================================================================
+\section{How you are assessed}
+
+\begin{caution}[Indicative, pending approval]
+The component split below is subject to departmental approval. The confirmed
+scheme will be posted on the LMS, and this handbook reissued if it changes. The
+Internal 50 : Mid-Semester 20 : End-Semester 30 frame is likewise to be confirmed
+against the Academic Handbook.
+\end{caution}
+
+\subsection{The 100 marks}
+
+\begin{center}
+\begin{tabular}{@{}p{6.2cm}cp{6.4cm}@{}}
+\toprule
+\textbf{Component} & \textbf{Marks} & \textbf{What it is}\\
+\midrule
+Theory assignments & 5 & Two assignments, each followed by a short in-class assessment test\\
+Theory quizzes / tests & 10 & Ten 20-minute tests through the semester\\
+Project --- individual & 10 & A quiz on your own group's project; \textbf{marked individually}\\
+Project --- group & 5 & The state of what your group submitted\\
+Lab assignments & 10 & Ten assignments covering experiments 1--14\\
+Lab quizzes & 10 & Ten short quizzes on \emph{your own} submitted lab code\\
+Mid-Semester examination & 20 & Common paper, university schedule\\
+End-Semester examination & 30 & Common paper, university schedule\\
+\midrule
+\textbf{Total} & \textbf{100} & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{How that maps to the university scheme}
+
+\begin{center}
+\begin{tabular}{@{}lcl@{}}
+\toprule
+\textbf{Block} & \textbf{Marks} & \textbf{Made up of}\\
+\midrule
+Continuous Internal Assessment (CIA) & 50 & everything except the two examinations\\
+Mid-Semester Examination & 20 & \\
+End-Semester Examination & 30 & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{keyidea}[The single most important line in this handbook]
+\textbf{Seventy of your hundred marks are decided before the end-semester
+examination} --- fifty from work spread across the whole semester (quizzes,
+assignments, lab work, project) and twenty at the mid-semester. A student who
+coasts until the last month cannot recover, because the marks are already gone.
+\end{keyidea}
+
+\subsection{Grades}
+
+\begin{center}
+\begin{tabular}{@{}lcccccccc@{}}
+\toprule
+\textbf{Total} & $\geq 90$ & $\geq 80$ & $\geq 70$ & $\geq 60$ & $\geq 50$ & $\geq 45$ & $\geq 40$ & $< 40$\\
+\midrule
+\textbf{Grade} & O & A+ & A & B+ & B & C & P & F\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\newpage
+% =========================================================================
+\section{The assessments in detail}
+
+\subsection{Theory quizzes --- 10 marks}
+
+Ten tests, T1--T10. Each is a \textbf{20-minute} instrument run at the close of
+a lecture session; they do not consume a whole session. The diagnostic Test-0 is
+the exception at \textbf{30 minutes}.
+
+\begin{center}
+\begin{tabular}{@{}llp{8.4cm}@{}}
+\toprule
+\textbf{Test} & \textbf{Session} & \textbf{Coverage}\\
+\midrule
+T0 & week 2, TBC & Prerequisites and general understanding --- \textbf{no marks}\\
+T1 & 6 & Units I--II\\
+T2 & 10 & Unit III; Unit IV (cleaning)\\
+T3 & 13 & Unit IV\\
+T4 & 17 & Unit V --- foundations, least squares, MLE\\
+T5 & 21 & Unit V --- logistic, MLR, regularization\\
+T6 & 25 & Unit VI --- foundations, KNN, decision trees\\
+T7 & 28 & Unit VI --- Bayesian, ensembles\\
+T8 & 32 & Unit VI --- neural networks, SVM, evaluation\\
+T9 & 35 & Unit VII --- foundations, similarity, data types\\
+T10 & 39 & Unit VII --- hierarchical, partitioning, density-based\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Each test is marked out of 10; the component is the total scaled to 10.
+\textbf{An absence counts as zero}, so tell me in advance if you cannot sit one.
+
+A \textbf{drop-lowest-two} provision may be applied, in which case your best 8 of
+10 count. Whether it is in force will be confirmed early in the semester ---
+plan on all ten counting and treat it as a safety net, not a budget.
+
+\subsubsection*{About Test-0, and about the different question sets}
+
+\textbf{Test-0} is a diagnostic. It carries \textbf{no marks}, is not a ranking,
+and is not an ability test. There is nothing to revise for it. Its purpose is to
+let the teaching team see \emph{how you approach a problem}, so that the short
+tests through the semester can be framed in a way that suits how you work. Show
+your working; an incomplete answer that makes its reasoning visible is more
+useful than a bare correct one.
+
+You will notice that the quizzes come in several versions. What you should know
+about that:
+
+\begin{itemize}[leftmargin=*]
+  \item The versions match the \textbf{style} of a question to how you work.
+    They are not ability tiers.
+  \item Every version asks \textbf{equally demanding} questions, on the same
+    topics, for the same marks, and is marked against the \textbf{same rubric}.
+  \item Which version you get may change during the semester. That is normal and
+    is not a promotion or a demotion.
+  \item It has \textbf{no effect whatsoever} on any mark you receive.
+  \item T1 may run as a single common paper for everyone; the versions begin at
+    T2 in that case.
+\end{itemize}
+
+If any of that does not match your experience, tell me --- that would be a fault
+in the design and I would want to fix it.
+
+\subsection{Theory assignments --- 5 marks}
+
+Two assignments, each worth 2.5. Each has two parts: the submission itself
+(1.0) and a short \textbf{in-class assessment test} on what you submitted (1.5).
+
+\begin{center}
+\begin{tabular}{@{}lp{6.6cm}ll@{}}
+\toprule
+\textbf{Asst} & \textbf{Coverage} & \textbf{Issued} & \textbf{Submission + test}\\
+\midrule
+A1 & Units I--IV --- preprocessing and cross-validation pipeline & after session 13 & \textbf{session 14}\\
+A2 & Units V--VI --- classifier comparison with ROC/AUC & after session 32 & \textbf{session 33}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{caution}[Why the test is worth more than the submission]
+Because it is the part that proves the work is yours. If you did the assignment,
+the test is straightforward. If you did not, no amount of polish on the
+submission will save it.
+\end{caution}
+
+\subsection{Laboratory --- 20 marks}
+
+Experiments 1--14 are grouped into \textbf{ten assignments}. Experiment 15, the
+mini-project, is assessed under the project component instead.
+
+\begin{center}
+\begin{tabular}{@{}llp{5.5cm}cc@{}}
+\toprule
+\textbf{Asst} & \textbf{Expts} & \textbf{Topic} & \textbf{Due after} & \textbf{Quiz}\\
+ & & & \textbf{lab} & \\
+\midrule
+LA1 & 1, 2 & Environment setup; preprocessing and EDA & 2 & LQ1, lab 3\\
+LA2 & 3 & Regression: housing price prediction & 3 & LQ2, lab 4\\
+LA3 & 4 & Time-series regression: stock prices & 4 & LQ3, lab 5\\
+LA4 & 5 & Customer churn prediction & 5 & LQ4, lab 6\\
+LA5 & 6, 7 & Image and multiclass classification: digits and Iris & 7 & LQ5, lab 8\\
+LA6 & 8 & Spam email detection & 8 & LQ6, lab 9\\
+LA7 & 9 & Credit risk assessment & 9 & LQ7, lab 10\\
+LA8 & 10, 11 & Anomaly detection; physiological signal classification & 11 & LQ8, lab 12\\
+LA9 & 12 & Breast cancer diagnosis from imaging features & 12 & LQ9, lab 13\\
+LA10 & 13, 14 & Clustering medical images; crop disease classification & 14 & LQ10, lab 15\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection*{How a lab assignment is marked}
+
+Each is out of 10, with a choice structure:
+
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Section} & \textbf{Level} & \textbf{Choice rule} & \textbf{Marks}\\
+\midrule
+A & Easy & attempt any 2 of 3 (2 marks each) & 4\\
+B & Medium & attempt any 1 of 2 (4 marks each) & 4\\
+C & Consolidation & compulsory & 2\\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Total}} & \textbf{10}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Attempting more than the rule allows is not penalised --- the best attempts are
+marked.
+
+\subsubsection*{Lab quizzes --- and why you should write your own code}
+
+Each lab quiz asks you to \textbf{read, trace, debug and modify your own
+submitted code}. Not recall, not theory --- your code, in front of you, with
+questions about it.
+
+\begin{caution}
+This is deliberate, and it is the reason copying does not work in this course.
+Code you did not write is very hard to explain on the spot. Struggling through
+your own imperfect solution will score better than submitting someone else's
+good one.
+\end{caution}
+
+\subsection{Project --- 15 marks}
+
+Ten projects are offered. You form your own group and choose one. Each project is
+normally taken by one group only; two groups may take the same one only with
+prior approval.
+
+\begin{center}
+\begin{tabular}{@{}p{5.4cm}cp{6.8cm}@{}}
+\toprule
+\textbf{Sub-component} & \textbf{Marks} & \textbf{Basis}\\
+\midrule
+Project quiz & 10 & An oral and written test on your group's project. \textbf{Marked individually} --- everyone is asked separately.\\
+Project state & 5 & Completeness, correctness, reproducibility and documentation of the artefact. \textbf{Awarded to the group.}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Milestone} & \textbf{Session}\\
+\midrule
+Project catalogue released & 8\\
+Groups formed and project selected & 13\\
+Checkpoint 1 --- data secured, baseline model & 21\\
+Checkpoint 2 --- full pipeline, initial results & 32\\
+Final submission (code, report, reproducibility notes) & 39\\
+Individual project quiz & 40 / lab 15\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{keyidea}[Read this before you choose your group]
+Two thirds of the project mark is \textbf{individual}. A strong contributor in a
+weak group can still score well. A passenger in a strong group cannot --- the
+group mark will not save them, because it is only 5 of the 15.
+
+Group marks are not divided by contribution. All individual differentiation
+happens through the individual quiz.
+\end{keyidea}
+
+\newpage
+% =========================================================================
+\section{Semester planner}
+
+Sessions are numbered rather than dated; dates follow the timetable and will be
+announced. Print this page.
+
+\begin{center}
+\begin{tabular}{@{}clp{7.2cm}@{}}
+\toprule
+\textbf{Session} & \textbf{What happens} & \textbf{What you should have done}\\
+\midrule
+1--2 & Unit I lectures & \texttt{pip install numpy pandas scikit-learn matplotlib seaborn jupyter}\\
+week 2 & \textbf{Test-0} (no marks) & Nothing --- turn up\\
+lab 2 & \textbf{LA1 due} & Experiments 1--2 written up\\
+lab 3 & \textbf{LQ1} & Be able to explain your LA1 code\\
+6 & \textbf{T1} & Units I--II\\
+8 & Project catalogue released & Start thinking about a group\\
+10 & \textbf{T2} & Unit III; Unit IV cleaning\\
+13 & \textbf{T3}; groups and project fixed & Unit IV\\
+14 & \textbf{A1 submission + assessment test} & Assignment 1 done and understood\\
+17 & \textbf{T4} & Unit V foundations\\
+21 & \textbf{T5}; project checkpoint 1 & Unit V; data secured, baseline model\\
+25 & \textbf{T6} & Unit VI foundations, KNN, trees\\
+28 & \textbf{T7} & Unit VI Bayesian, ensembles\\
+32 & \textbf{T8}; project checkpoint 2 & Unit VI complete; pipeline running\\
+33 & \textbf{A2 submission + assessment test} & Assignment 2 done and understood\\
+35 & \textbf{T9} & Unit VII foundations\\
+39 & \textbf{T10}; project final submission & Unit VII complete; project handed in\\
+40 & Revision; project quiz & Everything\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Mid-Semester and End-Semester examinations follow the university
+calendar and are notified separately.
+
+\newpage
+% =========================================================================
+\section{How to do well in this course}
+
+\subsection{Three rules that apply to everything}
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Fit every transformer inside a \texttt{Pipeline}.} Never fit
+    anything on the test set --- not a scaler, not an imputer, not a feature
+    selector. This is the single most common way to produce a wonderful result
+    that means nothing.
+  \item \textbf{Set \texttt{random\_state} wherever reproducibility is asked
+    for.} A result you cannot reproduce is a result you cannot defend.
+  \item \textbf{Every question wants a short written observation}, not just a
+    number. Code with no commentary is capped at half marks.
+\end{enumerate}
+
+\subsection{Practical advice}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Restart the kernel and run top to bottom before you submit.} Out
+    of order cells are the commonest reason a submission does not reproduce.
+  \item \textbf{Download each dataset once} into a local \texttt{data/} folder
+    and keep it for the semester. \texttt{Anchor-Datasets.pdf} has the links and
+    the loading code. Some loaders need internet on first use --- run them at
+    home, not in the lab.
+  \item \textbf{Report metrics with units.} ``MAE 0.53'' means nothing;
+    ``MAE 0.53, i.e.\ about \$53{,}000'' means something.
+  \item \textbf{Do not quote more precision than you have.} If cross-validation
+    gives $0.953 \pm 0.052$, writing ``95.33\%'' is false precision.
+  \item \textbf{Ask in the lab rather than guessing.} That is what the session
+    is for, and it costs you nothing.
+\end{itemize}
+
+\subsection{What to submit}
+
+\begin{itemize}[leftmargin=*]
+  \item Notebook: \texttt{AML\_LAxx\_<SAPID>.ipynb}, all cells executed with
+    outputs visible.
+  \item Report: 2--3 pages PDF, or a \texttt{README.md}, carrying your results
+    table and observations.
+  \item Do not upload datasets. Cite the source and include the loading code.
+\end{itemize}
+
+\subsection{Academic integrity}
+
+Discussing ideas with classmates is encouraged. Submitting someone else's code
+or text as your own is not, and the assessment design will find it: the
+assignment assessment tests and the lab quizzes both ask you to explain work you
+have submitted. If you used a tool or a tutorial substantially, say so in your
+report --- that is honest practice, not an admission of weakness.
+
+\newpage
+% =========================================================================
+\section{Books, courses and other help}
+
+All links checked 4 August 2026. Free and no-login resources are marked
+\textbf{[free]}.
+
+\subsection*{Prescribed}
+
+\begin{itemize}[leftmargin=*]
+  \item M\"uller, A.\ C.\ and Guido, S. \emph{Introduction to Machine Learning
+    with Python}. O'Reilly, 2016.
+  \item Bishop, C.\ M. \emph{Pattern Recognition and Machine Learning}.
+    Springer, 2006. \textbf{[free]} from Microsoft Research.
+\end{itemize}
+
+\subsection*{Reference}
+
+\begin{itemize}[leftmargin=*]
+  \item Murphy, K.\ P. \emph{Machine Learning: A Probabilistic Perspective}.
+    MIT Press, 2012. The author's free successor volume is at
+    \textbf{[free]} \url{https://probml.github.io/pml-book/book1.html}
+  \item Han, J., Kamber, M.\ and Pei, J. \emph{Data Mining: Concepts and
+    Techniques}, 3rd ed. Morgan Kaufmann, 2012. Especially Chapters 3, 8 and 10.
+  \item \emph{scikit-learn user guide} --- the syllabus web resource.
+    \textbf{[free]} \url{https://scikit-learn.org/stable/}
+\end{itemize}
+
+\subsection*{Open-access support (not on the official list, but good)}
+
+\begin{itemize}[leftmargin=*]
+  \item James, G.\ et al. \emph{An Introduction to Statistical Learning with
+    Python}. \textbf{[free]} \url{https://www.statlearning.com/} --- the friendliest
+    treatment of regression, regularization and cross-validation available.
+\end{itemize}
+
+\subsection*{Courses --- free, and worth your time}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{NPTEL, Introduction to Machine Learning}, Prof.\ Balaraman
+    Ravindran, IIT Madras. The closest match to this syllabus.
+    \textbf{[free]} \url{https://nptel.ac.in/courses/106106139}
+  \item \textbf{SWAYAM} --- national portal hosting NPTEL and other Indian
+    university courses. \textbf{[free]} \url{https://swayam.gov.in/}
+  \item \textbf{Google Machine Learning Crash Course}. \textbf{[free]}
+    \url{https://developers.google.com/machine-learning/crash-course}
+  \item \textbf{Kaggle Learn, Intro to Machine Learning} --- four hours, runs in
+    the browser, no installation. \textbf{[free]}
+    \url{https://www.kaggle.com/learn/intro-to-machine-learning}
+\end{itemize}
+
+\subsection*{When something will not click}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{StatQuest} (Josh Starmer) --- short, clear videos on almost every
+    topic in this syllabus. Start with \emph{A Gentle Introduction to Machine
+    Learning}. \textbf{[free]} \url{https://statquest.org/video-index/}
+  \item \textbf{MLU-Explain} --- interactive visual explanations of train/test
+    splits, bias--variance and cross-validation. \textbf{[free]}
+    \url{https://mlu-explain.github.io/}
+  \item \textbf{scikit-learn, Common Pitfalls} --- the official treatment of
+    leakage and \texttt{random\_state}. Read it once, properly. \textbf{[free]}
+    \url{https://scikit-learn.org/stable/common_pitfalls.html}
+\end{itemize}
+
+\subsection*{Course materials}
+
+Slides, notes, lab briefs and starter notebooks are published as they are
+delivered at\\
+\url{https://github.com/tali7c/Applied-Machine-Learning}
+
+Each lecture ships with \texttt{slides.pdf} and a much fuller \texttt{notes.pdf}
+containing worked examples, runnable code with its real output, practice
+questions and full solutions. \textbf{The notes are written so you can learn the
+material without having been in the lecture} --- use them.
+
+\vfill
+\begin{center}
+\small Questions about anything in this handbook: ask in class, in the lab, or
+on the LMS.
+\end{center}
+
+\end{document}

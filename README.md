@@ -4,6 +4,8 @@ Lecture slides (Beamer), teaching notes, lab assignments and starter notebooks f
 
 GitHub: `https://github.com/tali7c/Applied-Machine-Learning`
 
+**Students, start here → [`Course-Handbook/Course-Handbook.pdf`](Course-Handbook/Course-Handbook.pdf)** — syllabus, the full marks structure, every deadline, grade bands and the reading list in one 12-page document.
+
 | | |
 |---|---|
 | Course code | CSAI2017 (theory) · CSAI2017P (theory + lab) |
@@ -27,6 +29,7 @@ GitHub: `https://github.com/tali7c/Applied-Machine-Learning`
   - `AML_LAxx_starter.ipynb` — starter notebook with the questions inlined
   - `latex/assignment.tex` — source
 - `lab-assignments/Anchor-Datasets.pdf` — the three dataset families, with sources and loading snippets
+- `Course-Handbook/Course-Handbook.pdf` — the student handbook (syllabus, marks, calendar, resources); source in `Course-Handbook/latex/`
 - `_shared/` — common LaTeX preambles and the UPES beamer theme
 
 Notes:
