@@ -11,8 +11,8 @@ GitHub: `https://github.com/tali7c/Applied-Machine-Learning`
 | Course code | CSAI2017 (theory) · CSAI2017P (theory + lab) |
 | L-T-P-C | 4-0-1-5 |
 | Units | 7 |
-| Delivery | 24 lecture packages across 40 theory sessions |
-| Laboratory | 15 experiments; experiments 1–14 assessed as 10 assignments, experiment 15 as the project |
+| Delivery | 24 lecture packages (L1–L24) + 2 assessment sessions |
+| Laboratory | 15 experiments; 1–14 assessed as 10 assignments, 15 as the project |
 | Session | Autumn 2026 · AY 2026-27 |
 | Faculty | Dr. Tofik Ali |
 
@@ -53,7 +53,7 @@ Notes:
 | Project — individual quiz | 10 |
 | Project — group submission state | 5 |
 | Lab assignments (10) | 10 |
-| Lab quizzes (10) | 10 |
+| Lab quizzes (10, 60 min each) | 10 |
 | Mid-Semester examination | 20 |
 | End-Semester examination | 30 |
 | **Total** | **100** |
@@ -86,8 +86,10 @@ Units II and III come early on purpose. Once you know **what quantity we are min
 
 ## Laboratory
 
-Lab experiments 1–14 are grouped into ten assignments. Experiment 15 (the mini-project) is assessed
-under the Project component instead. Each assignment is marked out of 10: Section A (attempt 2 of 3,
+Lab experiments 1–14 are grouped into **ten assignments** — the assignment is the fixed unit, not the
+lab session, so this grouping holds however many labs the timetable delivers. Each assignment is
+released once the lectures it depends on are done, with enough time to complete the experiments it
+covers. Experiment 15 (the mini-project) is assessed under the Project component instead. Each assignment is marked out of 10: Section A (attempt 2 of 3,
 2 marks each), Section B (attempt 1 of 2, 4 marks each), Section C (consolidation, compulsory, 2 marks).
 
 | Assignment | Experiments | Topic |
@@ -96,7 +98,7 @@ under the Project component instead. Each assignment is marked out of 10: Sectio
 | LA2 | 3 | Regression: housing price prediction |
 | LA3 | 4 | Time-series regression: stock price prediction |
 | LA4 | 5 | Customer churn prediction |
-| LA5 | 6, 7 | Digit recognition; Iris classification |
+| LA5 | 6, 7 | Image and multiclass classification: digits and Iris |
 | LA6 | 8 | Spam email detection |
 | LA7 | 9 | Credit risk assessment |
 | LA8 | 10, 11 | Anomaly detection; physiological signal classification |
@@ -109,7 +111,7 @@ Three rules apply to every assignment:
 - Set `random_state` wherever a question asks for reproducibility.
 - Every question wants a short written observation, not just a number. Code without commentary caps you at half marks.
 
-The lab quiz that follows each assignment asks you to read, trace, debug and modify **your own** submitted code.
+The 60-minute lab quiz that follows each submission asks you to read, trace, debug and modify **your own** submitted code.
 
 ## Building the PDFs
 
