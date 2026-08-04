@@ -1,6 +1,6 @@
 # Applied Machine Learning (CSAI2017P)
 
-Lecture slides (Beamer), teaching notes, lab assignments and starter notebooks for **Applied Machine Learning**, B.Tech CSE (AI & ML), Semester IV.
+Lecture slides (Beamer), teaching notes, lab assignments and starter notebooks for **Applied Machine Learning**, B.Tech CSE (AI & ML), Semester III.
 
 GitHub: `https://github.com/tali7c/Applied-Machine-Learning`
 
