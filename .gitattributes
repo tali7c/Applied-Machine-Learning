@@ -1,0 +1,20 @@
+# Normalise line endings so Windows/Linux collaborators do not churn diffs.
+* text=auto eol=lf
+
+# Text formats
+*.tex    text diff=tex
+*.sty    text diff=tex
+*.md     text
+*.py     text diff=python
+*.ipynb  text
+
+# Binaries: never touch, and do not attempt a textual diff
+*.pdf    binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.zip    binary
+
+# Keep generated artefacts out of GitHub's language statistics
+*.pdf            linguist-documentation
+_shared/*        linguist-vendored

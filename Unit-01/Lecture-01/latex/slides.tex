@@ -1,0 +1,528 @@
+\documentclass[aspectratio=169]{beamer}
+
+\input{../../../_shared/beamer-common.tex}
+
+\title[Applied Machine Learning]{Applied Machine Learning}
+\subtitle{Unit 01 -- Lecture 01: Introduction to ML \& the Python ML Stack}
+\author{Tofik Ali}
+\institute{School of Computer Science, UPES Dehradun}
+\date{Autumn 2026}
+
+\graphicspath{{../images/}{../../../_shared/}{../../../_shared/UPES-Beamer-Theme/}}
+
+\begin{document}
+
+\UPESCoverFrame
+\setcounter{framenumber}{0}
+
+\begin{frame}
+  \titlepage
+  \vspace{0.3em}
+  \begin{center}
+    \footnotesize Topic focus: \textbf{What is machine learning?} what kinds there are, and the tools we will use\\[0.25em]
+    \footnotesize Repository: \texttt{\AMLRepoURL}
+  \end{center}
+  \slidesources{\AMLUnitISources}
+\end{frame}
+
+\begin{frame}{Quick Links}
+  \centering
+  \hyperlink{sec:course}{\beamerbutton{Course}}\hspace{0.6em}
+  \hyperlink{sec:whatisml}{\beamerbutton{What is ML}}\hspace{0.6em}
+  \hyperlink{sec:types}{\beamerbutton{Types}}\hspace{0.6em}
+  \hyperlink{sec:stack}{\beamerbutton{Python Stack}}\hspace{0.6em}
+  \hyperlink{sec:summary}{\beamerbutton{Summary}}
+\end{frame}
+
+\begin{frame}{Agenda}
+  \tableofcontents
+\end{frame}
+
+% ============================================================================
+\section{Course Overview}
+\label{sec:course}
+% ============================================================================
+
+\begin{frame}{Learning Outcomes}
+  By the end of this lecture, you should be able to:
+  \begin{itemize}[<+->]
+    \item Explain what \textbf{machine learning} is and when it is the right tool.
+    \item State Mitchell's definition in terms of \textbf{task, performance measure and experience}.
+    \item Distinguish \textbf{supervised}, \textbf{unsupervised} and \textbf{reinforcement} learning, and name the task type for a given problem.
+    \item Describe the roles of \textbf{NumPy}, \textbf{Pandas} and \textbf{scikit-learn}, and run a complete model in a dozen lines.
+  \end{itemize}
+  \vspace{0.3em}
+  Mapped to \textbf{CO1} (core concepts) and \textbf{CO2} (build models with standard libraries).
+\end{frame}
+
+\begin{frame}{Course Roadmap (Units I--VII)}
+  \begin{itemize}[<+->]
+    \item \textbf{Unit I:} Introduction --- what ML is, its types, and the Python stack.
+    \item \textbf{Unit II:} Loss functions --- MSE, MAE, Huber, cross-entropy, hinge, triplet.
+    \item \textbf{Unit III:} Optimizers --- SGD, mini-batch, momentum, Adagrad, RMSprop, Adadelta, Adam.
+    \item \textbf{Unit IV:} Data preprocessing --- cleaning, features, splitting, cross-validation, imbalance.
+    \item \textbf{Unit V:} Regression --- linear, logistic, multiple, regularization.
+    \item \textbf{Unit VI:} Classification --- KNN, trees, Bayes, ensembles, neural networks, SVM, evaluation.
+    \item \textbf{Unit VII:} Clustering --- hierarchical, K-means, K-medoids, CLARA, DBSCAN.
+  \end{itemize}
+  \vspace{0.3em}
+  \onslide<8->{Units II and III come early on purpose: once you know \textbf{what we minimise} and \textbf{how}, Units V--VII are variations on one theme.}
+\end{frame}
+
+\begin{frame}[shrink=12]{Course Structure and Assessment}
+  \begin{columns}[T]
+    \begin{column}{0.42\textwidth}
+      \footnotesize
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        Course code & CSAI2017P \\
+        L-T-P-C & 4-0-1-5 \\
+        Units & 7 \\
+        Theory & 24 lectures / 40 sessions \\
+        Lab & 15 experiments \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.56\textwidth}
+      \footnotesize
+      \begin{tabular}{@{}lc@{}}
+        \toprule
+        \textbf{Component} & \textbf{Marks} \\
+        \midrule
+        Theory assignments (2, each with a test) & 5 \\
+        Theory quizzes (10 short tests) & 10 \\
+        Project --- individual quiz & 10 \\
+        Project --- group submission state & 5 \\
+        Lab assignments (10) & 10 \\
+        Lab quizzes (10) & 10 \\
+        Mid-Semester examination & 20 \\
+        End-Semester examination & 30 \\
+        \midrule
+        \textbf{Total} & \textbf{100} \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+  \end{columns}
+  \vspace{0.4em}
+  \begin{block}{Read this carefully}
+    The project is worth 15, and \textbf{10 of those 15 are individual}. A strong contributor in a weak group can still score well; a passenger cannot.\\[2pt]
+    {\footnotesize Indicative. The final component split is subject to departmental approval and will be confirmed on the LMS.}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Test-0: a diagnostic, not an exam}
+  \begin{itemize}[<+->]
+    \item A \textbf{30-minute} diagnostic on prerequisites and general understanding. \textbf{Date to be announced} --- expect it within a week or two.
+    \item It \textbf{carries no marks} and is not part of any component.
+    \item Its purpose: to let the teaching team see \textbf{how you approach a problem}, so the short tests through the semester can be framed to suit how you work.
+    \item It is \textbf{not} a ranking and \textbf{not} an ability test. Nothing to revise.
+  \end{itemize}
+  \vspace{0.3em}
+  \onslide<5->{%
+  \begin{block}{How to answer it}
+    Show your working. An incomplete answer that makes its reasoning visible is \textbf{more} useful to us than a bare correct one. If you do not know something, write what you would need to find out --- that is a useful answer, not a blank one.
+  \end{block}}
+\end{frame}
+
+\begin{frame}{Abbreviations (Used in This Lecture)}
+  \begin{itemize}[<+->]
+    \item \textbf{ML}: Machine Learning
+    \item \textbf{AI}: Artificial Intelligence
+    \item \textbf{DL}: Deep Learning
+    \item \textbf{EDA}: Exploratory Data Analysis (lab focus)
+    \item \textbf{MSE}: Mean Squared Error (Unit II)
+    \item \textbf{KNN}: K-Nearest Neighbours (Unit VI)
+  \end{itemize}
+\end{frame}
+
+% ============================================================================
+\section{What is Machine Learning?}
+\label{sec:whatisml}
+% ============================================================================
+
+\begin{frame}[shrink=14]{The Shape of the Problem}
+  \begin{itemize}[<+->]
+    \item \textbf{Programs we can write by hand:} sort a list, parse a date, compute a payroll. We know the rule; we encode the rule.
+    \item \textbf{Programs we cannot write by hand:} decide whether an email is spam, read a handwritten digit, tell whether a scan shows a tumour.
+    \item In the second group we \textbf{recognise} the right answer but cannot state the rule that produces it.
+  \end{itemize}
+  \vspace{0.4em}
+  \onslide<4->{%
+  \begin{block}{Working idea for this course}
+    Machine learning is what you reach for when you have \textbf{examples of the answer} but not \textbf{a statement of the rule}. The examples are used to find the rule.\\[2pt]
+    {\footnotesize That is the \emph{supervised} case, which is most of this course. The other two families relax it --- we get to them shortly.}
+  \end{block}}
+  \slidesources{\AMLUnitISources}
+\end{frame}
+
+\begin{frame}[fragile,shrink=8]{Two Ways to Build a Spam Filter}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Rule-based}
+      \begin{lstlisting}
+def classify(subject, sender, bangs):
+    if "free money" in subject:
+        return "SPAM"
+    if sender in blocklist:
+        return "SPAM"
+    if bangs > 5:
+        return "SPAM"
+    return "HAM"
+      \end{lstlisting}
+      \footnotesize Spammer writes ``fr33 m0ney''. You add a rule. They adapt. You add a rule.
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{Learned}
+      \begin{lstlisting}
+model.fit(emails, labels)
+model.predict(new_email)
+      \end{lstlisting}
+      \footnotesize Spammer adapts. You collect newly labelled mail. You refit.
+    \end{column}
+  \end{columns}
+  \vspace{0.4em}
+  \begin{exampleblock}{Discussion}
+    What changed is the \textbf{maintenance strategy}, not only the code. But the rule-based filter keeps one property the learned one loses --- can you name it?
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}[shrink=8]{A Working Definition (Mitchell, 1997)}
+  \begin{block}{Definition}
+    A computer program is said to \textbf{learn} from experience $E$ with respect to some class of tasks $T$ and performance measure $P$, if its performance at tasks in $T$, as measured by $P$, improves with experience $E$.
+  \end{block}
+  \vspace{0.3em}
+  \centering\footnotesize
+  \begin{tabular}{@{}llll@{}}
+    \toprule
+     & \textbf{Task $T$} & \textbf{Experience $E$} & \textbf{Performance $P$} \\
+    \midrule
+    Spam filter  & classify email & labelled inbox     & fraction correctly classified \\
+    House prices & predict price  & past sales records & mean squared error \\
+    Game agent   & choose a move  & games played       & win rate \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.5em}
+  \begin{block}{Practical takeaway}
+    The definition forces you to name $P$ \textbf{before} you start. Many failed ML projects failed here, not in the modelling.
+  \end{block}
+\end{frame}
+
+\begin{frame}[shrink=10]{Where ML Sits: AI $\supset$ ML $\supset$ DL}
+  \centering
+  \begin{tikzpicture}[scale=0.85, every node/.style={transform shape}]
+    \draw[fill=UPESBlueDark!10,draw=UPESBlueDark,thick] (0,0) ellipse (4.6cm and 2.5cm);
+    \node[above] at (0,1.7) {\small\textbf{Artificial Intelligence}};
+    \node[below, font=\tiny, text width=3.8cm, align=center] at (0,1.65)
+      {search, planning, logic, knowledge representation};
+    \draw[fill=UPESBlue!25,draw=UPESBlue,thick] (0.3,-0.35) ellipse (3.1cm and 1.65cm);
+    \node[above] at (0.3,0.45) {\small\textbf{Machine Learning}};
+    \node[below, font=\tiny, text width=2.9cm, align=center] at (0.3,0.4)
+      {learn from data or experience};
+    \draw[fill=UPESOrange!45,draw=UPESOrange,thick] (0.6,-0.9) ellipse (1.7cm and 0.8cm);
+    \node[font=\small\bfseries] at (0.6,-0.9) {Deep Learning};
+  \end{tikzpicture}
+  \vspace{0.3em}
+  \begin{alertblock}{Careful}
+    Deep learning is a \textbf{subset} of ML, not a synonym and not an automatic upgrade. On tabular data of the size you meet in this course, a gradient-boosted tree usually beats a neural network --- and trains in seconds.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Why ML ``Works'' Today (Three Drivers)}
+  \begin{itemize}[<+->]
+    \item \textbf{Data}: digitised transactions, sensors, images and logs --- the examples exist and are cheap to store.
+    \item \textbf{Compute}: parallel hardware made the arithmetic of Unit III affordable at scale.
+    \item \textbf{Algorithms and tooling}: better optimisers and regularisation, plus libraries that put all of it three lines away.
+  \end{itemize}
+  \vspace{0.4em}
+  \onslide<4->{Most core ideas here are decades old --- least squares dates from about 1805. What changed is that data and compute caught up with the mathematics.}
+\end{frame}
+
+\begin{frame}[shrink=6]{Applications --- and the Unit that Covers Them}
+  \centering\footnotesize
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Domain} & \textbf{Task} & \textbf{Unit} \\
+    \midrule
+    Finance     & credit scoring, fraud detection               & VI \\
+    Healthcare  & diagnosis from imaging, signal classification & VI, VII \\
+    Retail      & churn prediction, customer segmentation       & V, VI, VII \\
+    Agriculture & crop disease from leaf images                 & VI \\
+    Web         & spam filtering, recommendation                & VI, VII \\
+    Operations  & demand and price forecasting                  & V \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.5em}
+  \begin{block}{You will build this column}
+    Most rows above appear as a lab experiment. By the end of the lab programme you will have written them.
+  \end{block}
+\end{frame}
+
+\begin{frame}[shrink=6]{When \emph{Not} to Use Machine Learning}
+  \begin{itemize}[<+->]
+    \item \textbf{The rule is known and stable.} Income tax is a lookup, not a prediction.
+    \item \textbf{No labelled examples} exist and none can realistically be obtained.
+    \item \textbf{Errors are unacceptable} and you cannot bound them.
+    \item \textbf{Every decision must be explained} to a regulator, and a simple rule would do nearly as well.
+    \item \textbf{Training data will not resemble deployment.} A model trained on last year's customers predicts last year's customers.
+  \end{itemize}
+  \vspace{0.3em}
+  \onslide<6->{%
+  \begin{exampleblock}{Discussion}
+    A hospital wants to predict which patients will miss an appointment. Which of the five is most likely to bite, and why?
+  \end{exampleblock}}
+\end{frame}
+
+% ============================================================================
+\section{Types of Machine Learning}
+\label{sec:types}
+% ============================================================================
+
+\begin{frame}{The Three Families}
+  \centering
+  \begin{tikzpicture}[
+    node distance=6mm and 6mm,
+    box/.style={draw=UPESBlueDark,thick,rounded corners,fill=UPESBlueDark!10,
+                text width=3.2cm,align=center,inner sep=4pt,font=\small},
+    lbl/.style={font=\scriptsize\itshape,text width=3.2cm,align=center}]
+    \node[box] (sup) {\textbf{Supervised}\\ learn a mapping\\ $x \mapsto y$};
+    \node[box, right=of sup] (uns) {\textbf{Unsupervised}\\ find structure\\ in $x$ alone};
+    \node[box, right=of uns] (rl)  {\textbf{Reinforcement}\\ learn a policy\\ from reward};
+    \node[lbl, below=3mm of sup] {labelled data $\{(x_i,y_i)\}$};
+    \node[lbl, below=3mm of uns] {unlabelled data $\{x_i\}$};
+    \node[lbl, below=3mm of rl]  {environment + reward};
+  \end{tikzpicture}
+  \vspace{0.5em}
+  \begin{block}{The question that decides which family you are in}
+    \textbf{Do you already have the answers?} Yes, for past examples $\rightarrow$ supervised. No, and you want structure $\rightarrow$ unsupervised. No, but you can act and be scored $\rightarrow$ reinforcement.
+  \end{block}
+\end{frame}
+
+\begin{frame}[shrink=6]{Supervised Learning}
+  Given $\{(x_i, y_i)\}_{i=1}^{n}$, find $f$ such that $f(x) \approx y$ on data \textbf{not seen during training}.
+  \vspace{0.4em}
+  \begin{itemize}[<+->]
+    \item \textbf{Regression} --- $y$ is continuous: house price, stock value, temperature, time to failure. \hfill (Unit V; lab experiments 3--4)
+    \item \textbf{Classification} --- $y$ is a category: spam or not, digit 0--9, benign or malignant. \hfill (Unit VI; lab experiments 5--9, 11--12)
+  \end{itemize}
+  \vspace{0.4em}
+  \onslide<3->{%
+  \begin{alertblock}{The whole difficulty in one sentence}
+    Fitting the training data is easy --- a model can simply memorise it. The task is to be right on data never seen before. That single requirement is why Unit IV (splitting, cross-validation) and the over-fitting material in Unit V exist.
+  \end{alertblock}}
+\end{frame}
+
+\begin{frame}[shrink=8]{Unsupervised and Reinforcement Learning}
+  \begin{itemize}[<+->]
+    \item \textbf{Clustering} --- group similar records: customer segments, disease subtypes. \hfill (Unit VII; lab experiment 13)
+    \item \textbf{Dimensionality reduction} --- fewer features carrying much the same information. \hfill (Unit IV)
+    \item \textbf{Anomaly detection} --- identify what does not fit. \hfill (lab experiment 10)
+    \item \textbf{Reinforcement learning} --- an agent acts in an environment and receives reward; no labelled answers, only consequences, often delayed. Robotics, game playing, control.
+  \end{itemize}
+  \vspace{0.3em}
+  \onslide<5->{%
+  \begin{block}{Why unsupervised is harder to judge}
+    Unsupervised results have no ground truth to check against, so evaluating a clustering is genuinely harder than evaluating a classifier. Unit VII therefore spends real time on cluster validity.
+  \end{block}}
+\end{frame}
+
+\begin{frame}[shrink=6]{Naming the Problem (Worked Exercise)}
+  \centering\footnotesize
+  \begin{tabular}{@{}p{6.4cm}ll@{}}
+    \toprule
+    \textbf{Situation} & \textbf{Family} & \textbf{Task} \\
+    \midrule
+    10\,000 past loans marked repaid or defaulted; score a new applicant
+      & \onslide<2->{supervised} & \onslide<2->{classification} \\
+    5 years of daily sales; forecast next month
+      & \onslide<3->{supervised} & \onslide<3->{regression} \\
+    50\,000 customer records, no labels; find natural groups
+      & \onslide<4->{unsupervised} & \onslide<4->{clustering} \\
+    Card transactions; flag the unusual ones
+      & \onslide<5->{unsupervised} & \onslide<5->{anomaly detection} \\
+    A warehouse robot that must learn a route
+      & \onslide<6->{reinforcement} & \onslide<6->{policy learning} \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.5em}
+  \onslide<6->{%
+  \begin{exampleblock}{Discussion}
+    Row 4 could also be posed as supervised. What would you need for that, and why might a bank not have it?
+  \end{exampleblock}}
+\end{frame}
+
+% ============================================================================
+\section{The Python ML Stack}
+\label{sec:stack}
+% ============================================================================
+
+\begin{frame}{Three Libraries, Three Jobs}
+  \centering
+  \begin{tikzpicture}[
+    node distance=4mm,
+    layer/.style={draw=UPESBlueDark,thick,rounded corners,fill=UPESBlueDark!10,
+                  text width=10.5cm,align=center,inner sep=5pt,font=\small}]
+    \node[layer] (sk) {\textbf{scikit-learn} --- models, preprocessing, evaluation, pipelines};
+    \node[layer, below=of sk] (pd) {\textbf{Pandas} --- tabular data: load, clean, reshape, group};
+    \node[layer, below=of pd] (np) {\textbf{NumPy} --- the \texttt{ndarray} and fast array arithmetic};
+  \end{tikzpicture}
+  \vspace{0.5em}
+  \begin{block}{Everything above rests on the layer below}
+    A Pandas \texttt{DataFrame} holds NumPy arrays; a scikit-learn estimator consumes NumPy arrays. Understanding the bottom layer is what lets you debug the top one.
+  \end{block}
+  \footnotesize Matplotlib and Seaborn join the stack for plotting from Unit IV onwards.
+\end{frame}
+
+\begin{frame}[fragile,shrink=8]{NumPy --- Vectorisation is the Point}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Python loop}
+      \begin{lstlisting}
+total = 0.0
+for i in range(len(y)):
+    d = y[i] - yhat[i]
+    total += d * d
+mse = total / len(y)
+      \end{lstlisting}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{NumPy}
+      \begin{lstlisting}
+import numpy as np
+mse = np.mean((y - yhat) ** 2)
+      \end{lstlisting}
+      \footnotesize Shorter, and typically 10--100$\times$ faster: the loop runs in compiled code over a contiguous block of memory.
+    \end{column}
+  \end{columns}
+  \vspace{0.3em}
+  \begin{block}{Note what you just wrote}
+    That is the \textbf{Mean Squared Error} --- the first loss function of Unit II. Every optimiser in Unit III exists to make it smaller.
+  \end{block}
+  \footnotesize Essentials for lab 1: \texttt{np.array}, \texttt{.shape}, \texttt{.reshape}, broadcasting, \texttt{axis}, boolean masks.
+\end{frame}
+
+\begin{frame}[fragile,shrink=12]{Pandas --- the DataFrame}
+  \begin{lstlisting}
+import pandas as pd
+
+df = pd.read_csv("data.csv")
+df.head()          # look at it first, always
+df.info()          # dtypes and non-null counts
+df.describe()      # numeric summary
+df.isna().sum()    # where is the data missing?
+
+df["price_per_sqft"] = df["price"] / df["area"]
+df.groupby("city")["price"].mean()
+  \end{lstlisting}
+  \vspace{0.2em}
+  \begin{block}{Habit to build now}
+    Run \texttt{head}, \texttt{info}, \texttt{describe} and \texttt{isna().sum()} before you model anything. Unit IV is the disciplined version of that reflex.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile,shrink=6]{scikit-learn --- One API for Every Model}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \begin{lstlisting}
+est.fit(X, y)      # learn
+est.predict(X)     # apply
+est.score(X, y)    # evaluate
+
+tr.fit(X)          # transformers
+tr.transform(X)
+      \end{lstlisting}
+    \end{column}
+    \begin{column}{0.52\textwidth}
+      \begin{block}{Why this matters}
+        Swapping a decision tree for an SVM changes \textbf{one line}. Learn the API once here and every model in Units V--VII is already familiar.
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{alertblock}{The rule you must not break}
+    Call \texttt{fit} on training data only --- never on the test set, not even for scaling. Doing so leaks the answer and inflates your score. This is the most common bug in student ML code.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile,shrink=18]{End to End in Twelve Lines}
+  \begin{lstlisting}
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.pipeline import make_pipeline
+
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0, stratify=y)
+
+model = make_pipeline(StandardScaler(), KNeighborsClassifier(n_neighbors=5))
+model.fit(X_train, y_train)
+print(model.score(X_test, y_test))
+  \end{lstlisting}
+  \vspace{0.2em}
+  \begin{exampleblock}{Read what each argument protects you from}
+    \footnotesize \texttt{stratify=y} preserves the class balance. \texttt{random\_state} makes it reproducible. \texttt{make\_pipeline} fits the scaler \emph{inside} the training portion only --- the leak-proof way.
+  \end{exampleblock}
+  \slidesources{\AMLLabSources}
+\end{frame}
+
+\begin{frame}{Before the First Lab}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{block}{Set up your environment}
+        \footnotesize
+        \begin{enumerate}
+          \item Install Python 3.11+ (Anaconda or \texttt{venv}).
+          \item \texttt{pip install numpy pandas scikit-learn matplotlib seaborn jupyter}
+          \item Launch Jupyter; run the twelve-line Iris script.
+          \item Print the version of each library.
+        \end{enumerate}
+      \end{block}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{block}{Lab assignment LA1}
+        \footnotesize Experiments 1--2: environment setup, then preprocessing and EDA. Due after lab session 2; quiz LQ1 in lab session 3.
+      \end{block}
+      \begin{alertblock}{Lab quizzes test \emph{your} code}
+        \footnotesize They ask you to read, trace, debug and modify what you submitted. Copied code is hard to defend in three minutes.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================================
+\section{Summary}
+\label{sec:summary}
+% ============================================================================
+
+\begin{frame}{Summary}
+  \begin{itemize}[<+->]
+    \item ML suits problems where you have \textbf{examples of the answer} but cannot \textbf{state the rule}.
+    \item Mitchell's $T$, $P$, $E$ forces you to name the performance measure before modelling.
+    \item \textbf{Supervised} (regression, classification), \textbf{unsupervised} (clustering, dimensionality reduction, anomaly detection), \textbf{reinforcement} (policy from reward).
+    \item The goal is never to fit the training data --- it is to \textbf{generalise}.
+    \item \textbf{NumPy} $\rightarrow$ \textbf{Pandas} $\rightarrow$ \textbf{scikit-learn}, with one \texttt{fit}/\texttt{predict} API for every model.
+    \item Never \texttt{fit} on the test set.
+  \end{itemize}
+  \slidesources{\AMLUnitISources}
+\end{frame}
+
+\begin{frame}[shrink=10]{Next Lecture and Reading}
+  \begin{block}{Next --- L2: Loss functions (Unit II)}
+    Putting a number on how wrong a prediction is: MSE, MAE and Huber for regression; cross-entropy for classification; hinge and triplet for margins. That number is what everything else in the course minimises.
+  \end{block}
+  \begin{itemize}
+    \item M\"uller \& Guido, \textit{Introduction to Machine Learning with Python}, Ch.~1.
+    \item Bishop, \textit{Pattern Recognition and Machine Learning}, Ch.~1 (\S1.1).
+    \item Murphy, \textit{Probabilistic Machine Learning: An Introduction}, Ch.~1 (open access).
+    \item James et al., \textit{ISL with Python}, Ch.~1--2 (open access).
+    \item Scikit-learn user guide, ``Getting Started''.
+  \end{itemize}
+  \vspace{2pt}
+  {\scriptsize Free copies: \texttt{statlearning.com} (ISLP) \textbullet\
+  \texttt{probml.github.io/pml-book} (Murphy) \textbullet\ Bishop PRML via Microsoft Research.}
+\end{frame}
+
+\UPESThankYouFrame
+
+\end{document}

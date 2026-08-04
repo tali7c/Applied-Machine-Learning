@@ -1,0 +1,715 @@
+% ==============================================================================
+% beamerthemeUPES.sty  -- UPES B.Tech Academic Presentation Theme
+% Uses background image with left gradient bar + bottom accent line.
+% All content is kept inside the white region by restricting headline/footline/
+% frametitle to a safe region and setting text margins accordingly.
+% ==============================================================================
+
+\ProvidesPackage{beamerthemeUPES}[2026/02/10 UPES beamer theme]
+
+\RequirePackage{graphicx}
+\RequirePackage{xcolor}
+
+% --- Brand-ish colors (picked to match the supplied background) ---
+% NOTE: `UPESBlueDark` is sampled from `upes-header-footer.jpeg`.
+\definecolor{UPESBlueDark}{HTML}{2B4693}
+\definecolor{UPESBlue}{HTML}{177291}     % teal-dark accent (used sparingly)
+\definecolor{UPESOrange}{HTML}{F28C28}
+\definecolor{UPESLightBlue}{RGB}{70,175,249} % sampled from Unit1_IntroToOS title text
+\definecolor{UPESHeadingYellow}{HTML}{FDCE4A} % sampled from `upes-headings.jpeg` heading bar
+\definecolor{UPESBodyFG}{HTML}{111827} % default main text color (graphite)
+\colorlet{UPESHeaderFooterBG}{UPESBlueDark} % header + footer bar background
+\colorlet{UPESHeadingBG}{UPESBlue} % slide heading (frametitle) bar background
+\colorlet{UPESBodyHeadingFG}{UPESBlueDark} % headings inside slide body (blocks/structure)
+
+% --- Palette control (optional) --------------------------------------------------
+% Usage (in your .tex):
+%   \usetheme[palette=scheme01-classic-teal]{UPES}   % recommended
+% or (after `\usetheme{UPES}`):
+%   \UPESSetPalette{scheme01-classic-teal}
+%
+% This affects header/footer bars, heading (frametitle) bar, and text colors.
+% The slide background image remains `upes-background.jpeg`.
+\colorlet{UPESBarFG}{white}
+\colorlet{UPESBarFGInactive}{white!85}
+\colorlet{UPESFrameTitleFG}{white}
+
+\newcommand{\UPESApplyPalette}{%
+  % Core accents
+  \setbeamercolor{normal text}{fg=UPESBodyFG}%
+  \setbeamercolor{author}{fg=UPESBodyFG}%
+  \setbeamercolor{institute}{fg=UPESBodyFG}%
+  \setbeamercolor{date}{fg=UPESBodyFG}%
+  \setbeamercolor{alerted text}{fg=UPESOrange}%
+  \setbeamercolor{example text}{fg=UPESBodyHeadingFG}%
+  \setbeamercolor{structure}{fg=UPESBodyHeadingFG}%
+  % Make ToC readable on projectors (avoid low-contrast accent-colored text).
+  \setbeamercolor{section in toc}{fg=UPESBodyFG}%
+  \setbeamercolor{subsection in toc}{fg=UPESBodyFG}%
+  \setbeamercolor{subsubsection in toc}{fg=UPESBodyFG}%
+  % Keep list markers as the primary accent.
+  \setbeamercolor{itemize item}{fg=UPESOrange}%
+  \setbeamercolor{itemize subitem}{fg=UPESOrange}%
+  \setbeamercolor{enumerate item}{fg=UPESOrange}%
+  \setbeamercolor{enumerate subitem}{fg=UPESOrange}%
+  \setbeamercolor{frametitle}{fg=UPESFrameTitleFG,bg=UPESHeadingBG}%
+  \setbeamercolor{title}{fg=UPESLightBlue}%
+  \setbeamercolor{subtitle}{fg=UPESLightBlue}%
+  % Blocks (keep subtle; readable on the white region)
+  \setbeamercolor{block title}{fg=UPESBodyHeadingFG,bg=UPESBodyHeadingFG!12}%
+  \setbeamercolor{block body}{fg=UPESBodyFG,bg=UPESBodyHeadingFG!4}%
+  \setbeamercolor{block title alerted}{fg=UPESOrange,bg=UPESOrange!12}%
+  \setbeamercolor{block body alerted}{fg=UPESBodyFG,bg=UPESOrange!5}%
+  % Header navigation bar
+  \setbeamercolor{section in head/foot}{fg=UPESBarFG,bg=UPESHeaderFooterBG}%
+  \setbeamercolor{section in head/foot shaded}{fg=UPESBarFGInactive,bg=UPESHeaderFooterBG}%
+  \setbeamercolor{subsection in head/foot}{fg=UPESBarFG,bg=UPESHeaderFooterBG}%
+  \setbeamercolor{subsection in head/foot shaded}{fg=UPESBarFGInactive,bg=UPESHeaderFooterBG}%
+  \setbeamercolor{upper separation line head}{bg=UPESHeaderFooterBG}%
+  \setbeamercolor{middle separation line head}{bg=UPESHeaderFooterBG}%
+  \setbeamercolor{lower separation line head}{bg=UPESHeaderFooterBG}%
+  % Footer bar
+  \setbeamercolor{upper separation line foot}{bg=UPESHeaderFooterBG}%
+  \setbeamercolor{lower separation line foot}{bg=UPESHeaderFooterBG}%
+  \setbeamercolor{author in head/foot}{fg=UPESBarFG,bg=UPESHeaderFooterBG}%
+  \setbeamercolor{title in head/foot}{fg=UPESBarFG,bg=UPESHeaderFooterBG}%
+  \setbeamercolor{institute in head/foot}{fg=UPESBarFG,bg=UPESHeaderFooterBG}%
+  \setbeamercolor{page number in head/foot}{fg=UPESBarFG,bg=UPESHeaderFooterBG}%
+}
+
+\makeatletter
+\newcommand{\UPESSetPalette}[1]{%
+  \@ifundefined{UPES@palette@#1}{%
+    \PackageWarning{beamerthemeUPES}{Unknown palette `#1'. Using `scheme01-classic-teal`.}%
+    \csname UPES@palette@scheme01-classic-teal\endcsname%
+  }{%
+    \csname UPES@palette@#1\endcsname%
+  }%
+  \UPESApplyPalette%
+}
+
+% 10 ready-to-use palettes (professional / readable on the provided background).
+\expandafter\def\csname UPES@palette@scheme01-classic-teal\endcsname{%
+  \definecolor{UPESBlueDark}{HTML}{2B4693}%
+  \definecolor{UPESBlue}{HTML}{177291}%
+  \definecolor{UPESOrange}{HTML}{F28C28}%
+  \definecolor{UPESLightBlue}{RGB}{70,175,249}%
+  \definecolor{UPESBodyFG}{HTML}{0F172A}%
+  \colorlet{UPESHeaderFooterBG}{UPESBlueDark}%
+  \colorlet{UPESHeadingBG}{UPESBlue}%
+  \colorlet{UPESBodyHeadingFG}{UPESBlueDark}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+  \colorlet{UPESFrameTitleFG}{white}%
+}
+\expandafter\def\csname UPES@palette@scheme02-classic-yellow\endcsname{%
+  \definecolor{UPESBlueDark}{HTML}{2B4693}%
+  \definecolor{UPESBlue}{HTML}{FDCE4A}%
+  \definecolor{UPESOrange}{HTML}{F28C28}%
+  \definecolor{UPESLightBlue}{HTML}{2B4693}%
+  \definecolor{UPESBodyFG}{HTML}{1E3A8A}%
+  \colorlet{UPESHeaderFooterBG}{UPESBlueDark}%
+  \colorlet{UPESHeadingBG}{UPESBlue}%
+  \colorlet{UPESBodyHeadingFG}{UPESBlueDark}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+  \colorlet{UPESFrameTitleFG}{UPESBlueDark}%
+}
+\expandafter\def\csname UPES@palette@scheme03-classic-azure\endcsname{%
+  \definecolor{UPESBlueDark}{HTML}{2B4693}%
+  \definecolor{UPESBlue}{HTML}{2563EB}%
+  \definecolor{UPESOrange}{HTML}{F28C28}%
+  \definecolor{UPESLightBlue}{HTML}{93C5FD}%
+  \definecolor{UPESBodyFG}{HTML}{0B1F3B}%
+  \colorlet{UPESHeaderFooterBG}{UPESBlueDark}%
+  \colorlet{UPESHeadingBG}{UPESBlue}%
+  \colorlet{UPESBodyHeadingFG}{UPESBlueDark}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+  \colorlet{UPESFrameTitleFG}{white}%
+}
+\expandafter\def\csname UPES@palette@scheme04-classic-sand\endcsname{%
+  \definecolor{UPESBlueDark}{HTML}{2B4693}%
+  \definecolor{UPESBlue}{HTML}{F5D07A}%
+  \definecolor{UPESOrange}{HTML}{EA580C}%
+  \definecolor{UPESLightBlue}{HTML}{2B4693}%
+  \definecolor{UPESBodyFG}{HTML}{2F2A1F}%
+  \colorlet{UPESHeaderFooterBG}{UPESBlueDark}%
+  \colorlet{UPESHeadingBG}{UPESBlue}%
+  \colorlet{UPESBodyHeadingFG}{UPESBlueDark}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+  \colorlet{UPESFrameTitleFG}{UPESBlueDark}%
+}
+\expandafter\def\csname UPES@palette@scheme05-midnight-teal\endcsname{%
+  \definecolor{UPESBlueDark}{HTML}{0B1F3B}%
+  \definecolor{UPESBlue}{HTML}{0F766E}%
+  \definecolor{UPESOrange}{HTML}{F28C28}%
+  \definecolor{UPESLightBlue}{HTML}{22D3EE}%
+  \definecolor{UPESBodyFG}{HTML}{052F2B}%
+  \colorlet{UPESHeaderFooterBG}{UPESBlueDark}%
+  \colorlet{UPESHeadingBG}{UPESBlue}%
+  \colorlet{UPESBodyHeadingFG}{UPESBlueDark}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+  \colorlet{UPESFrameTitleFG}{white}%
+}
+\expandafter\def\csname UPES@palette@scheme06-midnight-gold\endcsname{%
+  \definecolor{UPESBlueDark}{HTML}{0B1F3B}%
+  \definecolor{UPESBlue}{HTML}{EAB308}%
+  \definecolor{UPESOrange}{HTML}{F28C28}%
+  \definecolor{UPESLightBlue}{HTML}{EAB308}%
+  \definecolor{UPESBodyFG}{HTML}{1F1A0B}%
+  \colorlet{UPESHeaderFooterBG}{UPESBlueDark}%
+  \colorlet{UPESHeadingBG}{UPESBlue}%
+  \colorlet{UPESBodyHeadingFG}{UPESBlueDark}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+  \colorlet{UPESFrameTitleFG}{UPESBlueDark}%
+}
+\expandafter\def\csname UPES@palette@scheme07-indigo-teal\endcsname{%
+  \definecolor{UPESBlueDark}{HTML}{312E81}%
+  \definecolor{UPESBlue}{HTML}{0F766E}%
+  \definecolor{UPESOrange}{HTML}{F97316}%
+  \definecolor{UPESLightBlue}{HTML}{93C5FD}%
+  \definecolor{UPESBodyFG}{HTML}{1E1B4B}%
+  \colorlet{UPESHeaderFooterBG}{UPESBlueDark}%
+  \colorlet{UPESHeadingBG}{UPESBlue}%
+  \colorlet{UPESBodyHeadingFG}{UPESBlueDark}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+  \colorlet{UPESFrameTitleFG}{white}%
+}
+\expandafter\def\csname UPES@palette@scheme08-indigo-slate\endcsname{%
+  \definecolor{UPESBlueDark}{HTML}{312E81}%
+  \definecolor{UPESBlue}{HTML}{475569}%
+  \definecolor{UPESOrange}{HTML}{F59E0B}%
+  \definecolor{UPESLightBlue}{HTML}{C7D2FE}%
+  \definecolor{UPESBodyFG}{HTML}{334155}%
+  \colorlet{UPESHeaderFooterBG}{UPESBlueDark}%
+  \colorlet{UPESHeadingBG}{UPESBlue}%
+  \colorlet{UPESBodyHeadingFG}{UPESBlueDark}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+  \colorlet{UPESFrameTitleFG}{white}%
+}
+\expandafter\def\csname UPES@palette@scheme09-graphite-teal\endcsname{%
+  \definecolor{UPESBlueDark}{HTML}{111827}%
+  \definecolor{UPESBlue}{HTML}{0E7490}%
+  \definecolor{UPESOrange}{HTML}{F97316}%
+  \definecolor{UPESLightBlue}{HTML}{2DD4BF}%
+  \definecolor{UPESBodyFG}{HTML}{111827}%
+  \colorlet{UPESHeaderFooterBG}{UPESBlueDark}%
+  \colorlet{UPESHeadingBG}{UPESBlue}%
+  \colorlet{UPESBodyHeadingFG}{UPESBlueDark}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+  \colorlet{UPESFrameTitleFG}{white}%
+}
+\expandafter\def\csname UPES@palette@scheme10-graphite-amber\endcsname{%
+  \definecolor{UPESBlueDark}{HTML}{111827}%
+  \definecolor{UPESBlue}{HTML}{F59E0B}%
+  \definecolor{UPESOrange}{HTML}{F97316}%
+  \definecolor{UPESLightBlue}{HTML}{F59E0B}%
+  \definecolor{UPESBodyFG}{HTML}{292524}%
+  \colorlet{UPESHeaderFooterBG}{UPESBlueDark}%
+  \colorlet{UPESHeadingBG}{UPESBlue}%
+  \colorlet{UPESBodyHeadingFG}{UPESBlueDark}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+  \colorlet{UPESFrameTitleFG}{UPESBlueDark}%
+}
+
+% --- Component scheme control ----------------------------------------------------
+% Users can mix-and-match the core visual aspects without touching the .sty.
+%
+% In your `.tex`:
+%   \usetheme[
+%     headerfooter=brand-blue,
+%     heading=teal,
+%     bodyheadings=brand-blue,
+%     bodytext=graphite
+%   ]{UPES}
+%
+% You can also set these after `\usetheme{UPES}` using the corresponding macros.
+
+\newcommand{\UPESSetHeaderFooterScheme}[1]{%
+  \@ifundefined{UPES@hf@#1}{%
+    \PackageWarning{beamerthemeUPES}{Unknown header/footer scheme `#1'. Using `brand-blue`.}%
+    \csname UPES@hf@brand-blue\endcsname%
+  }{%
+    \csname UPES@hf@#1\endcsname%
+  }%
+  \UPESApplyPalette%
+}
+\newcommand{\UPESSetHeadingScheme}[1]{%
+  \@ifundefined{UPES@heading@#1}{%
+    \PackageWarning{beamerthemeUPES}{Unknown heading scheme `#1'. Using `teal`.}%
+    \csname UPES@heading@teal\endcsname%
+  }{%
+    \csname UPES@heading@#1\endcsname%
+  }%
+  \UPESApplyPalette%
+}
+\newcommand{\UPESSetBodyHeadingsScheme}[1]{%
+  \@ifundefined{UPES@bodyheadings@#1}{%
+    \PackageWarning{beamerthemeUPES}{Unknown body headings scheme `#1'. Using `brand-blue`.}%
+    \csname UPES@bodyheadings@brand-blue\endcsname%
+  }{%
+    \csname UPES@bodyheadings@#1\endcsname%
+  }%
+  \UPESApplyPalette%
+}
+\newcommand{\UPESSetBodyTextScheme}[1]{%
+  \@ifundefined{UPES@bodytext@#1}{%
+    \PackageWarning{beamerthemeUPES}{Unknown body text scheme `#1'. Using `graphite`.}%
+    \csname UPES@bodytext@graphite\endcsname%
+  }{%
+    \csname UPES@bodytext@#1\endcsname%
+  }%
+  \UPESApplyPalette%
+}
+
+% Header/footer (nav + footer bar) schemes
+\expandafter\def\csname UPES@hf@brand-blue\endcsname{%
+  \definecolor{UPESHeaderFooterBG}{HTML}{2B4693}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+}
+\expandafter\def\csname UPES@hf@deep-navy\endcsname{%
+  \definecolor{UPESHeaderFooterBG}{HTML}{0B1F3B}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+}
+\expandafter\def\csname UPES@hf@graphite\endcsname{%
+  \definecolor{UPESHeaderFooterBG}{HTML}{111827}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+}
+\expandafter\def\csname UPES@hf@indigo\endcsname{%
+  \definecolor{UPESHeaderFooterBG}{HTML}{312E81}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+}
+\expandafter\def\csname UPES@hf@teal\endcsname{%
+  \definecolor{UPESHeaderFooterBG}{HTML}{0F766E}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+}
+\expandafter\def\csname UPES@hf@slate\endcsname{%
+  \definecolor{UPESHeaderFooterBG}{HTML}{334155}%
+  \colorlet{UPESBarFG}{white}%
+  \colorlet{UPESBarFGInactive}{white!85}%
+}
+
+% Slide heading (frametitle bar) schemes
+\expandafter\def\csname UPES@heading@teal\endcsname{%
+  \definecolor{UPESHeadingBG}{HTML}{177291}%
+  \colorlet{UPESFrameTitleFG}{white}%
+}
+\expandafter\def\csname UPES@heading@brand-blue\endcsname{%
+  \definecolor{UPESHeadingBG}{HTML}{2B4693}%
+  \colorlet{UPESFrameTitleFG}{white}%
+}
+\expandafter\def\csname UPES@heading@graphite\endcsname{%
+  \definecolor{UPESHeadingBG}{HTML}{111827}%
+  \colorlet{UPESFrameTitleFG}{white}%
+}
+\expandafter\def\csname UPES@heading@slate\endcsname{%
+  \definecolor{UPESHeadingBG}{HTML}{475569}%
+  \colorlet{UPESFrameTitleFG}{white}%
+}
+\expandafter\def\csname UPES@heading@gold\endcsname{%
+  \definecolor{UPESHeadingBG}{HTML}{FDCE4A}%
+  \colorlet{UPESFrameTitleFG}{UPESBlueDark}%
+}
+\expandafter\def\csname UPES@heading@sand\endcsname{%
+  \definecolor{UPESHeadingBG}{HTML}{F5D07A}%
+  \colorlet{UPESFrameTitleFG}{UPESBlueDark}%
+}
+
+% Slide body headings (blocks/structure) schemes
+\expandafter\def\csname UPES@bodyheadings@brand-blue\endcsname{%
+  \definecolor{UPESBodyHeadingFG}{HTML}{2B4693}%
+}
+\expandafter\def\csname UPES@bodyheadings@deep-navy\endcsname{%
+  \definecolor{UPESBodyHeadingFG}{HTML}{0B1F3B}%
+}
+\expandafter\def\csname UPES@bodyheadings@graphite\endcsname{%
+  \definecolor{UPESBodyHeadingFG}{HTML}{111827}%
+}
+\expandafter\def\csname UPES@bodyheadings@indigo\endcsname{%
+  \definecolor{UPESBodyHeadingFG}{HTML}{312E81}%
+}
+\expandafter\def\csname UPES@bodyheadings@teal\endcsname{%
+  \definecolor{UPESBodyHeadingFG}{HTML}{0F766E}%
+}
+
+% Slide body text schemes (high-contrast for projection)
+\expandafter\def\csname UPES@bodytext@graphite\endcsname{%
+  \definecolor{UPESBodyFG}{HTML}{111827}%
+}
+\expandafter\def\csname UPES@bodytext@slate\endcsname{%
+  \definecolor{UPESBodyFG}{HTML}{1F2937}%
+}
+\expandafter\def\csname UPES@bodytext@navy\endcsname{%
+  \definecolor{UPESBodyFG}{HTML}{0B1F3B}%
+}
+\expandafter\def\csname UPES@bodytext@charcoal\endcsname{%
+  \definecolor{UPESBodyFG}{HTML}{292524}%
+}
+\expandafter\def\csname UPES@bodytext@black\endcsname{%
+  \definecolor{UPESBodyFG}{HTML}{0B0F19}%
+}
+
+% --- Theme options (set via `\usetheme[...]{UPES}`) -------------------------------
+% Overall palette (all aspects at once)
+\DeclareOptionBeamer{palette}[scheme01-classic-teal]{\UPESSetPalette{#1}}
+\DeclareOptionBeamer{scheme}[scheme01-classic-teal]{\UPESSetPalette{#1}}
+
+% Individual aspect selection (mix-and-match)
+\DeclareOptionBeamer{headerfooter}[brand-blue]{\UPESSetHeaderFooterScheme{#1}}
+\DeclareOptionBeamer{hf}[brand-blue]{\UPESSetHeaderFooterScheme{#1}}
+\DeclareOptionBeamer{heading}[teal]{\UPESSetHeadingScheme{#1}}
+\DeclareOptionBeamer{frametitle}[teal]{\UPESSetHeadingScheme{#1}}
+\DeclareOptionBeamer{bodyheadings}[brand-blue]{\UPESSetBodyHeadingsScheme{#1}}
+\DeclareOptionBeamer{structure}[brand-blue]{\UPESSetBodyHeadingsScheme{#1}}
+\DeclareOptionBeamer{bodytext}[graphite]{\UPESSetBodyTextScheme{#1}}
+\DeclareOptionBeamer{text}[graphite]{\UPESSetBodyTextScheme{#1}}
+
+\ProcessOptionsBeamer
+% Keep `@` as a letter for the rest of the theme file (we define many internal
+% lengths/macros like `\UPES@safeleft` and also use `\define@key`). We switch
+% back to normal catcodes at the very end of the package.
+  
+\mode<presentation>
+
+% Use the same navigation model as the reference deck (`major-project-2026-beamer.pdf`).
+% `subsection=false` keeps the top navigation slim (no extra subsection row).
+\useoutertheme[subsection=false]{miniframes}
+
+% --- Background image ---
+% Background is always `upes-background.jpeg`.
+%
+% NOTE:
+% `upes-header-footer.jpeg` and `upes-headings.jpeg` are design references for
+% color/positioning of the header/footer and heading bar, not slide backgrounds.
+\setbeamertemplate{background canvas}{%
+  \IfFileExists{UPES-Beamer-Theme/upes-background.jpeg}{%
+    \includegraphics[width=\paperwidth,height=\paperheight]{UPES-Beamer-Theme/upes-background.jpeg}%
+  }{%
+    \IfFileExists{upes-background.jpeg}{%
+      \includegraphics[width=\paperwidth,height=\paperheight]{upes-background.jpeg}%
+    }{}%
+  }%
+}
+
+% --- Typography / structure ---
+\setbeamerfont{title}{family=\rmfamily,series=\bfseries,size=\Huge}
+\setbeamerfont{subtitle}{family=\rmfamily,series=\bfseries,size=\LARGE}
+\setbeamerfont{frametitle}{series=\bfseries,size=\Large}
+% Keep header/footer slim (closer to the reference deck).
+\setbeamerfont{footline}{size=\tiny}
+\setbeamerfont{author in head/foot}{size=\tiny}
+\setbeamerfont{title in head/foot}{size=\tiny}
+\setbeamerfont{institute in head/foot}{size=\tiny}
+\setbeamerfont{page number in head/foot}{size=\tiny}
+\setbeamerfont{section in head/foot}{series=\mdseries,size=\scriptsize}
+
+% Remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% Apply the default palette now (can be overridden later via \UPESSetPalette{...}).
+\UPESApplyPalette
+ 
+% ------------------------------------------------------------------------------
+% Safe content region (keeps headline/footline/text inside the white area).
+% ------------------------------------------------------------------------------
+\newlength{\UPES@safeleft}
+\newlength{\UPES@saferight}
+\newlength{\UPES@pad}
+\newlength{\UPES@textleft}
+\newlength{\UPES@textwidth}
+\newlength{\UPES@contentwidth}
+\newlength{\UPES@headtop}
+\newlength{\UPES@headbar}
+\newlength{\UPES@headheight}
+\newlength{\UPES@footbar}
+\newlength{\UPES@foottopgap}
+\newlength{\UPES@footbottom}
+\newlength{\UPES@footheight}
+\newlength{\UPES@titlegap}
+\newlength{\UPES@titlebarheight}
+\newlength{\UPES@titleleft}
+\newlength{\UPES@titlewidth}
+\newlength{\UPES@titlepad}
+\newdimen\UPES@frametopmargin
+\newdimen\UPES@framebottommargin
+
+% Defaults tuned from the working (aligned) deck in:
+%   D:\InSync-tofik\Work\UPES\Project-Mentoship\2026-Spring
+% Keep all overlaid text safely inside the white region (away from the left
+% gradient strip + bottom curve). Background bars extend further left, but we
+% intentionally start text at the footer bar start (keeps white text fully on
+% the blue bar in `upes-header-footer.jpeg`).
+\setlength{\UPES@safeleft}{0.097\paperwidth} % ~310/3200
+\setlength{\UPES@saferight}{0.020\paperwidth}
+\setlength{\UPES@pad}{0.40cm}
+
+% Vertical layout (reserve space so text stays in the white region)
+\setlength{\UPES@headtop}{0.0133\paperheight}    % ~24/1800
+\setlength{\UPES@headbar}{0.0811\paperheight}    % ~146/1800
+\setlength{\UPES@headheight}{0.0944\paperheight} % ~170/1800
+
+\setlength{\UPES@footbar}{0.0667\paperheight}    % ~120/1800 (blue footer bar height)
+\setlength{\UPES@footbottom}{0.0111\paperheight} % ~20/1800 (bottom padding)
+% Reserve extra vertical space above the footer so body text never overlaps the
+% orange accent line (~y=1570..1600 in the 1800px-tall reference images).
+\setlength{\UPES@footheight}{0.1278\paperheight} % ~230/1800
+\setlength{\UPES@foottopgap}{\dimexpr\UPES@footheight-\UPES@footbar-\UPES@footbottom\relax}
+
+\setlength{\UPES@titlegap}{0.0100\paperheight}   % ~18/1800 (gap below header bar)
+\setlength{\UPES@titlebarheight}{0.0756\paperheight} % ~136/1800
+\setlength{\UPES@titlepad}{0.55cm}
+
+\setlength{\UPES@contentwidth}{\paperwidth}
+\addtolength{\UPES@contentwidth}{-\UPES@safeleft}
+\addtolength{\UPES@contentwidth}{-\UPES@saferight}
+
+\setbeamersize{%
+  text margin left=\dimexpr\UPES@safeleft+\UPES@pad\relax,
+  text margin right=\dimexpr\UPES@saferight+\UPES@pad\relax
+}
+
+% Text region (the area where slide text is allowed to appear).
+\setlength{\UPES@textleft}{\dimexpr\UPES@safeleft+\UPES@pad\relax}
+\setlength{\UPES@textwidth}{\dimexpr\UPES@contentwidth-2\UPES@pad\relax}
+
+% Frame title (heading box): fixed size, centered to the text region.
+% This keeps the heading box alignment stable even if margins are tuned later.
+\setlength{\UPES@titlewidth}{\dimexpr\UPES@textwidth*94/100\relax}
+\setlength{\UPES@titleleft}{\dimexpr(\UPES@textwidth-\UPES@titlewidth)/2\relax}
+
+% Frame content margins (space between heading box and content, and above footer).
+% Implemented via Beamer's frame top/bottom skips so it applies to every slide.
+\setlength{\UPES@frametopmargin}{0.30cm}
+\setlength{\UPES@framebottommargin}{0.30cm}
+
+% Patch Beamer's vertical alignment keys to always include the above margins.
+% (Beamer resets these skips at the start of every frame via the {c}/{t}/{b}/{s} keys.)
+\define@key{beamerframe}{c}[true]{% centered
+  % Add shrink components so dense frames can still fit without being cut off.
+  \beamer@frametopskip=\UPES@frametopmargin plus 1fill minus \UPES@frametopmargin\relax%
+  \beamer@framebottomskip=\UPES@framebottommargin plus 1.5fill minus \UPES@framebottommargin\relax%
+  \beamer@frametopskipautobreak=\UPES@frametopmargin plus .4\paperheight minus \UPES@frametopmargin\relax%
+  \beamer@framebottomskipautobreak=\UPES@framebottommargin plus .6\paperheight minus \UPES@framebottommargin\relax%
+}
+\define@key{beamerframe}{t}[true]{% top
+  \beamer@frametopskip=\UPES@frametopmargin plus .5\paperheight minus \UPES@frametopmargin\relax%
+  \beamer@framebottomskip=\UPES@framebottommargin plus 1fill minus \UPES@framebottommargin\relax%
+  \beamer@frametopskipautobreak=\beamer@frametopskip\relax%
+  \beamer@framebottomskipautobreak=\beamer@framebottomskip\relax%
+}
+\define@key{beamerframe}{b}[true]{% bottom
+  \beamer@frametopskip=\UPES@frametopmargin plus 1fill minus \UPES@frametopmargin\relax%
+  \beamer@framebottomskip=\UPES@framebottommargin minus \UPES@framebottommargin\relax%
+  \beamer@frametopskipautobreak=\beamer@frametopskip\relax%
+  \beamer@framebottomskipautobreak=\beamer@framebottomskip\relax%
+}
+\define@key{beamerframe}{s}[true]{% stretch
+  \beamer@frametopskip=\UPES@frametopmargin\relax%
+  \beamer@framebottomskip=\UPES@framebottommargin plus 0.001fill minus \UPES@framebottommargin\relax%
+  \beamer@frametopskipautobreak=\beamer@frametopskip\relax%
+  \beamer@framebottomskipautobreak=\beamer@framebottomskip\relax%
+}
+
+% ------------------------------------------------------------------------------
+% Title / Cover / Thank-You frames (styled to match Unit1_IntroToOS.pdf)
+% ------------------------------------------------------------------------------
+
+\defbeamertemplate*{title page}{UPES}{%
+  \vbox{}%
+  % NOTE: Do not add an extra `\hskip\UPES@safeleft` here; the frame content is
+  % already constrained by `\setbeamersize{text margin left/right=...}`.
+  \begingroup
+  \setlength{\parskip}{0pt}%
+  \vspace*{0.05cm}%
+
+  % Title block (match the reference deck): centered box inside the white text region.
+  \hbox{%
+    \hskip\UPES@titleleft%
+    \begin{beamercolorbox}[wd=\UPES@titlewidth,sep=0.25cm,center]{frametitle}%
+      {\rmfamily\bfseries\usebeamercolor[fg]{frametitle}\fontsize{16}{19}\selectfont%
+        \inserttitle\par}%
+      \vspace{0.06cm}%
+      {\rmfamily\bfseries\usebeamercolor[fg]{frametitle}\fontsize{10.5}{12.5}\selectfont%
+        \insertsubtitle\par}%
+    \end{beamercolorbox}%
+  }%
+
+  \vspace{0.30cm}%
+
+  \begin{center}
+    {\small\insertauthor\par}%
+    \vspace{0.12cm}%
+    {\scriptsize\insertinstitute\par}%
+  \end{center}
+
+  \vfill
+
+  \begin{center}
+    {\small\insertdate\par}%
+  \end{center}
+
+  \vspace*{0.05cm}%
+  \endgroup
+}
+\setbeamertemplate{title page}[UPES]
+
+\newcommand{\UPESCoverFrame}{%
+  {%
+    \setbeamertemplate{headline}{}%
+    \setbeamertemplate{footline}{}%
+    \setbeamertemplate{background canvas}{%
+      \IfFileExists{UPES-Beamer-Theme/upes-first-page.jpeg}{%
+        \includegraphics[width=\paperwidth,height=\paperheight]{UPES-Beamer-Theme/upes-first-page.jpeg}%
+      }{%
+        \IfFileExists{upes-first-page.jpeg}{%
+          \includegraphics[width=\paperwidth,height=\paperheight]{upes-first-page.jpeg}%
+        }{%
+          \IfFileExists{UPES-Beamer-Theme/upes-first-page.png}{%
+            \includegraphics[width=\paperwidth,height=\paperheight]{UPES-Beamer-Theme/upes-first-page.png}%
+          }{%
+            \IfFileExists{upes-first-page.png}{%
+              \includegraphics[width=\paperwidth,height=\paperheight]{upes-first-page.png}%
+            }{%
+              \IfFileExists{UPES-Beamer-Theme/upes-cover.png}{%
+                \includegraphics[width=\paperwidth,height=\paperheight]{UPES-Beamer-Theme/upes-cover.png}%
+              }{%
+                \IfFileExists{upes-cover.png}{%
+                  \includegraphics[width=\paperwidth,height=\paperheight]{upes-cover.png}%
+                }{}%
+              }%
+            }%
+          }%
+        }%
+      }%
+    }%
+    \begin{frame}[plain]\end{frame}%
+  }%
+}
+
+\newcommand{\UPESThankYouFrame}{%
+  {%
+    \setbeamertemplate{headline}{}%
+    \setbeamertemplate{footline}{}%
+    \begin{frame}[plain]
+      \vfill
+      \centering
+      \IfFileExists{UPES-Beamer-Theme/upes-logo.png}{%
+        \includegraphics[height=2.2cm]{UPES-Beamer-Theme/upes-logo.png}\par
+      }{%
+        \IfFileExists{upes-logo.png}{%
+          \includegraphics[height=2.2cm]{upes-logo.png}\par
+        }{}%
+      }{}%
+      \vspace{0.7cm}%
+      {\rmfamily\bfseries\color{UPESBlueDark}\fontsize{46}{52}\selectfont Thank You\par}%
+      \vfill
+    \end{frame}%
+  }%
+}
+
+\setbeamertemplate{headline}{%
+  % Header navigation aligned to the blue header bar in upes-*.jpeg
+  % (and constrained to the white safe region, so it doesn't overlap the gradient strip).
+  \makeatletter
+  \leavevmode%
+  \hbox{%
+    \hskip\UPES@safeleft%
+    \vbox to \UPES@headheight{%
+      \vskip\UPES@headtop%
+      \begin{beamercolorbox}[wd=\UPES@contentwidth,sep=0pt]{section in head/foot}%
+        \vbox to \UPES@headbar{%
+          \vfil%
+          \hbox to \UPES@contentwidth{%
+            \hskip\UPES@pad%
+            {%
+              \usebeamerfont{section in head/foot}%
+              \usebeamercolor[fg]{section in head/foot}%
+              \begingroup\beamer@compresstrue%
+                \insertnavigation{\dimexpr\UPES@contentwidth-2\UPES@pad\relax}%
+              \endgroup%
+            }%
+            \hskip\UPES@pad%
+          }%
+          \vfil%
+        }%
+      \end{beamercolorbox}%
+      \vfil%
+    }%
+  }%
+  \makeatother
+}
+
+% Footer (2-line): author + institute (top), title + page number (bottom)
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \hskip\UPES@safeleft%
+    \vbox to \UPES@footheight{%
+      \vskip\UPES@foottopgap%
+      \begin{beamercolorbox}[wd=\UPES@contentwidth,sep=0pt]{author in head/foot}%
+        \vbox to \UPES@footbar{%
+          \vfil%
+          \hbox to \UPES@contentwidth{%
+            \hskip\UPES@pad%
+            {\usebeamerfont{author in head/foot}\usebeamercolor[fg]{author in head/foot}\insertshortauthor}%
+            \hfill%
+            {\usebeamerfont{institute in head/foot}\usebeamercolor[fg]{institute in head/foot}\insertshortinstitute}%
+            \hskip\UPES@pad%
+          }%
+          \vskip0.35ex%
+          \hbox to \UPES@contentwidth{%
+            \hskip\UPES@pad%
+            {\usebeamerfont{title in head/foot}\usebeamercolor[fg]{title in head/foot}\insertshorttitle}%
+            \hfill%
+            {\usebeamerfont{page number in head/foot}\usebeamercolor[fg]{page number in head/foot}\usebeamertemplate{page number in head/foot}}%
+            \hskip\UPES@pad%
+          }%
+          \vfil%
+        }%
+      \end{beamercolorbox}%
+      \vskip\UPES@footbottom%
+      \vfil%
+    }%
+  }%
+}
+
+% Frame title aligned with the same safe region.
+\defbeamertemplate*{frametitle}{UPES}{%
+  \nointerlineskip%
+  \vskip\UPES@titlegap%
+  \hbox{%
+    \hskip\UPES@titleleft%
+    \begin{beamercolorbox}[wd=\UPES@titlewidth,sep=0pt]{frametitle}%
+      \vbox to \UPES@titlebarheight{%
+        \vfil%
+        \hbox to \UPES@titlewidth{%
+          \hfil%
+          {\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\insertframetitle}%
+          \hfil%
+        }%
+        \vfil%
+      }%
+    \end{beamercolorbox}%
+  }%
+}
+\setbeamertemplate{frametitle}[UPES]
+
+% Orange bullets
+\setbeamertemplate{itemize item}{\color{UPESOrange}$\bullet$}
+\setbeamertemplate{itemize subitem}{\color{UPESOrange}$\circ$}
+
+\mode<all>
+\makeatother

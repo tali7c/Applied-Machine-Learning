@@ -1,0 +1,61 @@
+% Shared notes settings for Applied Machine Learning lectures (UPES).
+% Keep this file free of \documentclass to allow reuse via \input.
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}          % scalable T1 fonts; without this pdflatex falls back
+\input{glyphtounicode}        % to bitmapped EC Type 3 and the PDFs are neither
+\pdfgentounicode=1            % searchable nor screen-reader friendly
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{xurl}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{parskip}
+
+% Code listings (Python-oriented for this subject).
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  stringstyle=\color{teal},
+  showstringspaces=false,
+  columns=fullflexible,
+  frame=single,
+  framerule=0.2pt,
+  breaklines=true
+}
+
+\setlist[itemize]{topsep=0.3em,itemsep=0.2em}
+\setlist[enumerate]{topsep=0.3em,itemsep=0.2em}
+
+% Simple per-section source line.
+\newcommand{\notesources}[1]{\par\noindent{\small\color{gray}\textit{Sources:} \sloppy #1\par}}
+
+% Unit-wise source strings for this subject (used by slides + notes).
+% Path is relative to the lecture `latex/` folder (the compilation CWD).
+\IfFileExists{../../../_shared/aml-sources.tex}{%
+  \input{../../../_shared/aml-sources.tex}%
+}{%
+  % Faculty copies live under `private/` so their compile CWD is different.
+  \IfFileExists{../../../../public/_shared/aml-sources.tex}{%
+    \input{../../../../public/_shared/aml-sources.tex}%
+  }{%
+    % Question papers live at `private/<family>/<instrument>/`.
+    \IfFileExists{../../../public/_shared/aml-sources.tex}{%
+      \input{../../../public/_shared/aml-sources.tex}%
+    }{%
+      % Marking schemes live at `private/solutions/<family>/<id>/latex/`.
+      \IfFileExists{../../../../../public/_shared/aml-sources.tex}{%
+        \input{../../../../../public/_shared/aml-sources.tex}%
+      }{%
+        \input{aml-sources.tex}%
+      }%
+    }%
+  }%
+}

@@ -1,0 +1,71 @@
+\documentclass[11pt,a4paper]{article}
+
+\newcommand{\CourseCode}{CSAI2017P: Applied Machine Learning (Lab)}
+\newcommand{\AssignmentName}{Anchor Datasets}
+
+\input{../../../_shared/assignment-common.tex}
+
+\begin{document}
+
+
+\begin{center}{\LARGE\textbf{Anchor Datasets}}\\[0.25em]{\large \CourseCode}\\[0.25em]\normalsize Reference for lab assignments LA1--LA10\end{center}\vspace{0.4em}\hrule\vspace{0.8em}
+
+The ten lab assignments reuse three families of dataset. The point is that you learn the methods rather than spending every fortnight wrestling a new file format. Download each one \emph{once} into a local \texttt{data/} folder and keep it there for the semester.
+
+\subsection*{Anchor A -- Tabular records}
+Mixed numeric and categorical rows, one record per entity. Used for EDA, regression, classification, scoring and anomaly work.\\[0.3em]
+\begin{center}\footnotesize\begin{tabular}{@{}p{0.7cm}>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{6.0cm}@{}}\toprule\textbf{ID} & \textbf{Dataset} & \textbf{Source} & \textbf{Notes}\\\midrule
+A1 & California Housing & \texttt{\scriptsize sklearn.\allowbreak datasets.\allowbreak fetch\_california\_housing} & 20{,}640 rows, 8 numeric features, numeric target MedHouseVal (\$100k units). \textbf{Downloads once} (about 1.4\,MB) on first call and caches to \texttt{\textasciitilde/scikit\_learn\_data}. Run it at home before the lab if the campus network blocks it.\\[2pt]
+A2 & Telco Customer Churn & \texttt{\scriptsize Kaggle: blastchar/\allowbreak telco-customer-churn} & 7{,}043 rows, 21 columns: 19 mixed features plus \texttt{customerID} and the binary target \texttt{Churn}. Kaggle login required; download the CSV once and keep it in \texttt{data/}.\\[2pt]
+A3 & Statlog German Credit & \texttt{\scriptsize OpenML: credit-g (id 31)} & 1{,}000 rows, 20 mixed features, binary target class (good/bad credit). Fetch with \texttt{sklearn.datasets.fetch\_openml('credit-g', version=1)}.\\[2pt]
+\bottomrule\end{tabular}\end{center}
+\subsection*{Anchor B -- Images and image-derived features}
+Pixel grids and features measured from images. Used for image classification, clustering on images and diagnostic tasks.\\[0.3em]
+\begin{center}\footnotesize\begin{tabular}{@{}p{0.7cm}>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{6.0cm}@{}}\toprule\textbf{ID} & \textbf{Dataset} & \textbf{Source} & \textbf{Notes}\\\midrule
+B1 & scikit-learn digits & \texttt{\scriptsize sklearn.\allowbreak datasets.\allowbreak load\_digits} & 1{,}797 images of 8$\times$8 greyscale handwritten digits, 10 classes. A small stand-in for MNIST that trains in seconds.\\[2pt]
+B2 & MNIST (full) & \texttt{\scriptsize sklearn.\allowbreak datasets.\allowbreak fetch\_openml('mnist\_784')} & 70{,}000 images of 28$\times$28 greyscale digits. Use a subsample of 10{,}000 unless you have time to spare.\\[2pt]
+B3 & Breast Cancer Wisconsin (Diagnostic) & \texttt{\scriptsize sklearn.\allowbreak datasets.\allowbreak load\_breast\_cancer} & 569 rows, 30 features computed from digitised images of fine-needle aspirates, binary target malignant/benign.\\[2pt]
+B4 & PlantVillage (leaf subset) & \texttt{\scriptsize Kaggle: emmarex/\allowbreak plantdisease} & Leaf photographs labelled by crop and disease. Use the tomato subset (10 classes) resized to 64$\times$64 to keep runtimes sane.\\[2pt]
+\bottomrule\end{tabular}\end{center}
+\subsection*{Anchor C -- Sequences and text}
+Data with an order that matters, or free text. Used for time-series regression, text classification and signal work.\\[0.3em]
+\begin{center}\footnotesize\begin{tabular}{@{}p{0.7cm}>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{6.0cm}@{}}\toprule\textbf{ID} & \textbf{Dataset} & \textbf{Source} & \textbf{Notes}\\\midrule
+C1 & Daily stock OHLCV & \texttt{\scriptsize Kaggle: any single-ticker daily history, or yfinance} & One row per trading day with Open/High/Low/Close/Volume. Pick one ticker and at least three years of history.\\[2pt]
+C2 & SMS Spam Collection & \texttt{\scriptsize UCI ML Repository: SMS Spam Collection} & 5{,}574 English SMS messages labelled ham/spam. A single tab-separated file.\\[2pt]
+C3 & UCI Human Activity Recognition & \texttt{\scriptsize UCI: Human Activity Recognition Using Smartphones} & 561 features engineered from accelerometer and gyroscope windows, 6 activity classes, subject-wise train/test split supplied.\\[2pt]
+\bottomrule\end{tabular}\end{center}
+
+\section*{Loading snippets}
+
+\begin{lstlisting}
+# A1 California Housing  (downloads ~1.4 MB on first call, then cached)
+from sklearn.datasets import fetch_california_housing
+d = fetch_california_housing(as_frame=True)
+df = d.frame            # features + target in one DataFrame
+print(d.DESCR)          # <- the target's units are documented here
+
+# A3 German Credit  (downloads once, then cached)
+from sklearn.datasets import fetch_openml
+d = fetch_openml("credit-g", version=1, as_frame=True)
+
+# B1 digits  (no download)
+from sklearn.datasets import load_digits
+dig = load_digits()            # dig.images 8x8, dig.data 64 features
+
+# B3 Breast Cancer Wisconsin  (no download)
+from sklearn.datasets import load_breast_cancer
+bc = load_breast_cancer(as_frame=True)
+
+# A2 Telco / C2 SMS Spam / C1 stock / B4 leaves : place the file in data/
+# Telco needs a (free) Kaggle login:
+#   kaggle.com/datasets/blastchar/telco-customer-churn
+import pandas as pd
+tel = pd.read_csv("data/WA_Fn-UseC_-Telco-Customer-Churn.csv")
+tel["TotalCharges"] = pd.to_numeric(tel["TotalCharges"], errors="coerce")
+\end{lstlisting}
+
+\begin{infobox}[Reproducibility]Record the exact file name, the download date and the row count of every downloaded dataset in your notebook. Public datasets are revised without notice, and a result you cannot reproduce is a result you cannot defend in the lab quiz.\end{infobox}
+
+\notesources{\AMLLabSources}
+
+\end{document}

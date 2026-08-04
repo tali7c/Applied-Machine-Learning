@@ -1,0 +1,145 @@
+\documentclass[11pt,a4paper]{article}
+
+\newcommand{\CourseCode}{CSAI2017P: Applied Machine Learning (Lab)}
+\newcommand{\AssignmentName}{LA01 -- Lab Assignment 1}
+
+\input{../../../_shared/assignment-common.tex}
+
+\begin{document}
+
+
+\LAtitle{Lab Assignment 1: Environment Setup, Preprocessing and Exploratory Data Analysis}{Experiments 1--2 (Units I, IV) \textbullet\ CO1, CO2}{after lab session 2}{LQ1, lab session 3}
+
+\section*{Objective}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Stand up a reproducible Python ML environment and prove it works.
+
+  \item Load a tabular dataset and describe it before modelling anything.
+
+  \item Diagnose missing values, outliers and scale problems, and treat them.
+
+\end{itemize}
+
+\section*{Datasets used in this assignment}
+
+\textbf{A1 (California Housing), A2 (Telco Customer Churn).}\\ Full descriptions, sources and loading snippets for all anchor datasets are in \texttt{Anchor-Datasets.pdf}, alongside this brief.
+
+\begin{infobox}[This assignment runs ahead of the lectures]Experiment 2 draws on Unit IV (data preprocessing), which is lectured around sessions 9--14. You are not expected to know it yet. Everything you need is in the Lecture~1 notes (\S10, the Python ML stack) and the scikit-learn preprocessing guide linked there. Ask in the lab rather than guessing.\end{infobox}
+
+\section*{Instructions}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Use a train/test split (80/20 unless stated) and set \texttt{random\_state} for reproducibility.
+
+  \item Fit every transformer inside a \texttt{Pipeline} so nothing is fitted on the test set.
+
+  \item Report the metric named in the question. A number without units or context earns no marks.
+
+  \item Every question asks for a short written observation. Code without commentary caps you at half marks.
+
+  \item The lab quiz that follows will ask you to read, trace and modify \emph{your own} submitted code.
+
+\end{itemize}
+
+\noindent\textbf{Coverage rule for this assignment.} Both datasets must appear in your submission. If you skip A3 in Section~A, you must answer B2 in Section~B.
+
+\textbf{Submit:}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Notebook: \texttt{AML\_LA01\_<SAPID>.ipynb} with all cells executed and outputs visible.
+
+  \item Report: 2--3 pages PDF, or a \texttt{README.md}, carrying your results table and observations.
+
+  \item Do not upload datasets. Cite the source and include the loading code.
+
+\end{itemize}
+
+\begin{center}\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Section} & \textbf{Level} & \textbf{Choice rule} & \textbf{Marks}\\
+\midrule
+A & Easy & Attempt any 2 of 3 (2 marks each) & 4\\
+B & Medium & Attempt any 1 of 2 (4 marks each) & 4\\
+C & Consolidation & Compulsory & 2\\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Total}} & \textbf{10}\\
+\bottomrule
+\end{tabular}\end{center}
+
+\noindent\small Course outcomes assessed by this assignment: \textbf{CO1, CO2}. Attempting more than the choice rule allows is not penalised; the best attempts are marked. Component weightings are indicative and subject to departmental approval; the confirmed split will be posted on the LMS.\normalsize
+
+\section*{Section A (Easy) --- attempt any 2 of 3 \quad (2 $\times$ 2 = 4)}
+
+\begin{enumerate}[label=\textbf{A\arabic*.}, leftmargin=*]
+
+  \item \textbf{Environment proof} \QMarks{2}\\
+    \emph{No dataset.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Create a fresh environment and install \texttt{numpy}, \texttt{pandas}, \texttt{scikit-learn}, \texttt{matplotlib}, \texttt{seaborn}, \texttt{jupyter}.
+      \item Print the version of each of the five libraries and your Python version in one cell.
+      \item State in two lines why pinning versions matters when you hand work to someone else.
+    \end{enumerate}
+
+  \item \textbf{First look at the data} \QMarks{2}\\
+    \emph{Dataset: A1 (California Housing).}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Load with \texttt{fetch\_california\_housing(as\_frame=True)} and run \texttt{head}, \texttt{info}, \texttt{describe} and \texttt{isna().sum()} on \texttt{d.frame}.
+      \item State the number of rows, the number of features, the target, and its units. (\texttt{print(d.DESCR)} tells you the units --- the \texttt{return\_X\_y} form throws them away.)
+      \item Name one feature you suspect is on a very different scale from the others, with evidence.
+    \end{enumerate}
+
+  \item \textbf{Missing values and outliers} \QMarks{2}\\
+    \emph{Dataset: A2 (Telco Customer Churn).}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Find the column that looks numeric but is stored as text, and explain why.
+      \item Convert it, count how many values become missing, and impute them with a stated strategy.
+      \item Draw a boxplot of \texttt{tenure} and \texttt{MonthlyCharges} and comment on outliers in two lines.
+    \end{enumerate}
+
+\end{enumerate}
+
+\section*{Section B (Medium) --- attempt any 1 of 2 \quad (1 $\times$ 4 = 4)}
+
+\begin{enumerate}[label=\textbf{B\arabic*.}, leftmargin=*]
+
+  \item \textbf{Scaling changes the answer} \QMarks{4}\\
+    \emph{Dataset: A1 (California Housing).}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Split 80/20 with \texttt{random\_state=0}. Train a \texttt{KNeighborsRegressor(n\_neighbors=5)} on the raw features and report test MAE.
+      \item Repeat inside a \texttt{Pipeline} with \texttt{StandardScaler}. Report test MAE again.
+      \item Explain in 4--6 lines why the difference appears, referring to how KNN measures distance.
+    \end{enumerate}
+
+  \item \textbf{Correlation and redundant features} \QMarks{4}\\
+    \emph{Dataset: A2 (Telco Customer Churn).}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Convert \texttt{TotalCharges} with \texttt{pd.to\_numeric(df['TotalCharges'], errors='coerce')}, then encode \texttt{Churn} as 0/1.
+      \item Compute \texttt{df.corr(numeric\_only=True)} --- the plain \texttt{df.corr()} raises \texttt{ValueError} on this frame because of the text columns. Rank the four numeric features against \texttt{Churn} and report the strongest three.
+      \item \texttt{TotalCharges} is roughly \texttt{tenure}$\times$\texttt{MonthlyCharges}. Explain in 4--6 lines what problem that redundancy causes, and what you would do about it.
+    \end{enumerate}
+
+\end{enumerate}
+
+\section*{Section C (Consolidation) --- compulsory \quad (2)}
+
+\begin{enumerate}[label=\textbf{C\arabic*.}, leftmargin=*]
+
+  \item \textbf{Reproducibility check} \QMarks{2}\\
+    \emph{Either dataset.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Restart the kernel and run your notebook top to bottom.
+      \item State whether every number in your report reproduced exactly. If not, identify which and why.
+      \item Now change \texttt{random\_state} from 0 to 1 and re-run one model. Report how much your headline metric moved, and say in two lines what that tells you about how precisely you should quote it.
+    \end{enumerate}
+
+\end{enumerate}
+
+\vfill\noindent\textit{End of Lab Assignment 1}
+
+\notesources{\AMLLabSources}
+
+\end{document}

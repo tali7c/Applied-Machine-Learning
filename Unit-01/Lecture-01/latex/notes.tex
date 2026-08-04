@@ -1,0 +1,415 @@
+\documentclass[11pt]{article}
+
+\input{../../../_shared/notes-common.tex}
+
+\title{Applied Machine Learning\\Unit 01 -- Lecture 01 Notes\\Introduction to ML \& the Python ML Stack}
+\author{Tofik Ali}
+\date{Autumn 2026}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Lecture Overview}
+This lecture opens the course and answers four practical questions:
+\begin{itemize}[leftmargin=*]
+  \item What do we mean by \textbf{machine learning}, and when is it the right tool?
+  \item How do we say precisely that a program has \textbf{learned} something?
+  \item What are the \textbf{types} of machine learning, and how do we tell which one a problem needs?
+  \item What \textbf{tools} will we use, and what does a complete model look like end to end?
+\end{itemize}
+Mapped to \textbf{CO1} (core concepts and techniques of ML and AI) and \textbf{CO2} (develop models using popular libraries and frameworks).
+\notesources{\AMLUnitISources}
+
+\section{How to use these notes (self-study)}
+Read in order and pause at each example to ask: ``What would I do next, and why?''.
+In applied machine learning the important skill is not memorising definitions but connecting
+\textbf{problem type} $\rightarrow$ \textbf{method} $\rightarrow$ \textbf{evaluation}.
+Attempt the practice questions in Section~\ref{sec:practice} before reading the answers.
+
+\section{Learning Outcomes}
+\begin{itemize}[leftmargin=*]
+  \item Explain what machine learning is and when it is the right tool.
+  \item State Mitchell's definition in terms of task, performance measure and experience.
+  \item Distinguish supervised, unsupervised and reinforcement learning, and name the task type for a given problem.
+  \item Describe the roles of NumPy, Pandas and scikit-learn, and run a complete model in a dozen lines.
+\end{itemize}
+
+\section{Keywords (quick definitions)}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Machine Learning (ML):} methods that learn a rule from examples in order to make predictions or decisions.
+  \item \textbf{Model:} a simplified representation of a process, fitted to data and used for prediction.
+  \item \textbf{Feature:} an input variable, one column of $x$.
+  \item \textbf{Label / target:} the known answer $y$ in supervised learning.
+  \item \textbf{Training set / test set:} data used to fit the model, and data held back to estimate how it will behave on unseen cases.
+  \item \textbf{Generalisation:} performance on unseen data drawn from the same process as the training data.
+  \item \textbf{Overfitting:} fitting noise in the training data, so that training performance is good but test performance is poor.
+  \item \textbf{Data leakage:} unintended use of information that would not be available at prediction time.
+  \item \textbf{Loss function:} a number measuring how wrong a prediction is (Unit II).
+\end{itemize}
+
+\section{Course roadmap (how topics connect)}
+The subject is organised from \textbf{what we measure} to \textbf{how we optimise} to \textbf{the methods themselves}:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Unit I (this unit):} what ML is, its types, and the Python stack.
+  \item \textbf{Unit II:} loss functions --- MSE, MAE, Huber, cross-entropy, hinge, triplet.
+  \item \textbf{Unit III:} optimizers --- SGD, mini-batch, momentum, Adagrad, RMSprop, Adadelta, Adam.
+  \item \textbf{Unit IV:} data preprocessing --- cleaning, features, splitting, cross-validation, imbalance.
+  \item \textbf{Unit V:} regression --- linear, logistic, multiple, regularization.
+  \item \textbf{Unit VI:} classification --- KNN, trees, Bayes, ensembles, neural networks, SVM, evaluation.
+  \item \textbf{Unit VII:} clustering --- hierarchical, K-means, K-medoids, CLARA, DBSCAN.
+\end{itemize}
+Units II and III come early deliberately. Once you know \textbf{what quantity we are minimising} and
+\textbf{how the minimisation is carried out}, every method in Units V--VII is a variation on one theme.
+
+\section{Assessment (summary)}
+\begin{center}
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Component} & \textbf{Marks} \\
+\midrule
+Theory assignments (2, each with an assessment test) & 5 \\
+Theory quizzes (10 short tests) & 10 \\
+Project --- individual quiz & 10 \\
+Project --- group submission state & 5 \\
+Lab assignments (10, over experiments 1--14) & 10 \\
+Lab quizzes (10, code understanding) & 10 \\
+Mid-Semester examination & 20 \\
+End-Semester examination & 30 \\
+\midrule
+\textbf{Total} & \textbf{100} \\
+\bottomrule
+\end{tabular}
+\end{center}
+The project carries 15 marks, of which \textbf{10 are individual}. A strong contributor in a weak
+group can still score well; a passenger cannot.
+
+\textbf{Test-0} is a 30-minute diagnostic on prerequisites and general understanding, with the date to
+be announced. It \textbf{carries no marks}. Its purpose is to let the teaching team see how you approach a
+problem, so that the short tests through the semester can be framed to suit how you work. There is
+nothing to revise; show your working, and if you do not know something, write what you would need to
+find out.
+
+\section{Abbreviations used in this lecture}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{ML}: Machine Learning \quad \textbf{AI}: Artificial Intelligence \quad \textbf{DL}: Deep Learning
+  \item \textbf{EDA}: Exploratory Data Analysis (lab focus) \quad \textbf{MSE}: Mean Squared Error (Unit II)
+  \item \textbf{KNN}: K-Nearest Neighbours (Unit VI)
+\end{itemize}
+
+\section{What machine learning is}
+
+\subsection{The shape of the problem}
+Some programs we can write by hand because we know the rule: sorting a list, parsing a date,
+computing a payroll. We state the rule and encode it.
+
+Other programs we cannot write by hand. Decide whether an email is spam. Read a handwritten digit.
+Tell whether a scan shows a tumour. We can \emph{recognise} the right answer when we see it, but we
+cannot write down the rule that produces it.
+
+\textbf{Machine learning is what you reach for when you have examples of the answer but not a
+statement of the rule.} The examples are used to find the rule. That is the \emph{supervised} case, which is most of this
+course; the other two families relax it, as the next section shows.
+
+\subsection{Two ways to build a spam filter}
+A rule-based filter encodes conditions directly:
+\begin{lstlisting}
+def classify(subject, sender, bangs):
+    if "free money" in subject:  return "SPAM"
+    if sender in blocklist:      return "SPAM"
+    if bangs > 5:                return "SPAM"
+    return "HAM"
+\end{lstlisting}
+The spammer writes ``fr33 m0ney''. You add a rule. They adapt. A learned filter instead consumes
+labelled examples:
+\begin{lstlisting}
+model.fit(emails, labels)
+model.predict(new_email)
+\end{lstlisting}
+When the spammer adapts, you collect newly labelled mail and refit. What changed is not only the
+code but the \textbf{maintenance strategy}.
+
+The rule-based filter does keep one property the learned one loses: you can read exactly why it
+fired. That property is \textbf{interpretability}, and recovering some of it for learned models is
+part of Unit VI (decision trees, rule extraction).
+
+\subsection{A working definition (Mitchell, 1997)}
+\emph{A computer program is said to learn from experience $E$ with respect to some class of tasks
+$T$ and performance measure $P$, if its performance at tasks in $T$, as measured by $P$, improves
+with experience $E$.}
+
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+ & \textbf{Task $T$} & \textbf{Experience $E$} & \textbf{Performance $P$} \\
+\midrule
+Spam filter  & classify email & labelled inbox      & fraction correctly classified \\
+House prices & predict price  & past sales records  & mean squared error \\
+Game agent   & choose a move  & games played        & win rate \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The definition forces you to name $P$ \textbf{before} you start. A great many failed machine-learning
+projects failed at this step, not at the modelling step: nobody had agreed what ``working'' would mean.
+
+\subsection{Where ML sits}
+Artificial intelligence is the broad field: search, planning, logic, knowledge representation, and
+learning. Machine learning is the part of AI that learns the rule from data. Deep learning is a
+subset of ML that uses multi-layer neural networks.
+
+Deep learning is a subset, not a synonym and not an automatic upgrade. On tabular data of the size
+you will meet in this course, a gradient-boosted tree typically beats a neural network and trains in
+seconds. Choosing the smallest model that solves the problem is a skill, not a compromise.
+
+\subsection{Why now}
+Three things changed together:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Data.} Transactions, sensors, images and logs are digitised and cheap to store, so the examples exist.
+  \item \textbf{Compute.} Parallel hardware made the arithmetic of Unit III affordable at scale.
+  \item \textbf{Algorithms and tooling.} Better optimisers and regularisation, and libraries that put all of it three lines away.
+\end{itemize}
+Most of the core ideas in this course are old --- least squares dates from about 1805. What changed
+is that data and compute caught up with the mathematics.
+
+\subsection{Applications}
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Domain} & \textbf{Task} & \textbf{Unit} \\
+\midrule
+Finance      & credit scoring, fraud detection               & VI \\
+Healthcare   & diagnosis from imaging, signal classification & VI, VII \\
+Retail       & churn prediction, customer segmentation       & V, VI, VII \\
+Agriculture  & crop disease from leaf images                 & VI \\
+Web          & spam filtering, recommendation                & VI, VII \\
+Operations   & demand and price forecasting                  & V \\
+\bottomrule
+\end{tabular}
+\end{center}
+Most rows above appear as a lab experiment in this course.
+
+\subsection{When not to use machine learning}
+\label{sec:cautions}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{The rule is known and stable.} Income tax is a lookup, not a prediction.
+  \item \textbf{You have no labelled examples} and no realistic way to obtain them.
+  \item \textbf{Errors are unacceptable} and you cannot bound them.
+  \item \textbf{Every decision must be explained} to a regulator, and a simple rule would do nearly as well.
+  \item \textbf{Training data will not resemble deployment.} A model trained on last year's customers predicts last year's customers.
+\end{enumerate}
+\notesources{\AMLUnitISources}
+
+\section{Types of machine learning}
+The question that decides which family you are in: \textbf{do you already have the answers?}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Family} & \textbf{What you have} & \textbf{What you learn} \\
+\midrule
+Supervised     & labelled data $\{(x_i,y_i)\}$      & a mapping $x \mapsto y$ \\
+Unsupervised   & unlabelled data $\{x_i\}$          & structure in $x$ \\
+Reinforcement  & an environment and a reward signal & a policy \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Supervised learning}
+Given $\{(x_i, y_i)\}_{i=1}^{n}$, find $f$ such that $f(x) \approx y$ on data \emph{not seen during
+training}.
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Regression} --- $y$ is continuous. House price, stock value, temperature, time to failure. Unit V; lab experiments 3--4.
+  \item \textbf{Classification} --- $y$ is a category. Spam or not, digit 0--9, benign or malignant. Unit VI; lab experiments 5--9 and 11--12.
+\end{itemize}
+Fitting the training data is easy --- a model can simply memorise it. The task is to be right on data
+never seen before. That single requirement is why Unit IV (splitting, cross-validation) and the
+over-fitting material in Unit V exist.
+
+\subsection{Unsupervised learning}
+No $y$ is available.
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Clustering} --- group similar records: customer segments, disease subtypes. Unit VII.
+  \item \textbf{Dimensionality reduction} --- fewer features carrying substantially the same information. Unit IV.
+  \item \textbf{Anomaly detection} --- identify what does not fit. Lab experiment 10.
+\end{itemize}
+Unsupervised results have no ground truth to check against, so evaluating a clustering is genuinely
+harder than evaluating a classifier. Unit VII therefore spends real time on cluster validity measures.
+
+\subsection{Reinforcement learning}
+An agent takes actions in an environment and receives reward. There are no labelled answers, only
+consequences, and those consequences are often delayed. Used in robotics, game playing, control and
+feedback-driven recommendation. Covered here for orientation only.
+
+\subsection{Naming the problem}
+\begin{center}
+\begin{tabular}{@{}p{7.2cm}ll@{}}
+\toprule
+\textbf{Situation} & \textbf{Family} & \textbf{Task} \\
+\midrule
+10\,000 past loans marked repaid or defaulted; score a new applicant
+  & supervised & classification \\
+5 years of daily sales; forecast next month
+  & supervised & regression \\
+50\,000 customer records, no labels; find natural groups
+  & unsupervised & clustering \\
+Card transactions; flag the unusual ones
+  & unsupervised & anomaly detection \\
+A warehouse robot that must learn a route
+  & reinforcement & policy learning \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{The Python machine-learning stack}
+Three libraries, three jobs, stacked on one another:
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{scikit-learn} & models, preprocessing, evaluation, pipelines \\
+\textbf{Pandas}       & tabular data: load, clean, reshape, group \\
+\textbf{NumPy}        & the \texttt{ndarray} and fast array arithmetic \\
+\bottomrule
+\end{tabular}
+\end{center}
+A Pandas \texttt{DataFrame} holds NumPy arrays; a scikit-learn estimator consumes NumPy arrays.
+Understanding the bottom layer is what lets you debug the top one. Matplotlib and Seaborn join the
+stack for plotting from Unit IV onwards.
+
+\subsection{NumPy --- vectorisation}
+\begin{lstlisting}
+# Python loop
+total = 0.0
+for i in range(len(y)):
+    d = y[i] - yhat[i]
+    total += d * d
+mse = total / len(y)
+
+# NumPy
+import numpy as np
+mse = np.mean((y - yhat) ** 2)
+\end{lstlisting}
+The NumPy version is shorter and typically 10--100 times faster, because the loop runs in compiled
+code over a contiguous block of memory.
+
+You have just written the \textbf{Mean Squared Error} --- the first loss function of Unit II. Every
+optimiser in Unit III exists to make that number smaller.
+
+Essentials to be comfortable with before lab 1: \texttt{np.array}, \texttt{.shape},
+\texttt{.reshape}, broadcasting, the \texttt{axis} argument, and boolean masks.
+
+\subsection{Pandas --- the DataFrame}
+\begin{lstlisting}
+import pandas as pd
+
+df = pd.read_csv("data.csv")
+df.head()          # look at it first, always
+df.info()          # dtypes and non-null counts
+df.describe()      # numeric summary
+df.isna().sum()    # where is the data missing?
+
+df["price_per_sqft"] = df["price"] / df["area"]
+df.groupby("city")["price"].mean()
+\end{lstlisting}
+Build the habit now: run \texttt{head}, \texttt{info}, \texttt{describe} and \texttt{isna().sum()}
+before modelling anything. Unit IV is the disciplined version of that reflex.
+
+\subsection{scikit-learn --- one API for every model}
+\begin{lstlisting}
+est.fit(X, y)       # learn from data
+est.predict(X)      # apply to new data
+est.score(X, y)     # evaluate
+
+tr.fit(X)           # transformers follow the same shape
+tr.transform(X)
+\end{lstlisting}
+Because the API is uniform, swapping a decision tree for a support vector machine changes one line.
+Learn it once here and every model in Units V--VII is already familiar.
+
+\textbf{The rule you must not break.} Call \texttt{fit} on training data only --- never on the test
+set, not even for scaling. Fitting a scaler on the full dataset before splitting leaks information
+about the test set into training and inflates your reported score. This is the single most common bug
+in student ML code, and a favourite planted fault in lab quizzes.
+
+\subsection{End to end in twelve lines}
+\begin{lstlisting}
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.pipeline import make_pipeline
+
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0, stratify=y)
+
+model = make_pipeline(StandardScaler(), KNeighborsClassifier(n_neighbors=5))
+model.fit(X_train, y_train)
+print(model.score(X_test, y_test))
+\end{lstlisting}
+Read what each argument protects you from. \texttt{stratify=y} preserves the class balance across the
+split. \texttt{random\_state} makes the result reproducible. \texttt{make\_pipeline} guarantees the
+scaler is fitted inside the training portion only --- the leak-proof way to combine preprocessing
+with a model.
+\notesources{\AMLLabSources}
+
+\section{Practice questions}
+\label{sec:practice}
+Attempt these before reading the answers in Section~\ref{sec:answers}.
+\begin{enumerate}[leftmargin=*]
+  \item State Mitchell's $T$, $P$ and $E$ for a system that recommends films to a streaming subscriber.
+  \item A hospital wants to predict which patients will miss an appointment. Which of the five cautions in Section~\ref{sec:cautions} is most likely to bite, and why?
+  \item Classify each as supervised regression, supervised classification, unsupervised or reinforcement: (a) predicting tomorrow's electricity demand; (b) grouping news articles by topic with no labels; (c) deciding whether a transaction is fraudulent given past confirmed fraud; (d) tuning a thermostat that is rewarded for comfort and penalised for energy use.
+  \item Explain in your own words why fitting a scaler before the train/test split inflates the reported score.
+  \item Rewrite this loop using NumPy: \texttt{s = 0} ; \texttt{for i in range(len(a)): s += abs(a[i] - b[i])} ; \texttt{mae = s / len(a)}.
+\end{enumerate}
+
+\section{Answers}
+\label{sec:answers}
+\begin{enumerate}[leftmargin=*]
+  \item $T$: recommend a film for a given subscriber. $E$: past viewing and ratings history. $P$: a stated measure such as click-through rate or watch-time on recommended titles. Any defensible $P$ is acceptable provided it is named explicitly and could actually be measured.
+  \item Most likely caution 5, \textbf{distribution shift}: appointment behaviour depends on clinic policy, transport and season, all of which change, so a model trained on old data degrades. Caution 4 (explainability) is also defensible if the prediction is used to allocate scarce slots.
+  \item (a) supervised regression; (b) unsupervised clustering; (c) supervised classification; (d) reinforcement learning.
+  \item The scaler's mean and standard deviation are computed using test rows as well as training rows. The model is therefore evaluated on data whose statistics it has already seen, so the test score is no longer an honest estimate of performance on genuinely unseen data. Use \texttt{make\_pipeline} so the scaler is fitted inside the training portion only.
+  \item \texttt{mae = np.mean(np.abs(a - b))}. This is the Mean Absolute Error, which we meet again in Unit II.
+\end{enumerate}
+
+\section{Before the next session}
+\begin{enumerate}[leftmargin=*]
+  \item Install Python 3.11 or later (Anaconda or a \texttt{venv}).
+  \item \texttt{pip install numpy pandas scikit-learn matplotlib seaborn jupyter}
+  \item Run the twelve-line Iris script in a Jupyter notebook and print the version of each library.
+  \item Attempt the practice questions above.
+\end{enumerate}
+Lab assignment LA1 covers experiments 1--2 (environment setup, then preprocessing and exploratory data
+analysis); it is due after lab session 2 and is examined by quiz LQ1 in lab session 3. Lab quizzes ask
+you to read, trace, debug and modify \emph{your own} submitted code.
+
+\section{Summary}
+\begin{itemize}[leftmargin=*]
+  \item Machine learning suits problems where you have examples of the answer but cannot state the rule.
+  \item Mitchell's $T$, $P$, $E$ forces you to name the performance measure before modelling.
+  \item Supervised (regression, classification), unsupervised (clustering, dimensionality reduction, anomaly detection), reinforcement (policy from reward).
+  \item The goal is never to fit the training data --- it is to generalise.
+  \item NumPy $\rightarrow$ Pandas $\rightarrow$ scikit-learn, with one \texttt{fit}/\texttt{predict} API for every model.
+  \item Never \texttt{fit} on the test set.
+\end{itemize}
+
+\textbf{Next (L2):} loss functions --- putting a number on how wrong a prediction is. MSE, MAE and
+Huber for regression; cross-entropy for classification; hinge and triplet for margins.
+
+\section*{Reading}
+\begin{itemize}[leftmargin=*]
+  \item M\"uller \& Guido, \textit{Introduction to Machine Learning with Python}, Ch.~1.
+  \item Bishop, \textit{Pattern Recognition and Machine Learning}, Ch.~1, \S1.1.
+  \item Murphy, \textit{Probabilistic Machine Learning: An Introduction}, Ch.~1 (open access).
+  \item James et al., \textit{An Introduction to Statistical Learning with Python}, Ch.~1--2 (open access).
+  \item Scikit-learn user guide, ``Getting Started''.
+\end{itemize}
+Free, author-hosted copies: \emph{An Introduction to Statistical Learning with Python} at
+\url{https://www.statlearning.com/}, Murphy's \emph{Probabilistic Machine Learning} at
+\url{https://probml.github.io/pml-book/}, and Bishop's \emph{Pattern Recognition and Machine
+Learning} from Microsoft Research.
+\notesources{\AMLPrescribed}
+
+\end{document}

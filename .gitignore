@@ -1,0 +1,69 @@
+# LaTeX build artifacts (keep sources + PDFs)
+**/*.aux
+**/*.log
+**/*.out
+**/*.toc
+**/*.nav
+**/*.snm
+**/*.vrb
+**/*.synctex.gz
+**/*.fls
+**/*.fdb_latexmk
+**/*.lof
+**/*.lot
+**/*.bbl
+**/*.blg
+**/*.idx
+**/*.ilg
+**/*.ind
+.~lock.*#
+*.tmp
+
+# Python / notebooks
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.ipynb_checkpoints/
+
+# Virtual envs / caches
+**/.venv/
+**/venv/
+**/aml-env/
+**/.cache/
+
+# Local scratch/extractions (do not commit)
+_tmp/
+_tools/
+build.ps1
+
+# Pre-NIRF-45 artwork backup (kept locally, not published)
+_shared/UPES-Beamer-Theme/original-nirf52/
+
+# IDE / OS
+**/.idea/
+**/.vscode/
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Copyrighted reference PDFs (keep local; do not commit)
+Text-Books/
+textbooks/
+
+# Local datasets (keep small samples only; link large datasets)
+datasets/
+data/
+*.csv
+*.zip
+
+# Student submissions and anything carrying SAP IDs
+submissions/
+**/AML_LA*_5*.ipynb
+
+# ---------------------------------------------------------------------------
+# NOTE ON PRIVATE MATERIAL
+# The repository root is this `public/` folder. Marking schemes, question
+# papers, experiment solutions, marks and the CCR archive live in the sibling
+# folders `../private/` and `../admin/`, which are OUTSIDE this repository and
+# therefore cannot be committed even accidentally. Do not move them in here.
+# ---------------------------------------------------------------------------

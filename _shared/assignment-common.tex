@@ -1,0 +1,77 @@
+% Shared settings for Applied Machine Learning lab assignments and marking schemes.
+% Layered on the house notes preamble; keep free of \documentclass.
+%
+% Callers must define \CourseCode, \AssignmentName before \begin{document}.
+
+% Depth-agnostic locate of the house notes preamble: briefs compile from
+% public/lab-assignments/LAxx/latex/ and marking schemes from
+% private/solutions/lab-assignments/LAxx/latex/, which sit at different depths.
+\IfFileExists{../../../../public/_shared/notes-common.tex}{%
+  \input{../../../../public/_shared/notes-common.tex}%
+}{%
+  \IfFileExists{../../../../../public/_shared/notes-common.tex}{%
+    \input{../../../../../public/_shared/notes-common.tex}%
+  }{%
+    \input{../../../public/_shared/notes-common.tex}%
+  }%
+}
+
+\usepackage{fancyhdr}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+\usepackage{array}
+\usepackage[htt]{hyphenat}   % allow \texttt{...} to hyphenate, else long
+                             % identifiers overflow the measure
+
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, breaklinks=true}
+\setlist{itemsep=0.35em, topsep=0.35em}
+\sloppy
+\emergencystretch=2em
+
+\providecommand{\CourseCode}{CSAI2017P: Applied Machine Learning (Lab)}
+\providecommand{\AssignmentName}{Lab Assignment}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\CourseCode}
+\rhead{\small\AssignmentName}
+\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+
+% Per-question mark tag, right aligned.
+\newcommand{\QMarks}[1]{\hfill \textbf{[#1 marks]}}
+
+% Title block for a brief.
+\newcommand{\LAtitle}[4]{%
+  \begin{center}
+    {\LARGE \textbf{#1}}\\[0.25em]
+    {\large \CourseCode}\\[0.25em]
+    \normalsize #2
+  \end{center}
+  \noindent
+  \textbf{Instructor:} Dr.\ Tofik Ali \hfill \textbf{Due:} #3\\
+  \textbf{Student Name:} \rule{5cm}{0.4pt} \hfill \textbf{SAP ID:} \rule{3.5cm}{0.4pt}\\
+  \textbf{Batch:} \rule{2.5cm}{0.4pt} \hfill \textbf{Lab quiz:} #4
+  \vspace{0.6em}\hrule\vspace{0.8em}}
+
+% Title block for a marking scheme (no student fields).
+\newcommand{\MStitle}[3]{%
+  \begin{center}
+    {\LARGE \textbf{#1}}\\[0.25em]
+    {\large \CourseCode}\\[0.25em]
+    \normalsize #2\\[0.4em]
+    {\color{red}\textbf{MARKING SCHEME --- NOT FOR CIRCULATION}}
+  \end{center}
+  \noindent \textbf{Instructor:} Dr.\ Tofik Ali \hfill \textbf{Assignment due:} #3
+  \vspace{0.6em}\hrule\vspace{0.8em}}
+
+\newtcolorbox{infobox}[1][Note]{
+  breakable, enhanced, colback=gray!6, colframe=gray!55,
+  fonttitle=\bfseries\small, title=#1, boxrule=0.7pt, arc=2pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt}
+
+\newtcolorbox{answerbox}[1][Expected answer]{
+  breakable, enhanced, colback=green!4, colframe=green!35!black,
+  fonttitle=\bfseries\small, title=#1, boxrule=0.7pt, arc=2pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt}
