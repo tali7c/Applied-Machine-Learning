@@ -4,7 +4,7 @@ Lecture slides (Beamer), teaching notes, lab assignments and starter notebooks f
 
 GitHub: `https://github.com/tali7c/Applied-Machine-Learning`
 
-**Students, start here → [`Course-Handbook/Course-Handbook.pdf`](Course-Handbook/Course-Handbook.pdf)** — syllabus, the full marks structure, every deadline, grade bands and the reading list in one 12-page document.
+**Students, start here → [`Course-Handbook/Course-Handbook.pdf`](Course-Handbook/Course-Handbook.pdf)** — syllabus, the full marks structure, every deadline and the reading list in one document.
 
 | | |
 |---|---|
