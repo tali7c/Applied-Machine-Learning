@@ -152,11 +152,11 @@ against the Academic Handbook.
 \textbf{Component} & \textbf{Marks} & \textbf{What it is}\\
 \midrule
 Theory assignments & 5 & Two assignments, each followed by a short in-class assessment test\\
-Theory quizzes / tests & 10 & Ten 20-minute tests through the semester\\
+Theory quizzes / tests & 10 & Ten 40-minute tests through the semester\\
 Project --- individual & 10 & A quiz on your own group's project; \textbf{marked individually}\\
 Project --- group & 5 & The state of what your group submitted\\
 Lab assignments & 10 & Ten assignments covering experiments 1--14\\
-Lab quizzes & 10 & Ten short quizzes on \emph{your own} submitted lab code\\
+Lab quizzes & 10 & Ten 90-minute quizzes on \emph{your own} submitted lab code\\
 Mid-Semester examination & 20 & Common paper, university schedule\\
 End-Semester examination & 30 & Common paper, university schedule\\
 \midrule
@@ -192,29 +192,35 @@ coasts until the last month cannot recover, because the marks are already gone.
 
 \subsection{Theory quizzes --- 10 marks}
 
-Ten tests, T1--T10. Each is a \textbf{20-minute} instrument run at the close of
-a lecture session; they do not consume a whole session. The diagnostic Test-0 is
-the exception at \textbf{30 minutes}.
+Ten tests, T1--T10, each \textbf{40 minutes}. The diagnostic Test-0 is shorter,
+at \textbf{30 minutes}.
 
 \begin{center}
-\begin{tabular}{@{}llp{8.4cm}@{}}
+\begin{tabular}{@{}lp{10.2cm}@{}}
 \toprule
-\textbf{Test} & \textbf{Session} & \textbf{Coverage}\\
+\textbf{Test} & \textbf{Coverage}\\
 \midrule
-T0 & week 2, TBC & Prerequisites and general understanding --- \textbf{no marks}\\
-T1 & 6 & Units I--II\\
-T2 & 10 & Unit III; Unit IV (cleaning)\\
-T3 & 13 & Unit IV\\
-T4 & 17 & Unit V --- foundations, least squares, MLE\\
-T5 & 21 & Unit V --- logistic, MLR, regularization\\
-T6 & 25 & Unit VI --- foundations, KNN, decision trees\\
-T7 & 28 & Unit VI --- Bayesian, ensembles\\
-T8 & 32 & Unit VI --- neural networks, SVM, evaluation\\
-T9 & 35 & Unit VII --- foundations, similarity, data types\\
-T10 & 39 & Unit VII --- hierarchical, partitioning, density-based\\
+T0 & Prerequisites and general understanding --- \textbf{no marks}\\
+T1 & Units I--II\\
+T2 & Unit III; Unit IV (cleaning)\\
+T3 & Unit IV\\
+T4 & Unit V --- foundations, least squares, MLE\\
+T5 & Unit V --- logistic, MLR, regularization\\
+T6 & Unit VI --- foundations, KNN, decision trees\\
+T7 & Unit VI --- Bayesian, ensembles\\
+T8 & Unit VI --- neural networks, SVM, evaluation\\
+T9 & Unit VII --- foundations, similarity, data types\\
+T10 & Unit VII --- hierarchical, partitioning, density-based\\
 \bottomrule
 \end{tabular}
 \end{center}
+
+\begin{caution}[Dates are not fixed yet]
+The tests run in this order and cover this material, but \textbf{the dates are
+not settled}. Each one will be announced at least one session in advance, on the
+LMS and in class. Do not plan around a date you have inferred from the syllabus
+--- wait for the announcement.
+\end{caution}
 
 Each test is marked out of 10; the component is the total scaled to 10.
 \textbf{An absence counts as zero}, so tell me in advance if you cannot sit one.
@@ -256,15 +262,18 @@ Two assignments, each worth 2.5. Each has two parts: the submission itself
 (1.0) and a short \textbf{in-class assessment test} on what you submitted (1.5).
 
 \begin{center}
-\begin{tabular}{@{}lp{6.6cm}ll@{}}
+\begin{tabular}{@{}lp{8.4cm}l@{}}
 \toprule
-\textbf{Asst} & \textbf{Coverage} & \textbf{Issued} & \textbf{Submission + test}\\
+\textbf{Asst} & \textbf{Coverage} & \textbf{Issued}\\
 \midrule
-A1 & Units I--IV --- preprocessing and cross-validation pipeline & after session 13 & \textbf{session 14}\\
-A2 & Units V--VI --- classifier comparison with ROC/AUC & after session 32 & \textbf{session 33}\\
+A1 & Units I--IV --- preprocessing and cross-validation pipeline & once Unit IV is complete\\
+A2 & Units V--VI --- classifier comparison with ROC/AUC & once Unit VI is complete\\
 \bottomrule
 \end{tabular}
 \end{center}
+
+\noindent Each is issued with about a fortnight to work on it; the submission
+date and the assessment test are announced when the assignment goes out.
 
 \begin{caution}[Why the test is worth more than the submission]
 Because it is the part that proves the work is yours. If you did the assignment,
@@ -278,24 +287,27 @@ Experiments 1--14 are grouped into \textbf{ten assignments}. Experiment 15, the
 mini-project, is assessed under the project component instead.
 
 \begin{center}
-\begin{tabular}{@{}llp{5.5cm}cc@{}}
+\begin{tabular}{@{}llp{7.4cm}c@{}}
 \toprule
-\textbf{Asst} & \textbf{Expts} & \textbf{Topic} & \textbf{Due after} & \textbf{Quiz}\\
- & & & \textbf{lab} & \\
+\textbf{Asst} & \textbf{Expts} & \textbf{Topic} & \textbf{Quiz}\\
 \midrule
-LA1 & 1, 2 & Environment setup; preprocessing and EDA & 2 & LQ1, lab 3\\
-LA2 & 3 & Regression: housing price prediction & 3 & LQ2, lab 4\\
-LA3 & 4 & Time-series regression: stock prices & 4 & LQ3, lab 5\\
-LA4 & 5 & Customer churn prediction & 5 & LQ4, lab 6\\
-LA5 & 6, 7 & Image and multiclass classification: digits and Iris & 7 & LQ5, lab 8\\
-LA6 & 8 & Spam email detection & 8 & LQ6, lab 9\\
-LA7 & 9 & Credit risk assessment & 9 & LQ7, lab 10\\
-LA8 & 10, 11 & Anomaly detection; physiological signal classification & 11 & LQ8, lab 12\\
-LA9 & 12 & Breast cancer diagnosis from imaging features & 12 & LQ9, lab 13\\
-LA10 & 13, 14 & Clustering medical images; crop disease classification & 14 & LQ10, lab 15\\
+LA1 & 1, 2 & Environment setup; preprocessing and EDA & LQ1\\
+LA2 & 3 & Regression: housing price prediction & LQ2\\
+LA3 & 4 & Time-series regression: stock prices & LQ3\\
+LA4 & 5 & Customer churn prediction & LQ4\\
+LA5 & 6, 7 & Image and multiclass classification: digits and Iris & LQ5\\
+LA6 & 8 & Spam email detection & LQ6\\
+LA7 & 9 & Credit risk assessment & LQ7\\
+LA8 & 10, 11 & Anomaly detection; physiological signal classification & LQ8\\
+LA9 & 12 & Breast cancer diagnosis from imaging features & LQ9\\
+LA10 & 13, 14 & Clustering medical images; crop disease classification & LQ10\\
 \bottomrule
 \end{tabular}
 \end{center}
+
+\noindent Each assignment falls due shortly after the experiments it covers, and
+its quiz follows in a later lab. \textbf{Submission deadlines and quiz dates are
+announced in the lab and on the LMS} --- they are not fixed in advance here.
 
 \subsubsection*{How a lab assignment is marked}
 
@@ -320,15 +332,15 @@ marked.
 
 \subsubsection*{Lab quizzes --- and why you should write your own code}
 
-Each lab quiz asks you to \textbf{read, trace, debug and modify your own
-submitted code}. Not recall, not theory --- your code, in front of you, with
-questions about it.
+Each lab quiz runs for \textbf{90 minutes at the machine} and asks you to
+\textbf{read, trace, debug and modify your own submitted code}. Not recall, not
+theory --- your code, in front of you, with questions about it.
 
 \begin{caution}
 This is deliberate, and it is the reason copying does not work in this course.
-Code you did not write is very hard to explain on the spot. Struggling through
-your own imperfect solution will score better than submitting someone else's
-good one.
+Ninety minutes is long enough that code you did not write becomes very hard to
+defend. Struggling through your own imperfect solution will score better than
+submitting someone else's good one.
 \end{caution}
 
 \subsection{Project --- 15 marks}
@@ -349,19 +361,23 @@ Project state & 5 & Completeness, correctness, reproducibility and documentation
 \end{center}
 
 \begin{center}
-\begin{tabular}{@{}lc@{}}
+\begin{tabular}{@{}cl@{}}
 \toprule
-\textbf{Milestone} & \textbf{Session}\\
+\textbf{\#} & \textbf{Milestone}\\
 \midrule
-Project catalogue released & 8\\
-Groups formed and project selected & 13\\
-Checkpoint 1 --- data secured, baseline model & 21\\
-Checkpoint 2 --- full pipeline, initial results & 32\\
-Final submission (code, report, reproducibility notes) & 39\\
-Individual project quiz & 40 / lab 15\\
+1 & Project catalogue released\\
+2 & Groups formed and project selected\\
+3 & Checkpoint 1 --- data secured, baseline model\\
+4 & Checkpoint 2 --- full pipeline, initial results\\
+5 & Final submission (code, report, reproducibility notes)\\
+6 & Individual project quiz\\
 \bottomrule
 \end{tabular}
 \end{center}
+
+\noindent The catalogue goes out early in the semester and the two checkpoints
+fall either side of the mid-semester examination. \textbf{Each date is announced
+when it is fixed}; the order above will not change.
 
 \begin{keyidea}[Read this before you choose your group]
 Two thirds of the project mark is \textbf{individual}. A strong contributor in a
@@ -374,40 +390,47 @@ happens through the individual quiz.
 
 \newpage
 % =========================================================================
-\section{Semester planner}
+\section{The order of events}
 
-Sessions are numbered rather than dated; dates follow the timetable and will be
-announced. Print this page.
+\begin{caution}[No dates in this handbook --- and that is deliberate]
+The assessment calendar is not fixed yet, so publishing dates here would only
+create a schedule you could be misled by. What \emph{is} fixed is the
+\textbf{order}, and what each item requires of you. Every date is announced on
+the LMS and in class as it is confirmed --- a quiz at least one session ahead.
+\end{caution}
 
 \begin{center}
-\begin{tabular}{@{}clp{7.2cm}@{}}
+\begin{tabular}{@{}clp{7.0cm}@{}}
 \toprule
-\textbf{Session} & \textbf{What happens} & \textbf{What you should have done}\\
+\textbf{\#} & \textbf{What happens} & \textbf{What you should have done}\\
 \midrule
-1--2 & Unit I lectures & \texttt{pip install numpy pandas scikit-learn matplotlib seaborn jupyter}\\
-week 2 & \textbf{Test-0} (no marks) & Nothing --- turn up\\
-lab 2 & \textbf{LA1 due} & Experiments 1--2 written up\\
-lab 3 & \textbf{LQ1} & Be able to explain your LA1 code\\
-6 & \textbf{T1} & Units I--II\\
-8 & Project catalogue released & Start thinking about a group\\
-10 & \textbf{T2} & Unit III; Unit IV cleaning\\
-13 & \textbf{T3}; groups and project fixed & Unit IV\\
-14 & \textbf{A1 submission + assessment test} & Assignment 1 done and understood\\
-17 & \textbf{T4} & Unit V foundations\\
-21 & \textbf{T5}; project checkpoint 1 & Unit V; data secured, baseline model\\
-25 & \textbf{T6} & Unit VI foundations, KNN, trees\\
-28 & \textbf{T7} & Unit VI Bayesian, ensembles\\
-32 & \textbf{T8}; project checkpoint 2 & Unit VI complete; pipeline running\\
-33 & \textbf{A2 submission + assessment test} & Assignment 2 done and understood\\
-35 & \textbf{T9} & Unit VII foundations\\
-39 & \textbf{T10}; project final submission & Unit VII complete; project handed in\\
-40 & Revision; project quiz & Everything\\
+1 & Unit I lectures & \texttt{pip install numpy pandas scikit-learn matplotlib seaborn jupyter}\\
+2 & \textbf{Test-0} (no marks) & Nothing --- turn up\\
+3 & \textbf{LA1 due}, then \textbf{LQ1} & Experiments 1--2 written up, and be able to explain your own code\\
+4 & \textbf{T1} & Units I--II\\
+5 & Project catalogue released & Start thinking about a group\\
+6 & \textbf{T2} & Unit III; Unit IV cleaning\\
+7 & \textbf{T3}; groups and project fixed & Unit IV\\
+8 & \textbf{A1 submission + assessment test} & Assignment 1 done and understood\\
+9 & \textbf{T4} & Unit V foundations\\
+10 & \textbf{T5}; project checkpoint 1 & Unit V; data secured, baseline model\\
+11 & \textbf{Mid-Semester examination} & Units I--V\\
+12 & \textbf{T6} & Unit VI foundations, KNN, trees\\
+13 & \textbf{T7} & Unit VI Bayesian, ensembles\\
+14 & \textbf{T8}; project checkpoint 2 & Unit VI complete; pipeline running\\
+15 & \textbf{A2 submission + assessment test} & Assignment 2 done and understood\\
+16 & \textbf{T9} & Unit VII foundations\\
+17 & \textbf{T10}; project final submission & Unit VII complete; project handed in\\
+18 & Revision; individual project quiz & Everything\\
+19 & \textbf{End-Semester examination} & Everything\\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\noindent Mid-Semester and End-Semester examinations follow the university
-calendar and are notified separately.
+\noindent LA1--LA10 and LQ1--LQ10 run through the lab sessions in parallel with
+the above, roughly one assignment every one to two labs. The Mid-Semester and
+End-Semester examinations follow the university calendar and are notified
+separately by the examination section, not by me.
 
 \newpage
 % =========================================================================

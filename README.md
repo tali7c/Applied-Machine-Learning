@@ -49,7 +49,7 @@ Notes:
 | Component | Marks |
 |---|---|
 | Theory assignments (2, each with an assessment test) | 5 |
-| Theory quizzes (10 short tests) | 10 |
+| Theory quizzes (10 tests, 40 min each) | 10 |
 | Project — individual quiz | 10 |
 | Project — group submission state | 5 |
 | Lab assignments (10) | 10 |
