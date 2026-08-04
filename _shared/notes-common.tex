@@ -16,6 +16,41 @@
 \usepackage{xcolor}
 \usepackage{enumitem}
 \usepackage{parskip}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+% --- teaching callouts, used by the lecture notes -------------------------
+\definecolor{UPESPurple}{HTML}{7A378B}
+\definecolor{UPESBlueD}{HTML}{2B4693}
+\definecolor{UPESOrangeD}{HTML}{F28C28}
+
+\newtcolorbox{keyidea}[1][Key idea]{breakable, enhanced,
+  colback=UPESPurple!6, colframe=UPESPurple, fonttitle=\bfseries\small,
+  title=#1, boxrule=0.8pt, arc=2pt, left=6pt,right=6pt,top=4pt,bottom=4pt}
+
+\newtcolorbox{caution}[1][Caution]{breakable, enhanced,
+  colback=UPESOrangeD!8, colframe=UPESOrangeD!80!black, fonttitle=\bfseries\small,
+  title=#1, boxrule=0.8pt, arc=2pt, left=6pt,right=6pt,top=4pt,bottom=4pt}
+
+\newtcolorbox{worked}[1][Worked example]{breakable, enhanced,
+  colback=UPESBlueD!5, colframe=UPESBlueD, fonttitle=\bfseries\small,
+  title=#1, boxrule=0.8pt, arc=2pt, left=6pt,right=6pt,top=4pt,bottom=4pt}
+
+\newtcolorbox{tryit}[1][Try it yourself]{breakable, enhanced,
+  colback=white, colframe=UPESPurple!65, fonttitle=\bfseries\small,
+  title=#1, boxrule=0.8pt, arc=2pt, left=6pt,right=6pt,top=4pt,bottom=4pt}
+
+% Output block: what the code above actually printed.
+\lstdefinestyle{amlout}{
+  basicstyle=\ttfamily\footnotesize\color{black!80},
+  backgroundcolor=\color{black!4},
+  frame=leftline, framerule=2pt, rulecolor=\color{black!25},
+  breaklines=true, columns=fullflexible, xleftmargin=8pt,
+  aboveskip=2pt, belowskip=8pt, literate={-}{{-}}1
+}
+\lstnewenvironment{codeout}{\lstset{style=amlout}}{}
 
 % Code listings (Python-oriented for this subject).
 \lstset{
