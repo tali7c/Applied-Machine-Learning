@@ -67,8 +67,15 @@ can still score well.
 ## Release schedule
 
 Material is published as it is delivered, not all at once. Currently released:
-**Unit I Lecture 1** and **Lab Assignment 1**. Later lectures and assignments appear here as the
-semester progresses.
+
+| Item | Covers |
+|---|---|
+| **Unit I — Lecture 1** | Introduction to ML and the Python ML stack |
+| **Unit II — Lecture 2** | Loss functions: MSE, MAE, Huber, cross-entropy, hinge, triplet |
+| **Lab Assignment 1** | Experiments 1–2: environment setup, preprocessing and EDA |
+| **Anchor-Datasets.pdf** | The three dataset families, with sources and loading code |
+
+Later lectures and assignments appear here as the semester progresses.
 
 ## Unit order
 
@@ -118,9 +125,9 @@ The 60-minute lab quiz that follows each submission asks you to read, trace, deb
 Compiled PDFs are committed, so you do not need LaTeX to read anything. To rebuild:
 
 ```bash
-cd Unit-01/Lecture-01/latex
-pdflatex slides.tex && pdflatex slides.tex   # twice, for the navigation bar and TOC
-pdflatex notes.tex  && pdflatex notes.tex
+cd Unit-02/Lecture-02/latex          # or any Unit-xx/Lecture-yy
+for i in 1 2 3; do pdflatex -interaction=nonstopmode slides.tex; done
+for i in 1 2 3; do pdflatex -interaction=nonstopmode notes.tex;  done
 ```
 
 Compile from inside the `latex/` folder — the `../../../_shared/` paths depend on it.
