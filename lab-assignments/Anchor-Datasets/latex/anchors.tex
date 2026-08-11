@@ -58,7 +58,20 @@ fetch_openml("credit-g", version=1, as_frame=True)   # A3  ~0.2 MB
 print("cached OK")
 \end{lstlisting}
 
-The cache lives in \texttt{\textasciitilde/scikit\_learn\_data/} (\texttt{C:\textbackslash Users\textbackslash<you>\textbackslash scikit\_learn\_data} on Windows). You can copy that folder between machines --- if a classmate has it and you cannot download, copying the folder is a legitimate fix.
+The cache lives in \texttt{\textasciitilde/scikit\_learn\_data/} (\texttt{C:\textbackslash Users\textbackslash<you>\textbackslash scikit\_learn\_data} on Windows).
+
+\textbf{If the download fails on the campus network} you will see \texttt{CERTIFICATE\_VERIFY\_FAILED}. That is the campus web filter, not your code, and you cannot fix it by editing Python. Three things that do work, best first:
+
+\begin{enumerate}
+  \item Run the pre-fetch script above \textbf{at home}, on a normal connection. The cache
+        then persists and everything works offline afterwards.
+  \item \textbf{Download it in your browser} --- browsers accept the campus certificate even
+        when Python does not --- and save the file into the cache folder above.
+  \item Copy the whole \texttt{scikit\_learn\_data} folder from a classmate who already has it.
+        This is allowed, and is often the fastest fix in the room.
+\end{enumerate}
+
+\begin{warnbox}[Never do this]Do not \textit{fix} the error by turning off certificate verification. It teaches you nothing, it will not be accepted in your submission, and it is a habit that causes real harm outside this course.\end{warnbox}
 
 \textbf{Manual download} --- fetch the file yourself and put it in \texttt{data/}:
 
