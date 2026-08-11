@@ -10,23 +10,25 @@
 
 \begin{center}{\LARGE\textbf{Anchor Datasets}}\\[0.25em]{\large \CourseCode}\\[0.25em]\normalsize Reference for lab assignments LA1--LA10\end{center}\vspace{0.4em}\hrule\vspace{0.8em}
 
-The ten lab assignments reuse three families of dataset. The point is that you learn the methods rather than spending every fortnight wrestling a new file format. Download each one \emph{once} into a local \texttt{data/} folder and keep it there for the semester.
+The ten lab assignments reuse three families of dataset. The point is that you learn the methods rather than spending every fortnight wrestling a new file format. Get each one \emph{once} into a local \texttt{data/} folder and keep it there for the semester.
+
+\begin{warnbox}[Do this at home, before the lab]Only some of these ship inside scikit-learn. The rest \textbf{download over the internet on first use}, and the campus network may block or intercept that download. If you first run the code in the lab, you may lose the entire session. \textbf{Run the pre-fetch script below on your own connection, at home, before the lab it is needed for.} Once fetched, the data is cached on your machine and works offline afterwards.\end{warnbox}
 
 \subsection*{Anchor A -- Tabular records}
 Mixed numeric and categorical rows, one record per entity. Used for EDA, regression, classification, scoring and anomaly work.\\[0.3em]
 \begin{center}\footnotesize\begin{tabular}{@{}p{0.7cm}>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{4.1cm}>{\raggedright\arraybackslash}p{6.4cm}@{}}\toprule\textbf{ID} & \textbf{Dataset} & \textbf{Source} & \textbf{Notes}\\
 \midrule
-A1 & California Housing & \texttt{\footnotesize sklearn.datasets.fetch\_california\_housing} & 20{,}640 rows, 8 numeric features, numeric target MedHouseVal (\$100k units). Ships with scikit-learn; no download.\\
+A1 & California Housing & \texttt{\footnotesize sklearn.datasets.fetch\_california\_housing} & 20{,}640 rows, 8 numeric features, numeric target MedHouseVal (\$100k units). \textbf{Downloads on first use} (\textasciitilde1.4\,MB from figshare), then caches. \textbf{Fetch it at home before the lab} --- see \emph{Getting the data} below.\\
 A2 & Telco Customer Churn & \texttt{\footnotesize Kaggle: blastchar/telco-customer-churn} & 7{,}043 rows, 21 mixed features, binary target Churn. Download the CSV once and keep it in \texttt{data/}.\\
-A3 & Statlog German Credit & \texttt{\footnotesize OpenML: credit-g (id 31)} & 1{,}000 rows, 20 mixed features, binary target class (good/bad credit). Fetch with \texttt{sklearn.datasets.fetch\_openml('credit-g', version=1)}.\\
+A3 & Statlog German Credit & \texttt{\footnotesize OpenML: credit-g (id 31)} & 1{,}000 rows, 20 mixed features, binary target class (good/bad credit). \textbf{Downloads on first use} via \texttt{fetch\_openml('credit-g', version=1)}, then caches. Fetch it at home.\\
 \bottomrule\end{tabular}\end{center}
 \subsection*{Anchor B -- Images and image-derived features}
 Pixel grids and features measured from images. Used for image classification, clustering on images and diagnostic tasks.\\[0.3em]
 \begin{center}\footnotesize\begin{tabular}{@{}p{0.7cm}>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{4.1cm}>{\raggedright\arraybackslash}p{6.4cm}@{}}\toprule\textbf{ID} & \textbf{Dataset} & \textbf{Source} & \textbf{Notes}\\
 \midrule
-B1 & scikit-learn digits & \texttt{\footnotesize sklearn.datasets.load\_digits} & 1{,}797 images of 8$\times$8 greyscale handwritten digits, 10 classes. A small stand-in for MNIST that trains in seconds.\\
-B2 & MNIST (full) & \texttt{\footnotesize sklearn.datasets.fetch\_openml('mnist\_784')} & 70{,}000 images of 28$\times$28 greyscale digits. Use a subsample of 10{,}000 unless you have time to spare.\\
-B3 & Breast Cancer Wisconsin (Diagnostic) & \texttt{\footnotesize sklearn.datasets.load\_breast\_cancer} & 569 rows, 30 features computed from digitised images of fine-needle aspirates, binary target malignant/benign.\\
+B1 & scikit-learn digits & \texttt{\footnotesize sklearn.datasets.load\_digits} & 1{,}797 images of 8$\times$8 greyscale handwritten digits, 10 classes. \textbf{Bundled with scikit-learn} --- works offline. A small stand-in for MNIST that trains in seconds.\\
+B2 & MNIST (full) & \texttt{\footnotesize sklearn.datasets.fetch\_openml('mnist\_784')} & 70{,}000 images of 28$\times$28 greyscale digits. \textbf{Downloads on first use} (\textasciitilde15\,MB), then caches. Use a subsample of 10{,}000 unless you have time to spare.\\
+B3 & Breast Cancer Wisconsin (Diagnostic) & \texttt{\footnotesize sklearn.datasets.load\_breast\_cancer} & 569 rows, 30 features computed from digitised images of fine-needle aspirates, binary target malignant/benign. \textbf{Bundled with scikit-learn} --- works offline.\\
 B4 & PlantVillage (leaf subset) & \texttt{\footnotesize Kaggle: emmarex/plantdisease} & Leaf photographs labelled by crop and disease. Use the tomato subset (10 classes) resized to 64$\times$64 to keep runtimes sane.\\
 \bottomrule\end{tabular}\end{center}
 \subsection*{Anchor C -- Sequences and text}
@@ -40,20 +42,40 @@ C3 & UCI Human Activity Recognition & \texttt{\footnotesize UCI: Human Activity 
 
 \section*{Loading snippets}
 
+\section*{Getting the data}
+
+\textbf{Bundled with scikit-learn} --- nothing to do, works offline:\ \texttt{load\_digits}, \texttt{load\_breast\_cancer}, \texttt{load\_iris}, \texttt{load\_diabetes}.
+
+\textbf{Downloads once, then cached} --- run this at home before the lab:
+
 \begin{lstlisting}
-# A1 California Housing  (no download)
+# Pre-fetch script. Run ONCE at home, on a normal internet connection.
+from sklearn.datasets import fetch_california_housing, fetch_openml
+
+fetch_california_housing()                      # A1  ~1.4 MB
+fetch_openml("credit-g", version=1, as_frame=True)   # A3  ~0.2 MB
+# fetch_openml("mnist_784", version=1, as_frame=True)  # B2  ~15 MB, only if LA10 needs it
+print("cached OK")
+\end{lstlisting}
+
+The cache lives in \texttt{\textasciitilde/scikit\_learn\_data/} (\texttt{C:\textbackslash Users\textbackslash<you>\textbackslash scikit\_learn\_data} on Windows). You can copy that folder between machines --- if a classmate has it and you cannot download, copying the folder is a legitimate fix.
+
+\textbf{Manual download} --- fetch the file yourself and put it in \texttt{data/}:
+
+\begin{lstlisting}
+# A1 California Housing  (downloads on first use, then cached)
 from sklearn.datasets import fetch_california_housing
 X, y = fetch_california_housing(return_X_y=True, as_frame=True)
 
-# A3 German Credit  (downloads once, then cached)
+# A3 German Credit  (downloads on first use, then cached)
 from sklearn.datasets import fetch_openml
 d = fetch_openml("credit-g", version=1, as_frame=True)
 
-# B1 digits  (no download)
+# B1 digits  (bundled, offline)
 from sklearn.datasets import load_digits
 dig = load_digits()            # dig.images 8x8, dig.data 64 features
 
-# B3 Breast Cancer Wisconsin  (no download)
+# B3 Breast Cancer Wisconsin  (bundled, offline)
 from sklearn.datasets import load_breast_cancer
 bc = load_breast_cancer(as_frame=True)
 

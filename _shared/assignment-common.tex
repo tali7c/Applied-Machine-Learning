@@ -71,6 +71,11 @@
   fonttitle=\bfseries\small, title={#1}, boxrule=0.7pt, arc=2pt,
   left=6pt,right=6pt,top=4pt,bottom=4pt}
 
+\newtcolorbox{warnbox}[1][Important]{
+  breakable, enhanced, colback=orange!8, colframe=orange!75!black,
+  fonttitle=\bfseries\small, title={#1}, boxrule=0.9pt, arc=2pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt}
+
 \newtcolorbox{answerbox}[1][Expected answer]{
   breakable, enhanced, colback=green!4, colframe=green!35!black,
   fonttitle=\bfseries\small, title={#1}, boxrule=0.7pt, arc=2pt,
