@@ -72,10 +72,18 @@ Material is published as it is delivered, not all at once. Currently released:
 |---|---|
 | **Unit I — Lecture 1** | Introduction to ML and the Python ML stack |
 | **Unit II — Lecture 2** | Loss functions: MSE, MAE, Huber, cross-entropy, hinge, triplet |
-| **Lab Assignment 1** | Experiments 1–2: environment setup, preprocessing and EDA |
+| **Lab Assignments 1–10** | All ten briefs and starter notebooks, covering experiments 1–14 |
 | **Anchor-Datasets.pdf** | The three dataset families, with sources and loading code |
 
-Later lectures and assignments appear here as the semester progresses.
+Later lectures appear here as the semester progresses. **All ten lab assignments
+are published up front** so you can see where the lab is going and get the data
+in advance — but work them in order, and check the release schedule for when
+each one is due.
+
+> **Get your data early.** Several datasets download over the internet on first
+> use and the campus network blocks that download. See *Getting the data* in
+> `Anchor-Datasets.pdf` before your first lab — it costs five minutes at home and
+> saves you a whole session.
 
 ## Unit order
 
@@ -95,8 +103,9 @@ Units II and III come early on purpose. Once you know **what quantity we are min
 
 Lab experiments 1–14 are grouped into **ten assignments** — the assignment is the fixed unit, not the
 lab session, so this grouping holds however many labs the timetable delivers. Each assignment is
-released once the lectures it depends on are done, with enough time to complete the experiments it
-covers. Experiment 15 (the mini-project) is assessed under the Project component instead. Each assignment is marked out of 10: Section A (attempt 2 of 3,
+worked once the lectures it depends on are done, with enough time to complete the experiments it
+covers. All ten briefs are published now so you can plan and fetch data ahead. Experiment 15 (the mini-project) is assessed under the Project component instead.
+Each assignment is marked out of 10: Section A (attempt 2 of 3,
 2 marks each), Section B (attempt 1 of 2, 4 marks each), Section C (consolidation, compulsory, 2 marks).
 
 | Assignment | Experiments | Topic |

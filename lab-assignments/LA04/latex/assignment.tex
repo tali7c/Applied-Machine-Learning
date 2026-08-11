@@ -1,0 +1,138 @@
+\documentclass[11pt,a4paper]{article}
+
+\newcommand{\CourseCode}{CSAI2017P: Applied Machine Learning (Lab)}
+\newcommand{\AssignmentName}{LA04 -- Lab Assignment 4}
+
+\input{../../../_shared/assignment-common.tex}
+
+\begin{document}
+
+
+\LAtitle{Lab Assignment 4: Customer Churn Prediction}{Experiment 5 (Units V--VI) \textbullet\ CO2, CO4}{announced in the lab}{LQ4, after submission}
+
+\section*{Objective}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Build a classification pipeline over mixed numeric and categorical features.
+
+  \item Read a confusion matrix and choose a metric that matches the business cost.
+
+  \item Handle class imbalance and show what it changes.
+
+\end{itemize}
+
+\section*{Datasets used in this assignment}
+
+\textbf{A2 (Telco Customer Churn).}\\ Full descriptions, sources and loading snippets for all anchor datasets are in \texttt{Anchor-Datasets.pdf}, alongside this brief.
+
+\section*{Instructions}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Use a train/test split (80/20 unless stated) and set \texttt{random\_state} for reproducibility.
+
+  \item Fit every transformer inside a \texttt{Pipeline} so nothing is fitted on the test set.
+
+  \item Report the metric named in the question. A number without units or context earns no marks.
+
+  \item Every question asks for a short written observation. Code without commentary caps you at half marks.
+
+  \item The lab quiz that follows will ask you to read, trace and modify \emph{your own} submitted code.
+
+\end{itemize}
+
+\textbf{Submit:}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Notebook: \texttt{AML\_LA04\_<SAPID>.ipynb} with all cells executed and outputs visible.
+
+  \item Report: 2--3 pages PDF, or a \texttt{README.md}, carrying your results table and observations.
+
+  \item Do not upload datasets. Cite the source and include the loading code.
+
+\end{itemize}
+
+\begin{center}\begin{tabular}{@{}llll@{}}\toprule
+\textbf{Section} & \textbf{Level} & \textbf{Choice rule} & \textbf{Marks}\\
+\midrule
+A & Easy & Attempt any 2 of 3 (2 marks each) & 4\\
+B & Medium & Attempt any 1 of 2 (4 marks each) & 4\\
+C & Hard & Compulsory & 2\\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Total}} & \textbf{10}\\
+\bottomrule\end{tabular}\end{center}
+
+\noindent\small Course outcomes assessed by this assignment: \textbf{CO2, CO4}. Attempting more than the choice rule allows is not penalised; the best attempts are marked.\normalsize
+
+\section*{Section A (Easy) --- attempt any 2 of 3 \quad (2 $\times$ 2 = 4)}
+
+\begin{enumerate}[label=\textbf{A\arabic*.}, leftmargin=*]
+
+  \item \textbf{Encode and fit} \QMarks{2}\\
+    \emph{Dataset: A2. Target: \texttt{Churn}.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Build a \texttt{ColumnTransformer} with one-hot encoding for categoricals and scaling for numerics.
+      \item Fit a logistic regression inside the pipeline and report test accuracy.
+      \item State the churn rate in the data and compare it with your accuracy in two lines.
+    \end{enumerate}
+
+  \item \textbf{Confusion matrix} \QMarks{2}\\
+    \emph{Dataset: A2.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Print the confusion matrix and the classification report for your A1 model.
+      \item State the number of churners the model missed.
+      \item In two lines, say which error costs the company more: a missed churner, or a retention offer sent to someone who was staying.
+    \end{enumerate}
+
+  \item \textbf{Threshold moving} \QMarks{2}\\
+    \emph{Dataset: A2.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Take \texttt{predict\_proba} from your model and re-classify at thresholds 0.5, 0.35 and 0.25.
+      \item Report precision and recall on the churn class for each.
+      \item State which threshold you would ship and why, in two lines.
+    \end{enumerate}
+
+\end{enumerate}
+
+\section*{Section B (Medium) --- attempt any 1 of 2 \quad (1 $\times$ 4 = 4)}
+
+\begin{enumerate}[label=\textbf{B\arabic*.}, leftmargin=*]
+
+  \item \textbf{Model comparison} \QMarks{4}\\
+    \emph{Dataset: A2.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Train logistic regression, a decision tree (\texttt{max\_depth=5}) and a random forest on the same pipeline.
+      \item Report accuracy, precision, recall, F1 and ROC-AUC for each in one table.
+      \item Name the best model for this problem and defend the choice in 4--6 lines, referring to the cost argument.
+    \end{enumerate}
+
+  \item \textbf{Class imbalance} \QMarks{4}\\
+    \emph{Dataset: A2.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Retrain your best model with \texttt{class\_weight='balanced'}, and separately with random oversampling of the minority class.
+      \item Report accuracy, recall and F1 for the baseline and both treatments in one table.
+      \item Explain in 4--6 lines what each treatment did to the accuracy-recall trade-off, and whether it was worth it.
+    \end{enumerate}
+
+\end{enumerate}
+
+\section*{Section C (Hard) --- compulsory \quad (2)}
+
+\begin{enumerate}[label=\textbf{C\arabic*.}, leftmargin=*]
+
+  \item \textbf{Which features carry the signal} \QMarks{2}\\
+    \emph{Dataset: A2.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Report the ten most important features from your best model (coefficients or feature importances).
+      \item In 4--6 lines, say whether any of them would be unavailable at the moment you actually need the prediction.
+    \end{enumerate}
+
+\end{enumerate}
+
+\vfill\noindent\textit{End of Lab Assignment 4}
+
+\notesources{\AMLLabSources}
+
+\end{document}

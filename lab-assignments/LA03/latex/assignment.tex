@@ -1,0 +1,138 @@
+\documentclass[11pt,a4paper]{article}
+
+\newcommand{\CourseCode}{CSAI2017P: Applied Machine Learning (Lab)}
+\newcommand{\AssignmentName}{LA03 -- Lab Assignment 3}
+
+\input{../../../_shared/assignment-common.tex}
+
+\begin{document}
+
+
+\LAtitle{Lab Assignment 3: Time-Series Regression: Stock Price Prediction}{Experiment 4 (Unit V) \textbullet\ CO2, CO4}{announced in the lab}{LQ3, after submission}
+
+\section*{Objective}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Build supervised features from an ordered series without leaking the future.
+
+  \item Split time-ordered data correctly and see why a random split is wrong.
+
+  \item Compare a model against the naive baseline that actually matters.
+
+\end{itemize}
+
+\section*{Datasets used in this assignment}
+
+\textbf{C1 (daily stock OHLCV).}\\ Full descriptions, sources and loading snippets for all anchor datasets are in \texttt{Anchor-Datasets.pdf}, alongside this brief.
+
+\section*{Instructions}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Use a train/test split (80/20 unless stated) and set \texttt{random\_state} for reproducibility.
+
+  \item Fit every transformer inside a \texttt{Pipeline} so nothing is fitted on the test set.
+
+  \item Report the metric named in the question. A number without units or context earns no marks.
+
+  \item Every question asks for a short written observation. Code without commentary caps you at half marks.
+
+  \item The lab quiz that follows will ask you to read, trace and modify \emph{your own} submitted code.
+
+\end{itemize}
+
+\textbf{Submit:}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Notebook: \texttt{AML\_LA03\_<SAPID>.ipynb} with all cells executed and outputs visible.
+
+  \item Report: 2--3 pages PDF, or a \texttt{README.md}, carrying your results table and observations.
+
+  \item Do not upload datasets. Cite the source and include the loading code.
+
+\end{itemize}
+
+\begin{center}\begin{tabular}{@{}llll@{}}\toprule
+\textbf{Section} & \textbf{Level} & \textbf{Choice rule} & \textbf{Marks}\\
+\midrule
+A & Easy & Attempt any 2 of 3 (2 marks each) & 4\\
+B & Medium & Attempt any 1 of 2 (4 marks each) & 4\\
+C & Hard & Compulsory & 2\\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Total}} & \textbf{10}\\
+\bottomrule\end{tabular}\end{center}
+
+\noindent\small Course outcomes assessed by this assignment: \textbf{CO2, CO4}. Attempting more than the choice rule allows is not penalised; the best attempts are marked.\normalsize
+
+\section*{Section A (Easy) --- attempt any 2 of 3 \quad (2 $\times$ 2 = 4)}
+
+\begin{enumerate}[label=\textbf{A\arabic*.}, leftmargin=*]
+
+  \item \textbf{Load and describe the series} \QMarks{2}\\
+    \emph{Dataset: C1, one ticker, $\geq 3$ years.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Load the daily history, parse the date column and sort ascending.
+      \item Plot the closing price and state the date range and number of trading days.
+      \item State in two lines why the row order matters here but did not in LA02.
+    \end{enumerate}
+
+  \item \textbf{Lag features} \QMarks{2}\\
+    \emph{Dataset: C1.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Create features \texttt{Close\_lag1}, \texttt{Close\_lag2}, \texttt{Close\_lag3} and a 5-day rolling mean.
+      \item Set the target to the next day's close. Show the first five rows of the resulting frame.
+      \item Explain in two lines why the first few rows must be dropped.
+    \end{enumerate}
+
+  \item \textbf{The naive baseline} \QMarks{2}\\
+    \emph{Dataset: C1.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Build the baseline that predicts tomorrow's close equals today's close.
+      \item Report its MAE and RMSE on your test period.
+      \item State in two lines why any model must beat this number to be interesting.
+    \end{enumerate}
+
+\end{enumerate}
+
+\section*{Section B (Medium) --- attempt any 1 of 2 \quad (1 $\times$ 4 = 4)}
+
+\begin{enumerate}[label=\textbf{B\arabic*.}, leftmargin=*]
+
+  \item \textbf{Random split versus chronological split} \QMarks{4}\\
+    \emph{Dataset: C1.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Train a \texttt{RandomForestRegressor} twice: once with \texttt{train\_test\_split(shuffle=True)}, once with the last 20\% of dates held out.
+      \item Report test MAE for both and put them side by side.
+      \item Explain in 6--8 lines why the shuffled number is meaningless, naming the mechanism.
+    \end{enumerate}
+
+  \item \textbf{Horizon and difficulty} \QMarks{4}\\
+    \emph{Dataset: C1, chronological split throughout.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Retrain your model to predict the close 1, 5 and 10 trading days ahead.
+      \item Report MAE for each horizon alongside the persistence baseline at the same horizon.
+      \item Plot MAE against horizon and explain the trend in 4--6 lines.
+    \end{enumerate}
+
+\end{enumerate}
+
+\section*{Section C (Hard) --- compulsory \quad (2)}
+
+\begin{enumerate}[label=\textbf{C\arabic*.}, leftmargin=*]
+
+  \item \textbf{Would you trade on it?} \QMarks{2}\\
+    \emph{Dataset: C1.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Convert your best model's predictions into an up/down direction call and report directional accuracy.
+      \item In 4--6 lines, state whether a low MAE with near-50\% directional accuracy is useful, and why.
+    \end{enumerate}
+
+\end{enumerate}
+
+\vfill\noindent\textit{End of Lab Assignment 3}
+
+\notesources{\AMLLabSources}
+
+\end{document}

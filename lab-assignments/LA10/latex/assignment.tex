@@ -1,0 +1,138 @@
+\documentclass[11pt,a4paper]{article}
+
+\newcommand{\CourseCode}{CSAI2017P: Applied Machine Learning (Lab)}
+\newcommand{\AssignmentName}{LA10 -- Lab Assignment 10}
+
+\input{../../../_shared/assignment-common.tex}
+
+\begin{document}
+
+
+\LAtitle{Lab Assignment 10: Clustering Medical Images and Crop Disease Classification}{Experiments 13--14 (Units VI--VII) \textbullet\ CO2, CO4}{announced in the lab}{LQ10, after submission}
+
+\section*{Objective}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Cluster image data without labels and evaluate the result honestly.
+
+  \item Choose the number of clusters with a defensible criterion.
+
+  \item Build an image classifier and diagnose it from its errors.
+
+\end{itemize}
+
+\section*{Datasets used in this assignment}
+
+\textbf{B1 (digits), B3 (Breast Cancer), B4 (PlantVillage leaf subset).}\\ Full descriptions, sources and loading snippets for all anchor datasets are in \texttt{Anchor-Datasets.pdf}, alongside this brief.
+
+\section*{Instructions}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Use a train/test split (80/20 unless stated) and set \texttt{random\_state} for reproducibility.
+
+  \item Fit every transformer inside a \texttt{Pipeline} so nothing is fitted on the test set.
+
+  \item Report the metric named in the question. A number without units or context earns no marks.
+
+  \item Every question asks for a short written observation. Code without commentary caps you at half marks.
+
+  \item The lab quiz that follows will ask you to read, trace and modify \emph{your own} submitted code.
+
+\end{itemize}
+
+\textbf{Submit:}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Notebook: \texttt{AML\_LA10\_<SAPID>.ipynb} with all cells executed and outputs visible.
+
+  \item Report: 2--3 pages PDF, or a \texttt{README.md}, carrying your results table and observations.
+
+  \item Do not upload datasets. Cite the source and include the loading code.
+
+\end{itemize}
+
+\begin{center}\begin{tabular}{@{}llll@{}}\toprule
+\textbf{Section} & \textbf{Level} & \textbf{Choice rule} & \textbf{Marks}\\
+\midrule
+A & Easy & Attempt any 2 of 3 (2 marks each) & 4\\
+B & Medium & Attempt any 1 of 2 (4 marks each) & 4\\
+C & Hard & Compulsory & 2\\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Total}} & \textbf{10}\\
+\bottomrule\end{tabular}\end{center}
+
+\noindent\small Course outcomes assessed by this assignment: \textbf{CO2, CO4}. Attempting more than the choice rule allows is not penalised; the best attempts are marked.\normalsize
+
+\section*{Section A (Easy) --- attempt any 2 of 3 \quad (2 $\times$ 2 = 4)}
+
+\begin{enumerate}[label=\textbf{A\arabic*.}, leftmargin=*]
+
+  \item \textbf{Cluster the digits} \QMarks{2}\\
+    \emph{Dataset: B1 (digits), labels withheld.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Scale the features and run K-means with $k=10$.
+      \item Report inertia and the silhouette score.
+      \item State in two lines why you cannot report accuracy here.
+    \end{enumerate}
+
+  \item \textbf{Choosing k} \QMarks{2}\\
+    \emph{Dataset: B1 (digits).}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Run K-means for $k \in \{2,\dots,15\}$ and plot inertia and silhouette against $k$.
+      \item State the $k$ each criterion suggests.
+      \item In two lines, say what you would conclude if the two criteria disagreed.
+    \end{enumerate}
+
+  \item \textbf{Load the leaf images} \QMarks{2}\\
+    \emph{Dataset: B4 (PlantVillage tomato subset).}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Load the subset, resize to 64$\times$64 and report the number of images per class.
+      \item Display one image per class in a grid.
+      \item State in two lines whether the classes are balanced and what you would do if not.
+    \end{enumerate}
+
+\end{enumerate}
+
+\section*{Section B (Medium) --- attempt any 1 of 2 \quad (1 $\times$ 4 = 4)}
+
+\begin{enumerate}[label=\textbf{B\arabic*.}, leftmargin=*]
+
+  \item \textbf{Do the clusters mean anything} \QMarks{4}\\
+    \emph{Dataset: B1 or B3, your choice.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Cluster the data at your chosen $k$, then compare the clustering with the withheld labels using the adjusted Rand index and a cluster-versus-label crosstab.
+      \item Report ARI and identify one cluster that is nearly pure and one that mixes classes.
+      \item In 6--8 lines, explain what ARI measures and why a low ARI does not automatically mean the clustering is useless.
+    \end{enumerate}
+
+  \item \textbf{Leaf disease classifier} \QMarks{4}\\
+    \emph{Dataset: B4.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Build a classifier on flattened resized images or on simple colour-histogram features; use a stratified split.
+      \item Report macro-F1 and the per-class F1 table.
+      \item Show four misclassified leaves and explain in 6--8 lines what confuses the model.
+    \end{enumerate}
+
+\end{enumerate}
+
+\section*{Section C (Hard) --- compulsory \quad (2)}
+
+\begin{enumerate}[label=\textbf{C\arabic*.}, leftmargin=*]
+
+  \item \textbf{What would you tell the farmer} \QMarks{2}\\
+    \emph{Dataset: B4.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item State your model's macro-F1 and its worst per-class F1.
+      \item In 4--6 lines, write what you would honestly tell someone about to rely on this model in a field, including one thing it will get wrong.
+    \end{enumerate}
+
+\end{enumerate}
+
+\vfill\noindent\textit{End of Lab Assignment 10}
+
+\notesources{\AMLLabSources}
+
+\end{document}

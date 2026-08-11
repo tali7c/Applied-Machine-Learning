@@ -1,0 +1,138 @@
+\documentclass[11pt,a4paper]{article}
+
+\newcommand{\CourseCode}{CSAI2017P: Applied Machine Learning (Lab)}
+\newcommand{\AssignmentName}{LA09 -- Lab Assignment 9}
+
+\input{../../../_shared/assignment-common.tex}
+
+\begin{document}
+
+
+\LAtitle{Lab Assignment 9: Breast Cancer Diagnosis from Imaging Features}{Experiment 12 (Unit VI) \textbullet\ CO2, CO4}{announced in the lab}{LQ9, after submission}
+
+\section*{Objective}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Build a diagnostic classifier where a false negative is the dangerous error.
+
+  \item Use cross-validation properly on a small dataset.
+
+  \item Reduce dimensionality and measure what it costs.
+
+\end{itemize}
+
+\section*{Datasets used in this assignment}
+
+\textbf{B3 (Breast Cancer Wisconsin Diagnostic).}\\ Full descriptions, sources and loading snippets for all anchor datasets are in \texttt{Anchor-Datasets.pdf}, alongside this brief.
+
+\section*{Instructions}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Use a train/test split (80/20 unless stated) and set \texttt{random\_state} for reproducibility.
+
+  \item Fit every transformer inside a \texttt{Pipeline} so nothing is fitted on the test set.
+
+  \item Report the metric named in the question. A number without units or context earns no marks.
+
+  \item Every question asks for a short written observation. Code without commentary caps you at half marks.
+
+  \item The lab quiz that follows will ask you to read, trace and modify \emph{your own} submitted code.
+
+\end{itemize}
+
+\textbf{Submit:}
+
+\begin{itemize}[leftmargin=*]
+
+  \item Notebook: \texttt{AML\_LA09\_<SAPID>.ipynb} with all cells executed and outputs visible.
+
+  \item Report: 2--3 pages PDF, or a \texttt{README.md}, carrying your results table and observations.
+
+  \item Do not upload datasets. Cite the source and include the loading code.
+
+\end{itemize}
+
+\begin{center}\begin{tabular}{@{}llll@{}}\toprule
+\textbf{Section} & \textbf{Level} & \textbf{Choice rule} & \textbf{Marks}\\
+\midrule
+A & Easy & Attempt any 2 of 3 (2 marks each) & 4\\
+B & Medium & Attempt any 1 of 2 (4 marks each) & 4\\
+C & Hard & Compulsory & 2\\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Total}} & \textbf{10}\\
+\bottomrule\end{tabular}\end{center}
+
+\noindent\small Course outcomes assessed by this assignment: \textbf{CO2, CO4}. Attempting more than the choice rule allows is not penalised; the best attempts are marked.\normalsize
+
+\section*{Section A (Easy) --- attempt any 2 of 3 \quad (2 $\times$ 2 = 4)}
+
+\begin{enumerate}[label=\textbf{A\arabic*.}, leftmargin=*]
+
+  \item \textbf{Load and inspect} \QMarks{2}\\
+    \emph{Dataset: B3.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Load the data, report the shape and the malignant/benign split.
+      \item Explain in two lines where the 30 features come from -- they are not raw pixels.
+      \item Report the three features most correlated with the diagnosis.
+    \end{enumerate}
+
+  \item \textbf{First classifier} \QMarks{2}\\
+    \emph{Dataset: B3.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Fit logistic regression in a scaling pipeline with a stratified 80/20 split.
+      \item Report accuracy, precision, recall and F1 on the malignant class.
+      \item Report the number of malignant cases the model missed.
+    \end{enumerate}
+
+  \item \textbf{Cross-validation} \QMarks{2}\\
+    \emph{Dataset: B3.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Run 10-fold stratified cross-validation and report mean and standard deviation of accuracy.
+      \item Compare with your single-split figure from A2.
+      \item State in two lines why the single split is unreliable on 569 rows.
+    \end{enumerate}
+
+\end{enumerate}
+
+\section*{Section B (Medium) --- attempt any 1 of 2 \quad (1 $\times$ 4 = 4)}
+
+\begin{enumerate}[label=\textbf{B\arabic*.}, leftmargin=*]
+
+  \item \textbf{Optimising for recall} \QMarks{4}\\
+    \emph{Dataset: B3.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Train logistic regression, SVM and random forest, and report recall on the malignant class for each.
+      \item For your best model, lower the decision threshold until malignant recall reaches at least 0.99, and report the resulting precision and the number of false alarms.
+      \item In 6--8 lines, argue what recall a screening tool should target and what the false alarms cost.
+    \end{enumerate}
+
+  \item \textbf{PCA and the cost of compression} \QMarks{4}\\
+    \emph{Dataset: B3.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Apply PCA inside the pipeline retaining 2, 5, 10 and 20 components.
+      \item Report cross-validated accuracy for each, plus the variance explained.
+      \item Plot the first two components coloured by diagnosis and explain in 4--6 lines what PCA bought and what it cost.
+    \end{enumerate}
+
+\end{enumerate}
+
+\section*{Section C (Hard) --- compulsory \quad (2)}
+
+\begin{enumerate}[label=\textbf{C\arabic*.}, leftmargin=*]
+
+  \item \textbf{Would you deploy it} \QMarks{2}\\
+    \emph{Dataset: B3.}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item State the recall, precision and dataset size of your best model.
+      \item In 4--6 lines, list two things you would need to know about how the data was collected before letting this model near a patient.
+    \end{enumerate}
+
+\end{enumerate}
+
+\vfill\noindent\textit{End of Lab Assignment 9}
+
+\notesources{\AMLLabSources}
+
+\end{document}
