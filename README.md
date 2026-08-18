@@ -72,6 +72,7 @@ Material is published as it is delivered, not all at once. Currently released:
 |---|---|
 | **Unit I — Lecture 1** | Introduction to ML and the Python ML stack |
 | **Unit II — Lecture 2** | Loss functions: MSE, MAE, Huber, cross-entropy, hinge, triplet |
+| **Unit III — Lecture 3** | Gradient descent: batch, stochastic, mini-batch and momentum |
 | **Lab Assignments 1–10** | All ten briefs and starter notebooks, covering experiments 1–14 |
 | **Anchor-Datasets.pdf** | The three dataset families, with sources and loading code |
 
