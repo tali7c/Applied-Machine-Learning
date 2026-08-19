@@ -6,6 +6,11 @@ GitHub: `https://github.com/tali7c/Applied-Machine-Learning`
 
 **Students, start here → [`Course-Handbook/Course-Handbook.pdf`](Course-Handbook/Course-Handbook.pdf)** — syllabus, the full marks structure, every deadline and the reading list in one document.
 
+**New to VS Code? → [`student-guides/`](student-guides/)** — a 5-minute video and
+a step list covering the whole submission workflow: clone the repository, open it
+as a folder, install the Jupyter and PDF extensions, and work each section of an
+assignment.
+
 | | |
 |---|---|
 | Course code | CSAI2017 (theory) · CSAI2017P (theory + lab) |
@@ -75,6 +80,7 @@ Material is published as it is delivered, not all at once. Currently released:
 | **Unit III — Lecture 3** | Gradient descent: batch, stochastic, mini-batch and momentum |
 | **Lab Assignments 1–10** | All ten briefs and starter notebooks, covering experiments 1–14 |
 | **Anchor-Datasets.pdf** | The three dataset families, with sources and loading code |
+| **student-guides/** | VS Code tutorial video + step list for the submission workflow |
 
 Later lectures appear here as the semester progresses. **All ten lab assignments
 are published up front** so you can see where the lab is going and get the data
