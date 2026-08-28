@@ -14,7 +14,6 @@ Released after every group had sat the quiz and all answer sheets were collected
 
 - `T01-QP.pdf` — the question paper, all eight sets (32 pages)
 - `T01-solutions.pdf` — answer key and marking scheme for every set
-- `T01-continuation-sheet.pdf` — the blank continuation sheet used in the sitting
 - `latex/` — sources. `content.py` holds the items, `build.py` generates
   `T01-QP.tex` and `key.tex` from them, so the eight sets cannot drift apart.
 
