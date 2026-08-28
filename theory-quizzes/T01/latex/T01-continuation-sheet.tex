@@ -1,0 +1,38 @@
+% AML (CSAI2017P) --- T01 continuation sheet.
+% The question paper is answered on itself; this is only for students who run out of room.
+% Print a small stack and hand them out on request.
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=14mm,top=10mm,bottom=10mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\newcommand{\blk}[1]{\rule[-2pt]{#1}{0.4pt}}
+\makeatletter
+\newcommand{\rules}[2]{\par\vspace{3mm}%
+  \@tempcnta=0
+  \loop\ifnum\@tempcnta<#1\relax
+    \noindent\rule{\linewidth}{0.3pt}\par\vspace{#2}%
+    \advance\@tempcnta by 1
+  \repeat}
+\makeatother
+
+\begin{document}
+
+{\bfseries\large CSAI2017P --- Applied Machine Learning (Theory)}\hfill{\bfseries\large Theory Quiz 1 --- Continuation Sheet}\\[4pt]
+{\small Attach this to your question paper. Label every answer with its question number
+(for example \textbf{E1(ii) continued}); unlabelled writing is not marked.}
+
+\vspace{6pt}\hrule\vspace{7pt}
+
+\begin{tabular}{@{}p{1.5cm}p{5.6cm}p{1.7cm}p{4.2cm}p{1.1cm}p{2.0cm}@{}}
+\textbf{Name} & \hrulefill & \textbf{SAP ID} & \hrulefill & \textbf{Set} & \hrulefill\\[10pt]
+\textbf{Batch} & \hrulefill & \textbf{Date} & \hrulefill & \textbf{Sheet} & \hrulefill\ of \hrulefill\\
+\end{tabular}
+
+\vspace{2pt}\hrule
+\rules{21}{7.1mm}
+\vspace{-4mm}\hrule\vspace{3pt}
+{\footnotesize\itshape For office use --- continuation counted \blk{14mm} \hfill Marked by \blk{34mm}}
+
+\end{document}

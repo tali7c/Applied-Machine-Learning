@@ -34,6 +34,11 @@ assignment.
   - `AML_LAxx_starter.ipynb` — starter notebook with the questions inlined
   - `latex/assignment.tex` — source
 - `lab-assignments/Anchor-Datasets.pdf` — the three dataset families, with sources and loading snippets
+- `theory-quizzes/Txx/`
+  - `Txx-QP.pdf` — the question paper, all sets
+  - `Txx-solutions.pdf` — answer key and marking scheme
+  - `latex/` — sources; `content.py` + `build.py` generate the sets
+  - Published only after every group has sat that quiz
 - `Course-Handbook/Course-Handbook.pdf` — the student handbook (syllabus, marks, calendar, resources); source in `Course-Handbook/latex/`
 - `_shared/` — common LaTeX preambles and the UPES beamer theme
 
@@ -81,8 +86,11 @@ Material is published as it is delivered, not all at once. Currently released:
 | **Lab Assignments 1–10** | All ten briefs and starter notebooks, covering experiments 1–14 |
 | **Anchor-Datasets.pdf** | The three dataset families, with sources and loading code |
 | **student-guides/** | VS Code tutorial video + step list for the submission workflow |
+| **Theory Quiz 1 (T01)** | Paper (sets A–H) and full marking scheme — prerequisites, L1, L2 |
 
-Later lectures appear here as the semester progresses. **All ten lab assignments
+Each theory quiz paper and its marking scheme are published here **after every
+group has sat it** — so you can check your own answers and see exactly how the
+marks were awarded. Later lectures appear here as the semester progresses. **All ten lab assignments
 are published up front** so you can see where the lab is going and get the data
 in advance — but work them in order, and check the release schedule for when
 each one is due.
