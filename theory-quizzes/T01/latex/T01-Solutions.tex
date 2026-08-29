@@ -1,0 +1,989 @@
+% AML (CSAI2017P) --- Theory Quiz 1 --- SOLUTIONS issued to students.
+% 8 sets, A--H, four pages each; 32 pages, matching the question paper.
+% Generated. Explains the subject only: carries nothing about how the paper was
+% built or how it is marked. Release after the quiz has been conducted.
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=16mm,top=12mm,bottom=14mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage{fancyvrb}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2.5pt}
+\setlength{\emergencystretch}{3em}
+
+\pagestyle{fancy}\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\newcommand{\SetLetter}{}
+\fancyhead[L]{\footnotesize CSAI2017P --- Applied Machine Learning (Theory) --- Theory Quiz 1 solutions}
+\fancyhead[R]{\footnotesize\bfseries Set \SetLetter}
+\fancyfoot[R]{\footnotesize Set \SetLetter\ --- page \thepage\ of 4}
+
+\DefineVerbatimEnvironment{code}{Verbatim}%
+  {fontsize=\small,xleftmargin=5mm,baselinestretch=0.98}
+
+\newlist{sA}{enumerate}{1}
+\setlist[sA]{label=\textbf{A\arabic*.},leftmargin=8mm,topsep=3pt,itemsep=6pt,parsep=1pt}
+\newlist{sB}{enumerate}{1}
+\setlist[sB]{label=\textbf{B\arabic*.},leftmargin=8mm,topsep=3pt,itemsep=6pt,parsep=1pt}
+\newlist{sC}{enumerate}{1}
+\setlist[sC]{label=\textbf{C\arabic*.},leftmargin=8mm,topsep=3pt,itemsep=9pt,parsep=1pt}
+
+\newcommand{\parthead}[2]{\vspace{2pt}\noindent\rule{\linewidth}{0.4pt}\par\vspace{2pt}%
+  \noindent{\bfseries Part #1}\hfill{\small #2}\par\vspace{1pt}}
+\newcommand{\sol}[1]{\textbf{#1}}
+
+\begin{document}
+
+
+
+\renewcommand{\SetLetter}{A}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 1 --- Solutions \quad\textbullet\quad Set A}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set A}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(a)\ $3/4$}\\ Two tosses give four equally likely outcomes: HH, HT, TH, TT. Three of them contain at least one head.
+
+  \item \sol{(b)\ 3}\\ \texttt{range(2, 10, 3)} yields $2$, $5$ and $8$ --- it stops before $10$, so $11$ is never reached.
+
+  \item \sol{(c)\ $4 \times 5$}\\ The inner dimensions must agree and the result takes the outer ones: $(4 \times \mathbf{3})(\mathbf{3} \times 5)$ gives $4 \times 5$.
+
+  \item \sol{(d)\ supervised regression}\\ There are labels, and each label is a number on a continuous scale. Labels present means supervised; continuous labels mean regression rather than classification.
+
+  \item \sol{(a)\ median of the $y_i$}\\ Absolute error is minimised by the median, squared error by the mean. Shifting $c$ slightly changes the total by the count of points on each side, so the total stops falling exactly when the two sides are balanced.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{mean}\\ A single very large value pulls the mean towards it while leaving the median where it is, so with $2,\,3,\,4,\,5,\,96$ the mean is $22$ and the median is $4$.
+
+  \item \sol{overfit}\\ Fitting the training data is easy; generalising is the hard part. When a model scores far better on the rows it was fitted to than on rows it has never seen, it has learned those particular rows --- noise included --- rather than the pattern behind them.
+
+  \item \sol{leakage}\\ Any step that \emph{learns} something from the data --- scaling, imputation, feature selection, encoding --- must be fitted on the training portion only. Fit it on everything first and information from the test rows has already reached the model, which is why the score that comes out is not an honest one. Putting every such step inside a \texttt{Pipeline} makes this automatic.
+
+  \item \sol{logarithm}\\ For one example, cross-entropy is $-\log p$, where $p$ is the probability the model gave to the class that was actually correct. Give the right class $p = 1$ and the cost is $0$; let $p$ fall towards $0$ and the cost grows without bound, which is why being confident and wrong is so expensive.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{A model achieving zero training error is guaranteed to perform well on unseen data.}\\[2pt] \textbf{False.} A flexible enough model can drive the training error to zero by memorising the examples, noise and all. What tells you whether it has learned anything is the \emph{gap} between the training error and the error on data it has never seen.
+
+  \item \emph{Model $P$ reports $\mathrm{MAE} = 1.0$ and model $Q$ reports $\mathrm{MSE} = 1.375$, both from the identical predictions; therefore $P$ is the better model.}\\[2pt] \textbf{False.} MAE and MSE are different quantities in different units, and both come out of the same set of predictions --- one squares the errors, the other does not. Comparing $1.0$ of one against $1.375$ of the other compares nothing. To compare two models, pick one metric and compute it for both on the same held-out data.
+
+  \item \emph{For a point with $y = +1$ and score $f(x) = 3$, the hinge loss $\max(0,\,1 - y f(x))$ is exactly zero, so that point does not push the boundary during training.}\\[2pt] \textbf{True.} Hinge loss is $\max(0,\,1 - y f(x))$. At $y f(x) = 3$ that is $\max(0,\,-2) = 0$: the point already sits well beyond the margin, costs nothing, and contributes no gradient. Only the points at or inside the margin --- the support vectors --- decide where the boundary goes.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ For $y = (10,\,10,\,10)$ and $\hat{y} = (10,\,13,\,7)$: \textbf{(a)} compute the MSE and the MAE, showing your working; \textbf{(b)} state which of the two is more affected by the largest single residual, and why.
+
+\vspace{2pt}
+
+The residuals $\hat y_i - y_i$ are $+0,\ +3,\ -3$.
+
+\[ \mathrm{MSE} = \frac{0 + 9 + 9}{3} = \sol{6} \qquad\qquad \mathrm{MAE} = \frac{0 + 3 + 3}{3} = \sol{2} \]
+
+\sol{MSE} is the one the largest residual moves more. Squaring is what does it: the residual of $+3$ contributes $9$ to the squared total but only $3$ to the absolute one. This is the same fact as ``squared error is fitted by the mean, absolute error by the median'' seen from the other side --- squaring lets one far-away point pull the fitted value towards it, while taking sizes does not.
+
+\vspace{6pt}
+
+\textbf{D2.}\ A five-fold cross-validation of one model returns the fold scores $(0.95,\ 0.93,\ 0.97,\ 0.62,\ 0.96)$. \textbf{(a)} Explain why reporting only their mean would be inadequate. \textbf{(b)} State what you would investigate first, and why.
+
+\vspace{2pt}
+
+The mean of the folds hides how they are spread. Four of these agree closely and one sits far below them, so quoting a single number would suggest a model that performs uniformly well when in fact it is unstable across splits --- and which split you happen to draw would then decide the number you report.\par\vspace{1mm}So report the spread alongside the mean, and go and look at the low fold. Useful things to check: whether its class balance differs from the others; whether the rows are ordered or grouped so the split is not really random; whether a cluster of outliers or mislabelled rows has landed in it; and whether the dataset is simply small enough that any one fold is unrepresentative. Shuffling or stratifying and re-running settles most of these quickly.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ A colleague reports a test accuracy of $0.97$ from the procedure below, on a dataset with
+$n = 100$ rows and $p = 5000$ columns. A domain expert says the honest figure should be close to chance.
+
+\vspace{2mm}
+\hspace*{6mm}\textbf{Step 1.}\ Load $X \in \mathbb{R}^{100 \times 5000}$ and $y \in \{0,1\}^{100}$.\\
+\hspace*{6mm}\textbf{Step 2.}\ Score all $5000$ columns against $y$; keep the $20$ most strongly associated.\\
+\hspace*{6mm}\textbf{Step 3.}\ Split the $100$ rows into a training part and a test part.\\
+\hspace*{6mm}\textbf{Step 4.}\ Fit a classifier on the training part.\\
+\hspace*{6mm}\textbf{Step 5.}\ Report accuracy on the test part.
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} The step that chooses $20$ columns out of $5000$ is itself fitted to the data, and it was fitted using \emph{all} $100$ rows --- including the ones that later become the test rows. It therefore saw those rows' labels. With $5000$ columns and only $100$ rows, twenty of them will line up with $y$ by chance alone, and those twenty then look predictive at test time because the peeking has already happened. The honest figure is close to chance.\par\vspace{1mm}\textbf{(ii) How to check.} Put the selection inside a \texttt{Pipeline} and cross-validate, so the columns are chosen afresh from the training rows of each fold. Or, more brutally: shuffle $y$ at random, so there is no signal left to find, and re-run. Done the wrong way this still scores high; done properly it collapses to chance.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the score stays near $0.97$ once the selection is moved inside the fold, the ordering was not the problem and something else is going on --- duplicated rows spanning the split, or the target hiding among the features. Naming what you would expect to see is the part that turns a guess into a diagnosis: more than one explanation fits these facts, and yours has to account for all of them.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+
+\renewcommand{\SetLetter}{B}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 1 --- Solutions \quad\textbullet\quad Set B}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set B}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(b)\ $3/4$}\\ Three of the four equally likely outcomes --- HH, HT, TH --- contain at least one head.
+
+  \item \sol{(c)\ 2}\\ \texttt{lst[1:3]} takes positions $1$ and $2$, stopping before $3$: the two elements $20$ and $30$.
+
+  \item \sol{(d)\ \texttt{(4, 5)}}\\ The inner dimensions must agree and the result takes the outer ones: $(4,\,\mathbf{3})$ times $(\mathbf{3},\,5)$ gives $(4,\,5)$.
+
+  \item \sol{(a)\ supervised regression}\\ The thing being predicted is a price --- a number on a continuous scale --- and past prices are available as labels.
+
+  \item \sol{(c)\ MAE}\\ Squaring makes the single residual of $+12$ dominate the total, while taking sizes weights it in proportion to how large it actually is. That is why MAE is the one least disturbed by it.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{mean}\\ A single very large value pulls the mean towards it while leaving the median where it is, so with $2,\,3,\,4,\,5,\,96$ the mean is $22$ and the median is $4$.
+
+  \item \sol{overfit}\\ Fitting the training data is easy; generalising is the hard part. When a model scores far better on the rows it was fitted to than on rows it has never seen, it has learned those particular rows --- noise included --- rather than the pattern behind them.
+
+  \item \sol{leakage}\\ Any step that \emph{learns} something from the data --- scaling, imputation, feature selection, encoding --- must be fitted on the training portion only. Fit it on everything first and information from the test rows has already reached the model, which is why the score that comes out is not an honest one. Putting every such step inside a \texttt{Pipeline} makes this automatic.
+
+  \item \sol{logarithm}\\ For one example, cross-entropy is $-\log p$, where $p$ is the probability the model gave to the class that was actually correct. Give the right class $p = 1$ and the cost is $0$; let $p$ fall towards $0$ and the cost grows without bound, which is why being confident and wrong is so expensive.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{A results table showing a training accuracy of $1.00$ is sufficient evidence that the model will do well on new data.}\\[2pt] \textbf{False.} A flexible enough model can drive the training error to zero by memorising the examples, noise and all. What tells you whether it has learned anything is the \emph{gap} between the training error and the error on data it has never seen.
+
+  \item \emph{A table reports $\mathrm{MAE} = 1.0$ for model $P$ and $\mathrm{MSE} = 1.375$ for model $Q$, computed from the identical predictions. $P$ is therefore the better model.}\\[2pt] \textbf{False.} MAE and MSE are different quantities in different units, and both come out of the same set of predictions --- one squares the errors, the other does not. Comparing $1.0$ of one against $1.375$ of the other compares nothing. To compare two models, pick one metric and compute it for both on the same held-out data.
+
+  \item \emph{A table row records $y = +1$, $f(x) = 3$ and hinge loss $\max(0,\,1 - y f(x)) = 0$; that zero means the point does not push the boundary during training.}\\[2pt] \textbf{True.} Hinge loss is $\max(0,\,1 - y f(x))$. At $y f(x) = 3$ that is $\max(0,\,-2) = 0$: the point already sits well beyond the margin, costs nothing, and contributes no gradient. Only the points at or inside the margin --- the support vectors --- decide where the boundary goes.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ A table records three true values and the three predictions made for them: $y = (6,\,6,\,6)$ and $\hat{y} = (5,\,7,\,10)$. \textbf{(a)} Compute the MSE and the MAE, showing your working. \textbf{(b)} State which of the two is more affected by the largest single residual, and why.
+
+\vspace{2pt}
+
+The residuals $\hat y_i - y_i$ are $-1,\ +1,\ +4$.
+
+\[ \mathrm{MSE} = \frac{1 + 1 + 16}{3} = \sol{6} \qquad\qquad \mathrm{MAE} = \frac{1 + 1 + 4}{3} = \sol{2} \]
+
+\sol{MSE} is the one the largest residual moves more. Squaring is what does it: the residual of $+4$ contributes $16$ to the squared total but only $4$ to the absolute one. This is the same fact as ``squared error is fitted by the mean, absolute error by the median'' seen from the other side --- squaring lets one far-away point pull the fitted value towards it, while taking sizes does not.
+
+\vspace{6pt}
+
+\textbf{D2.}\ A five-fold cross-validation of one model returns the fold scores $(0.88,\ 0.91,\ 0.90,\ 0.55,\ 0.89)$. \textbf{(a)} Explain why reporting only their mean would be inadequate. \textbf{(b)} State what you would investigate first, and why.
+
+\vspace{2pt}
+
+The mean of the folds hides how they are spread. Four of these agree closely and one sits far below them, so quoting a single number would suggest a model that performs uniformly well when in fact it is unstable across splits --- and which split you happen to draw would then decide the number you report.\par\vspace{1mm}So report the spread alongside the mean, and go and look at the low fold. Useful things to check: whether its class balance differs from the others; whether the rows are ordered or grouped so the split is not really random; whether a cluster of outliers or mislabelled rows has landed in it; and whether the dataset is simply small enough that any one fold is unrepresentative. Shuffling or stratifying and re-running settles most of these quickly.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ The table below records a colleague's experiment. The domain expert consulted afterwards says the
+honest accuracy should be close to chance.
+
+\vspace{2mm}
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\hline
+\rule{0pt}{11pt}Rows in the dataset & $100$\\
+Columns in the dataset & $5000$\\
+Columns kept, scored against $y$ over \emph{all} $100$ rows & $20$\\
+Split performed & \emph{after} those columns were kept\\
+Reported test accuracy & $\mathbf{0.97}$\\[2pt]
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} The step that chooses $20$ columns out of $5000$ is itself fitted to the data, and it was fitted using \emph{all} $100$ rows --- including the ones that later become the test rows. It therefore saw those rows' labels. With $5000$ columns and only $100$ rows, twenty of them will line up with $y$ by chance alone, and those twenty then look predictive at test time because the peeking has already happened. The honest figure is close to chance.\par\vspace{1mm}\textbf{(ii) How to check.} Put the selection inside a \texttt{Pipeline} and cross-validate, so the columns are chosen afresh from the training rows of each fold. Or, more brutally: shuffle $y$ at random, so there is no signal left to find, and re-run. Done the wrong way this still scores high; done properly it collapses to chance.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the score stays near $0.97$ once the selection is moved inside the fold, the ordering was not the problem and something else is going on --- duplicated rows spanning the split, or the target hiding among the features. Naming what you would expect to see is the part that turns a guess into a diagnosis: more than one explanation fits these facts, and yours has to account for all of them.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+
+\renewcommand{\SetLetter}{C}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 1 --- Solutions \quad\textbullet\quad Set C}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set C}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(c)\ $3/4$}\\ The tree's four leaves have equal weight $1/4$, and three of them --- HH, HT, TH --- show at least one head.
+
+  \item \sol{(d)\ 3}\\ A \texttt{set} discards duplicates, so \texttt{[1, 2, 2, 3]} becomes $\{1, 2, 3\}$.
+
+  \item \sol{(a)\ $4$ by $5$}\\ The inner dimensions must agree and the result takes the outer ones: $4$ tall by $3$ wide, times $3$ tall by $5$ wide, gives $4$ by $5$.
+
+  \item \sol{(b)\ unsupervised}\\ There are no labels anywhere --- nothing says which clump a point belongs to. The structure has to come from the points themselves.
+
+  \item \sol{(d)\ MAE}\\ Squared error is a smooth parabola; absolute error is $\lvert e \rvert$, which has a corner at zero because its slope jumps from $-1$ to $+1$ there.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{mean}\\ A single very large value pulls the mean towards it while leaving the median where it is, so with $2,\,3,\,4,\,5,\,96$ the mean is $22$ and the median is $4$.
+
+  \item \sol{overfit}\\ Fitting the training data is easy; generalising is the hard part. When a model scores far better on the rows it was fitted to than on rows it has never seen, it has learned those particular rows --- noise included --- rather than the pattern behind them.
+
+  \item \sol{leakage}\\ Any step that \emph{learns} something from the data --- scaling, imputation, feature selection, encoding --- must be fitted on the training portion only. Fit it on everything first and information from the test rows has already reached the model, which is why the score that comes out is not an honest one. Putting every such step inside a \texttt{Pipeline} makes this automatic.
+
+  \item \sol{logarithm}\\ For one example, cross-entropy is $-\log p$, where $p$ is the probability the model gave to the class that was actually correct. Give the right class $p = 1$ and the cost is $0$; let $p$ fall towards $0$ and the cost grows without bound, which is why being confident and wrong is so expensive.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{A learning curve whose training-error line reaches zero shows a model that will generalise well.}\\[2pt] \textbf{False.} A flexible enough model can drive the training error to zero by memorising the examples, noise and all. What tells you whether it has learned anything is the \emph{gap} between the training error and the error on data it has never seen.
+
+  \item \emph{Two bars on one chart, labelled $\mathrm{MAE} = 1.0$ for model $P$ and $\mathrm{MSE} = 1.375$ for model $Q$ and computed from identical predictions, show that $P$ is the better model.}\\[2pt] \textbf{False.} MAE and MSE are different quantities in different units, and both come out of the same set of predictions --- one squares the errors, the other does not. Comparing $1.0$ of one against $1.375$ of the other compares nothing. To compare two models, pick one metric and compute it for both on the same held-out data.
+
+  \item \emph{On a plot of hinge loss against the margin $y f(x)$, the curve is flat at zero for every margin beyond $1$; a point sitting at margin $3$ therefore exerts no pull on the boundary.}\\[2pt] \textbf{True.} Hinge loss is $\max(0,\,1 - y f(x))$. At $y f(x) = 3$ that is $\max(0,\,-2) = 0$: the point already sits well beyond the margin, costs nothing, and contributes no gradient. Only the points at or inside the margin --- the support vectors --- decide where the boundary goes.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ Three points are plotted against a horizontal line at $y = 8$. Their predicted heights are $\hat{y} = (6,\,10,\,13)$ while every true value is $y = 8$. \textbf{(a)} Compute the MSE and the MAE, showing your working. \textbf{(b)} State which of the two is more affected by the largest single residual, and why.
+
+\vspace{2pt}
+
+The residuals $\hat y_i - y_i$ are $-2,\ +2,\ +5$.
+
+\[ \mathrm{MSE} = \frac{4 + 4 + 25}{3} = \sol{11} \qquad\qquad \mathrm{MAE} = \frac{2 + 2 + 5}{3} = \sol{3} \]
+
+\sol{MSE} is the one the largest residual moves more. Squaring is what does it: the residual of $+5$ contributes $25$ to the squared total but only $5$ to the absolute one. This is the same fact as ``squared error is fitted by the mean, absolute error by the median'' seen from the other side --- squaring lets one far-away point pull the fitted value towards it, while taking sizes does not.
+
+\vspace{6pt}
+
+\textbf{D2.}\ A bar chart of five cross-validation fold scores shows four bars of similar height and one much shorter: $(0.92,\ 0.90,\ 0.94,\ 0.61,\ 0.93)$. \textbf{(a)} Explain why reporting only their mean would be inadequate. \textbf{(b)} State what you would investigate first, and why.
+
+\vspace{2pt}
+
+The mean of the folds hides how they are spread. Four of these agree closely and one sits far below them, so quoting a single number would suggest a model that performs uniformly well when in fact it is unstable across splits --- and which split you happen to draw would then decide the number you report.\par\vspace{1mm}So report the spread alongside the mean, and go and look at the low fold. Useful things to check: whether its class balance differs from the others; whether the rows are ordered or grouped so the split is not really random; whether a cluster of outliers or mislabelled rows has landed in it; and whether the dataset is simply small enough that any one fold is unrepresentative. Shuffling or stratifying and re-running settles most of these quickly.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ A colleague's plot shows the reported test accuracy sitting at $0.97$, \emph{above} every one of the
+training-fold accuracies drawn beside it --- an ordering that should not occur. The dataset is $100$ rows by
+$5000$ columns. Reading the pipeline diagram from left to right, the boxes are
+
+\vspace{2mm}
+\begin{center}\small
+\fbox{\ load $X$ ($100 \times 5000$), $y$\ } $\rightarrow$
+\fbox{\ keep the $20$ columns best associated with $y$\ } $\rightarrow$
+\fbox{\ split\ } $\rightarrow$
+\fbox{\ fit\ } $\rightarrow$
+\fbox{\ score\ }
+\end{center}
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} The step that chooses $20$ columns out of $5000$ is itself fitted to the data, and it was fitted using \emph{all} $100$ rows --- including the ones that later become the test rows. It therefore saw those rows' labels. With $5000$ columns and only $100$ rows, twenty of them will line up with $y$ by chance alone, and those twenty then look predictive at test time because the peeking has already happened. The honest figure is close to chance.\par\vspace{1mm}\textbf{(ii) How to check.} Put the selection inside a \texttt{Pipeline} and cross-validate, so the columns are chosen afresh from the training rows of each fold. Or, more brutally: shuffle $y$ at random, so there is no signal left to find, and re-run. Done the wrong way this still scores high; done properly it collapses to chance.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the score stays near $0.97$ once the selection is moved inside the fold, the ordering was not the problem and something else is going on --- duplicated rows spanning the split, or the target hiding among the features. Naming what you would expect to see is the part that turns a guess into a diagnosis: more than one explanation fits these facts, and yours has to account for all of them.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+
+\renewcommand{\SetLetter}{D}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 1 --- Solutions \quad\textbullet\quad Set D}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set D}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(d)\ $3/4$}\\ The two inspections are independent, so both fail with probability $\tfrac12 \times \tfrac12 = \tfrac14$, and at least one passes the rest of the time.
+
+  \item \sol{(a)\ 2}\\ A dictionary cannot hold the same key twice. The second \texttt{'red'} overwrites the first, leaving two entries.
+
+  \item \sol{(b)\ 8}\\ One weight multiplies one measurement, so the weight vector has as many entries as there are measurements per patient. The number of patients sets the number of rows, not the length of the weight vector.
+
+  \item \sol{(c)\ supervised classification}\\ Every past loan carries a label, and that label is one of two categories rather than a number on a scale.
+
+  \item \sol{(b)\ MAE}\\ Squaring an impossible reading makes it dominate the total, so the fitted value is dragged towards it. Taking sizes instead weights it in proportion, which is why the constant that minimises absolute error barely moves.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{mean}\\ A single very large value pulls the mean towards it while leaving the median where it is, so with $2,\,3,\,4,\,5,\,96$ the mean is $22$ and the median is $4$.
+
+  \item \sol{overfit}\\ Fitting the training data is easy; generalising is the hard part. When a model scores far better on the rows it was fitted to than on rows it has never seen, it has learned those particular rows --- noise included --- rather than the pattern behind them.
+
+  \item \sol{leakage}\\ Any step that \emph{learns} something from the data --- scaling, imputation, feature selection, encoding --- must be fitted on the training portion only. Fit it on everything first and information from the test rows has already reached the model, which is why the score that comes out is not an honest one. Putting every such step inside a \texttt{Pipeline} makes this automatic.
+
+  \item \sol{logarithm}\\ For one example, cross-entropy is $-\log p$, where $p$ is the probability the model gave to the class that was actually correct. Give the right class $p = 1$ and the cost is $0$; let $p$ fall towards $0$ and the cost grows without bound, which is why being confident and wrong is so expensive.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{A fraud model that flags every past fraud in the bank's own records correctly is ready to be deployed on next month's transactions.}\\[2pt] \textbf{False.} A flexible enough model can drive the training error to zero by memorising the examples, noise and all. What tells you whether it has learned anything is the \emph{gap} between the training error and the error on data it has never seen.
+
+  \item \emph{A vendor's model reports $\mathrm{MAE} = 1.0$ and yours reports $\mathrm{MSE} = 1.375$ on the identical predictions; the vendor's model is therefore better.}\\[2pt] \textbf{False.} MAE and MSE are different quantities in different units, and both come out of the same set of predictions --- one squares the errors, the other does not. Comparing $1.0$ of one against $1.375$ of the other compares nothing. To compare two models, pick one metric and compute it for both on the same held-out data.
+
+  \item \emph{A support-vector classifier scores a correctly labelled application at $f(x) = 3$ with $y = +1$, so its hinge loss is zero and removing that application from the training set would not move the boundary.}\\[2pt] \textbf{True.} Hinge loss is $\max(0,\,1 - y f(x))$. At $y f(x) = 3$ that is $\max(0,\,-2) = 0$: the point already sits well beyond the margin, costs nothing, and contributes no gradient. Only the points at or inside the margin --- the support vectors --- decide where the boundary goes.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ A delivery service quotes $20$ minutes for three consecutive orders, so $y = (20,\,20,\,20)$. The model's predictions were $\hat{y} = (19,\,24,\,16)$. \textbf{(a)} Compute the MSE and the MAE, showing your working. \textbf{(b)} State which of the two is more affected by the largest single residual, and why.
+
+\vspace{2pt}
+
+The residuals $\hat y_i - y_i$ are $-1,\ +4,\ -4$.
+
+\[ \mathrm{MSE} = \frac{1 + 16 + 16}{3} = \sol{11} \qquad\qquad \mathrm{MAE} = \frac{1 + 4 + 4}{3} = \sol{3} \]
+
+\sol{MSE} is the one the largest residual moves more. Squaring is what does it: the residual of $+4$ contributes $16$ to the squared total but only $4$ to the absolute one. This is the same fact as ``squared error is fitted by the mean, absolute error by the median'' seen from the other side --- squaring lets one far-away point pull the fitted value towards it, while taking sizes does not.
+
+\vspace{6pt}
+
+\textbf{D2.}\ A five-fold cross-validation of a churn model returns the fold scores $(0.86,\ 0.84,\ 0.88,\ 0.52,\ 0.87)$. \textbf{(a)} Explain why reporting only their mean would be inadequate. \textbf{(b)} State what you would investigate first, and why.
+
+\vspace{2pt}
+
+The mean of the folds hides how they are spread. Four of these agree closely and one sits far below them, so quoting a single number would suggest a model that performs uniformly well when in fact it is unstable across splits --- and which split you happen to draw would then decide the number you report.\par\vspace{1mm}So report the spread alongside the mean, and go and look at the low fold. Useful things to check: whether its class balance differs from the others; whether the rows are ordered or grouped so the split is not really random; whether a cluster of outliers or mislabelled rows has landed in it; and whether the dataset is simply small enough that any one fold is unrepresentative. Shuffling or stratifying and re-running settles most of these quickly.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ An intern presents a churn model at the weekly meeting and reports a test accuracy of $0.97$. The
+dataset holds $100$ customers and $5000$ recorded attributes per customer. The team's own domain expert says
+the honest figure should be close to chance, because most of those attributes are meaningless. Asked how the
+result was produced, the intern says
+
+\vspace{2mm}
+\hspace*{6mm}\parbox{0.9\linewidth}{\emph{``I looked at all $5000$ attributes across all $100$ customers,
+kept the $20$ that tracked churn most closely, then split the customers into a training set and a test set,
+trained on the training set, and scored on the test set.''}}
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} The step that chooses $20$ columns out of $5000$ is itself fitted to the data, and it was fitted using \emph{all} $100$ rows --- including the ones that later become the test rows. It therefore saw those rows' labels. With $5000$ columns and only $100$ rows, twenty of them will line up with $y$ by chance alone, and those twenty then look predictive at test time because the peeking has already happened. The honest figure is close to chance.\par\vspace{1mm}\textbf{(ii) How to check.} Put the selection inside a \texttt{Pipeline} and cross-validate, so the columns are chosen afresh from the training rows of each fold. Or, more brutally: shuffle $y$ at random, so there is no signal left to find, and re-run. Done the wrong way this still scores high; done properly it collapses to chance.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the score stays near $0.97$ once the selection is moved inside the fold, the ordering was not the problem and something else is going on --- duplicated rows spanning the split, or the target hiding among the features. Naming what you would expect to see is the part that turns a guess into a diagnosis: more than one explanation fits these facts, and yours has to account for all of them.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+
+\renewcommand{\SetLetter}{E}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 1 --- Solutions \quad\textbullet\quad Set E}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set E}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(a)\ 0.75}\\ \texttt{product('HT', repeat=2)} gives the four pairs HH, HT, TH, TT, and three of them contain an \texttt{'H'}, so the expression is $3/4$.
+
+  \item \sol{(c)\ 3}\\ \texttt{range(5)} runs $0$ to $4$, and the even ones are $0$, $2$ and $4$.
+
+  \item \sol{(b)\ \texttt{(4, 5)}}\\ The \texttt{@} operator needs the inner dimensions to agree and returns the outer ones: \texttt{(4, 3) @ (3, 5)} gives \texttt{(4, 5)}.
+
+  \item \sol{(d)\ unsupervised}\\ No \texttt{y} is passed at all. \texttt{KMeans} finds structure in \texttt{X} alone, which is what makes the task unsupervised.
+
+  \item \sol{(c)\ MAE}\\ \texttt{np.abs} takes the size of each error and \texttt{np.mean} averages them --- that is the definition of mean absolute error. Squaring first would have given MSE.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{mean}\\ A single very large value pulls the mean towards it while leaving the median where it is, so with $2,\,3,\,4,\,5,\,96$ the mean is $22$ and the median is $4$.
+
+  \item \sol{overfit}\\ Fitting the training data is easy; generalising is the hard part. When a model scores far better on the rows it was fitted to than on rows it has never seen, it has learned those particular rows --- noise included --- rather than the pattern behind them.
+
+  \item \sol{leakage}\\ Any step that \emph{learns} something from the data --- scaling, imputation, feature selection, encoding --- must be fitted on the training portion only. Fit it on everything first and information from the test rows has already reached the model, which is why the score that comes out is not an honest one. Putting every such step inside a \texttt{Pipeline} makes this automatic.
+
+  \item \sol{logarithm}\\ For one example, cross-entropy is $-\log p$, where $p$ is the probability the model gave to the class that was actually correct. Give the right class $p = 1$ and the cost is $0$; let $p$ fall towards $0$ and the cost grows without bound, which is why being confident and wrong is so expensive.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{\texttt{model.score(X\_train, y\_train) == 1.0} is enough to conclude that the model will do well on unseen data.}\\[2pt] \textbf{False.} A flexible enough model can drive the training error to zero by memorising the examples, noise and all. What tells you whether it has learned anything is the \emph{gap} between the training error and the error on data it has never seen.
+
+  \item \emph{From the identical arrays, \texttt{mean\_absolute\_error(...)} returns $1.0$ for model $P$ and \texttt{mean\_squared\_error(...)} returns $1.375$ for model $Q$. Since $1.0 < 1.375$, $P$ is the better model.}\\[2pt] \textbf{False.} MAE and MSE are different quantities in different units, and both come out of the same set of predictions --- one squares the errors, the other does not. Comparing $1.0$ of one against $1.375$ of the other compares nothing. To compare two models, pick one metric and compute it for both on the same held-out data.
+
+  \item \emph{For \texttt{y = 1} and \texttt{f = 3.0}, \texttt{max(0.0, 1 - y * f)} evaluates to \texttt{0.0}, so this point contributes nothing to the hinge objective and does not move the boundary.}\\[2pt] \textbf{True.} Hinge loss is $\max(0,\,1 - y f(x))$. At $y f(x) = 3$ that is $\max(0,\,-2) = 0$: the point already sits well beyond the margin, costs nothing, and contributes no gradient. Only the points at or inside the margin --- the support vectors --- decide where the boundary goes.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ \texttt{y = np.array([12, 12, 12])} and \texttt{y\_hat = np.array([14, 10, 20])}. \textbf{(a)} Compute the MSE and the MAE by hand, showing your working. \textbf{(b)} State which of the two is more affected by the largest single residual, and why.
+
+\vspace{2pt}
+
+The residuals $\hat y_i - y_i$ are $+2,\ -2,\ +8$.
+
+\[ \mathrm{MSE} = \frac{4 + 4 + 64}{3} = \sol{24} \qquad\qquad \mathrm{MAE} = \frac{2 + 2 + 8}{3} = \sol{4} \]
+
+\sol{MSE} is the one the largest residual moves more. Squaring is what does it: the residual of $+8$ contributes $64$ to the squared total but only $8$ to the absolute one. This is the same fact as ``squared error is fitted by the mean, absolute error by the median'' seen from the other side --- squaring lets one far-away point pull the fitted value towards it, while taking sizes does not.
+
+\vspace{6pt}
+
+\textbf{D2.}\ \texttt{cross\_val\_score(model, X, y, cv=5)} returns \texttt{array([0.94, 0.92, 0.96, 0.60, 0.95])}. \textbf{(a)} Explain why reporting only \texttt{.mean()} would be inadequate. \textbf{(b)} State what you would investigate first, and why.
+
+\vspace{2pt}
+
+The mean of the folds hides how they are spread. Four of these agree closely and one sits far below them, so quoting a single number would suggest a model that performs uniformly well when in fact it is unstable across splits --- and which split you happen to draw would then decide the number you report.\par\vspace{1mm}So report the spread alongside the mean, and go and look at the low fold. Useful things to check: whether its class balance differs from the others; whether the rows are ordered or grouped so the split is not really random; whether a cluster of outliers or mislabelled rows has landed in it; and whether the dataset is simply small enough that any one fold is unrepresentative. Shuffling or stratifying and re-running settles most of these quickly.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ The function below is run on \texttt{X} of shape \texttt{(100, 5000)} and a binary \texttt{y}, and
+returns $0.97$. A domain expert says the honest figure should be close to chance.
+
+\begin{code}
+from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+
+def evaluate(X, y):
+    X_sel = SelectKBest(f_classif, k=20).fit_transform(X, y)
+    X_tr, X_te, y_tr, y_te = train_test_split(X_sel, y, test_size=0.25,
+                                              random_state=0)
+    model = KNeighborsClassifier(n_neighbors=3).fit(X_tr, y_tr)
+    return model.score(X_te, y_te)
+\end{code}
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} The step that chooses $20$ columns out of $5000$ is itself fitted to the data, and it was fitted using \emph{all} $100$ rows --- including the ones that later become the test rows. It therefore saw those rows' labels. With $5000$ columns and only $100$ rows, twenty of them will line up with $y$ by chance alone, and those twenty then look predictive at test time because the peeking has already happened. The honest figure is close to chance.\par\vspace{1mm}\textbf{(ii) How to check.} Put the selection inside a \texttt{Pipeline} and cross-validate, so the columns are chosen afresh from the training rows of each fold. Or, more brutally: shuffle $y$ at random, so there is no signal left to find, and re-run. Done the wrong way this still scores high; done properly it collapses to chance.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the score stays near $0.97$ once the selection is moved inside the fold, the ordering was not the problem and something else is going on --- duplicated rows spanning the split, or the target hiding among the features. Naming what you would expect to see is the part that turns a guess into a diagnosis: more than one explanation fits these facts, and yours has to account for all of them.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+
+\renewcommand{\SetLetter}{F}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 1 --- Solutions \quad\textbullet\quad Set F}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set F}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(b)\ three in four}\\ Of the four equally likely results of two tosses, three contain at least one head.
+
+  \item \sol{(d)\ 2}\\ Splitting \emph{machine} on \emph{h} cuts it into \emph{mac} and \emph{ine} --- two pieces, because there is one \emph{h} to cut at.
+
+  \item \sol{(c)\ four rows, five columns}\\ The inner sizes must agree and the result takes the outer ones: four rows by three columns, times three rows by five columns, leaves four rows and five columns.
+
+  \item \sol{(a)\ unsupervised}\\ No article has ever been labelled with a topic, so there is nothing to learn from except the articles themselves.
+
+  \item \sol{(d)\ MAE}\\ Squaring an error before averaging makes a single wild reading dominate the total. Taking its size instead weights it in proportion to how large it is, so the fitted value is far less disturbed.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{mean}\\ A single very large value pulls the mean towards it while leaving the median where it is, so with $2,\,3,\,4,\,5,\,96$ the mean is $22$ and the median is $4$.
+
+  \item \sol{overfit}\\ Fitting the training data is easy; generalising is the hard part. When a model scores far better on the rows it was fitted to than on rows it has never seen, it has learned those particular rows --- noise included --- rather than the pattern behind them.
+
+  \item \sol{leakage}\\ Any step that \emph{learns} something from the data --- scaling, imputation, feature selection, encoding --- must be fitted on the training portion only. Fit it on everything first and information from the test rows has already reached the model, which is why the score that comes out is not an honest one. Putting every such step inside a \texttt{Pipeline} makes this automatic.
+
+  \item \sol{logarithm}\\ For one example, cross-entropy is $-\log p$, where $p$ is the probability the model gave to the class that was actually correct. Give the right class $p = 1$ and the cost is $0$; let $p$ fall towards $0$ and the cost grows without bound, which is why being confident and wrong is so expensive.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{Getting every training example right proves that a model has learned the underlying pattern.}\\[2pt] \textbf{False.} A flexible enough model can drive the training error to zero by memorising the examples, noise and all. What tells you whether it has learned anything is the \emph{gap} between the training error and the error on data it has never seen.
+
+  \item \emph{One model's mean absolute error is a smaller number than another model's mean squared error on the same predictions, so the first model is the better one.}\\[2pt] \textbf{False.} MAE and MSE are different quantities in different units, and both come out of the same set of predictions --- one squares the errors, the other does not. Comparing $1.0$ of one against $1.375$ of the other compares nothing. To compare two models, pick one metric and compute it for both on the same held-out data.
+
+  \item \emph{A correctly classified point that already sits comfortably beyond the margin costs a hinge-loss model nothing, and therefore has no say in where the boundary is placed.}\\[2pt] \textbf{True.} Hinge loss is $\max(0,\,1 - y f(x))$. At $y f(x) = 3$ that is $\max(0,\,-2) = 0$: the point already sits well beyond the margin, costs nothing, and contributes no gradient. Only the points at or inside the margin --- the support vectors --- decide where the boundary goes.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ Three quantities were each truly fifteen, and the model predicted twelve, eighteen and twenty-one for them in that order. \textbf{(a)} Compute the mean squared error and the mean absolute error, showing your working. \textbf{(b)} State which of the two is more affected by the largest single residual, and why.
+
+\vspace{2pt}
+
+The residuals $\hat y_i - y_i$ are $-3,\ +3,\ +6$.
+
+\[ \mathrm{MSE} = \frac{9 + 9 + 36}{3} = \sol{18} \qquad\qquad \mathrm{MAE} = \frac{3 + 3 + 6}{3} = \sol{4} \]
+
+\sol{MSE} is the one the largest residual moves more. Squaring is what does it: the residual of $+6$ contributes $36$ to the squared total but only $6$ to the absolute one. This is the same fact as ``squared error is fitted by the mean, absolute error by the median'' seen from the other side --- squaring lets one far-away point pull the fitted value towards it, while taking sizes does not.
+
+\vspace{6pt}
+
+\textbf{D2.}\ Splitting the data five ways and scoring each part in turn gave five numbers: $0.90$, $0.88$, $0.92$, $0.57$ and $0.91$. \textbf{(a)} Explain why reporting only their average would be inadequate. \textbf{(b)} State what you would investigate first, and why.
+
+\vspace{2pt}
+
+The mean of the folds hides how they are spread. Four of these agree closely and one sits far below them, so quoting a single number would suggest a model that performs uniformly well when in fact it is unstable across splits --- and which split you happen to draw would then decide the number you report.\par\vspace{1mm}So report the spread alongside the mean, and go and look at the low fold. Useful things to check: whether its class balance differs from the others; whether the rows are ordered or grouped so the split is not really random; whether a cluster of outliers or mislabelled rows has landed in it; and whether the dataset is simply small enough that any one fold is unrepresentative. Shuffling or stratifying and re-running settles most of these quickly.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ A colleague describes what she did, and reports an accuracy of ninety-seven per cent. The data she
+used holds one hundred records, with five thousand recorded quantities per record. A domain expert says the
+honest figure should be close to chance.
+
+\vspace{2mm}
+\hspace*{6mm}\parbox{0.9\linewidth}{\emph{``I went through all five thousand quantities, using every one of
+the hundred records, and kept the twenty that lined up best with the answer I was trying to predict. Then I
+set part of the data aside as a test set, trained on the rest, and measured how well it did on the part I had
+set aside.''}}
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} The step that chooses $20$ columns out of $5000$ is itself fitted to the data, and it was fitted using \emph{all} $100$ rows --- including the ones that later become the test rows. It therefore saw those rows' labels. With $5000$ columns and only $100$ rows, twenty of them will line up with $y$ by chance alone, and those twenty then look predictive at test time because the peeking has already happened. The honest figure is close to chance.\par\vspace{1mm}\textbf{(ii) How to check.} Put the selection inside a \texttt{Pipeline} and cross-validate, so the columns are chosen afresh from the training rows of each fold. Or, more brutally: shuffle $y$ at random, so there is no signal left to find, and re-run. Done the wrong way this still scores high; done properly it collapses to chance.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the score stays near $0.97$ once the selection is moved inside the fold, the ordering was not the problem and something else is going on --- duplicated rows spanning the split, or the target hiding among the features. Naming what you would expect to see is the part that turns a guess into a diagnosis: more than one explanation fits these facts, and yours has to account for all of them.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+
+\renewcommand{\SetLetter}{G}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 1 --- Solutions \quad\textbullet\quad Set G}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set G}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(c)\ the first is larger}\\ At least one head covers HH, HT and TH, which is $3/4$; exactly one head covers only HT and TH, which is $1/2$.
+
+  \item \sol{(a)\ the second is larger}\\ \texttt{[1, 2, 3][:2]} is two elements long; \texttt{[1, 2] + [3]} joins the lists into one of three.
+
+  \item \sol{(d)\ only $AB$ is defined}\\ For a product the inner dimensions must agree. $4 \times \mathbf{3}$ against $\mathbf{3} \times 5$ agrees; the other way round, $3 \times \mathbf{5}$ against $\mathbf{4} \times 3$ does not.
+
+  \item \sol{(b)\ (i) regression, (ii) classification}\\ A sale price is a number on a continuous scale, so predicting it is regression. Spam or not spam is one of two categories, so deciding it is classification.
+
+  \item \sol{(a)\ MSE}\\ Squaring is what does it: a residual of $12$ contributes $144$ to the squared total but only $12$ to the absolute one, so the large value moves MSE far more.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{mean}\\ A single very large value pulls the mean towards it while leaving the median where it is, so with $2,\,3,\,4,\,5,\,96$ the mean is $22$ and the median is $4$.
+
+  \item \sol{overfit}\\ Fitting the training data is easy; generalising is the hard part. When a model scores far better on the rows it was fitted to than on rows it has never seen, it has learned those particular rows --- noise included --- rather than the pattern behind them.
+
+  \item \sol{leakage}\\ Any step that \emph{learns} something from the data --- scaling, imputation, feature selection, encoding --- must be fitted on the training portion only. Fit it on everything first and information from the test rows has already reached the model, which is why the score that comes out is not an honest one. Putting every such step inside a \texttt{Pipeline} makes this automatic.
+
+  \item \sol{logarithm}\\ For one example, cross-entropy is $-\log p$, where $p$ is the probability the model gave to the class that was actually correct. Give the right class $p = 1$ and the cost is $0$; let $p$ fall towards $0$ and the cost grows without bound, which is why being confident and wrong is so expensive.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{Between two models, the one with the higher training accuracy is the one that will do better on new data.}\\[2pt] \textbf{False.} A flexible enough model can drive the training error to zero by memorising the examples, noise and all. What tells you whether it has learned anything is the \emph{gap} between the training error and the error on data it has never seen.
+
+  \item \emph{Between model $P$ ($\mathrm{MAE} = 1.0$) and model $Q$ ($\mathrm{MSE} = 1.375$) on identical predictions, $P$ is the better model.}\\[2pt] \textbf{False.} MAE and MSE are different quantities in different units, and both come out of the same set of predictions --- one squares the errors, the other does not. Comparing $1.0$ of one against $1.375$ of the other compares nothing. To compare two models, pick one metric and compute it for both on the same held-out data.
+
+  \item \emph{Between a point at margin $y f(x) = 3$ and a point at margin $y f(x) = 0.5$, only the second contributes to the hinge objective; the first costs zero and does not move the boundary.}\\[2pt] \textbf{True.} Hinge loss is $\max(0,\,1 - y f(x))$. At $y f(x) = 3$ that is $\max(0,\,-2) = 0$: the point already sits well beyond the margin, costs nothing, and contributes no gradient. Only the points at or inside the margin --- the support vectors --- decide where the boundary goes.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ Compare three predictions $\hat{y} = (9,\,12,\,3)$ against three true values $y = (9,\,9,\,9)$. \textbf{(a)} Compute the MSE and the MAE, showing your working. \textbf{(b)} State which of the two is more affected by the largest single residual, and why.
+
+\vspace{2pt}
+
+The residuals $\hat y_i - y_i$ are $+0,\ +3,\ -6$.
+
+\[ \mathrm{MSE} = \frac{0 + 9 + 36}{3} = \sol{15} \qquad\qquad \mathrm{MAE} = \frac{0 + 3 + 6}{3} = \sol{3} \]
+
+\sol{MSE} is the one the largest residual moves more. Squaring is what does it: the residual of $-6$ contributes $36$ to the squared total but only $6$ to the absolute one. This is the same fact as ``squared error is fitted by the mean, absolute error by the median'' seen from the other side --- squaring lets one far-away point pull the fitted value towards it, while taking sizes does not.
+
+\vspace{6pt}
+
+\textbf{D2.}\ Compare the five fold scores returned by a five-fold cross-validation: $(0.93,\ 0.91,\ 0.95,\ 0.59,\ 0.94)$. \textbf{(a)} Explain why reporting only their mean would be inadequate. \textbf{(b)} State what you would investigate first, and why.
+
+\vspace{2pt}
+
+The mean of the folds hides how they are spread. Four of these agree closely and one sits far below them, so quoting a single number would suggest a model that performs uniformly well when in fact it is unstable across splits --- and which split you happen to draw would then decide the number you report.\par\vspace{1mm}So report the spread alongside the mean, and go and look at the low fold. Useful things to check: whether its class balance differs from the others; whether the rows are ordered or grouped so the split is not really random; whether a cluster of outliers or mislabelled rows has landed in it; and whether the dataset is simply small enough that any one fold is unrepresentative. Shuffling or stratifying and re-running settles most of these quickly.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ Two colleagues run the same dataset --- $100$ rows, $5000$ columns --- through the procedures below.
+The procedures use the identical four steps in a different order, and report very different figures. The
+domain expert says the honest figure should be close to chance.
+
+\vspace{2mm}
+\begin{center}\small
+\begin{tabular}{@{}l@{\qquad}l@{}}
+\hline
+\rule{0pt}{11pt}\textbf{Procedure A --- reports $0.97$} & \textbf{Procedure B --- reports $0.51$}\\[2pt]
+\hline
+\rule{0pt}{11pt}1. Keep the $20$ columns best associated with $y$. & 1. Split into train and test.\\
+2. Split into train and test. & 2. Keep the $20$ columns best associated with $y$.\\
+3. Fit a classifier. & 3. Fit a classifier.\\
+4. Report accuracy on the test part. & 4. Report accuracy on the test part.\\[2pt]
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} The step that chooses $20$ columns out of $5000$ is itself fitted to the data, and it was fitted using \emph{all} $100$ rows --- including the ones that later become the test rows. It therefore saw those rows' labels. With $5000$ columns and only $100$ rows, twenty of them will line up with $y$ by chance alone, and those twenty then look predictive at test time because the peeking has already happened. The honest figure is close to chance.\par\vspace{1mm}\textbf{(ii) How to check.} Put the selection inside a \texttt{Pipeline} and cross-validate, so the columns are chosen afresh from the training rows of each fold. Or, more brutally: shuffle $y$ at random, so there is no signal left to find, and re-run. Done the wrong way this still scores high; done properly it collapses to chance.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the score stays near $0.97$ once the selection is moved inside the fold, the ordering was not the problem and something else is going on --- duplicated rows spanning the split, or the target hiding among the features. Naming what you would expect to see is the part that turns a guess into a diagnosis: more than one explanation fits these facts, and yours has to account for all of them.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+
+\renewcommand{\SetLetter}{H}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 1 --- Solutions \quad\textbullet\quad Set H}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set H}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(d)\ $3/4$}\\ One toss has two outcomes; two tosses have four, equally likely. Three of them --- HH, HT, TH --- contain at least one head.
+
+  \item \sol{(b)\ 3}\\ A slice \texttt{[1:4]} takes positions $1$, $2$ and $3$, stopping before $4$: the three elements $6$, $7$ and $8$.
+
+  \item \sol{(a)\ $4 \times 5$}\\ The rule is the same one the worked line uses: inner dimensions must agree, and the result takes the outer ones.
+
+  \item \sol{(c)\ unsupervised}\\ Nobody has named the groups, so there are no labels to learn from --- exactly the situation the worked line contrasts with.
+
+  \item \sol{(b)\ median}\\ Squared error is minimised by the mean; absolute error is minimised by the median. Shifting $c$ slightly changes the absolute total by the count of points on each side, so it stops falling when the two sides balance.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{mean}\\ A single very large value pulls the mean towards it while leaving the median where it is, so with $2,\,3,\,4,\,5,\,96$ the mean is $22$ and the median is $4$.
+
+  \item \sol{overfit}\\ Fitting the training data is easy; generalising is the hard part. When a model scores far better on the rows it was fitted to than on rows it has never seen, it has learned those particular rows --- noise included --- rather than the pattern behind them.
+
+  \item \sol{leakage}\\ Any step that \emph{learns} something from the data --- scaling, imputation, feature selection, encoding --- must be fitted on the training portion only. Fit it on everything first and information from the test rows has already reached the model, which is why the score that comes out is not an honest one. Putting every such step inside a \texttt{Pipeline} makes this automatic.
+
+  \item \sol{logarithm}\\ For one example, cross-entropy is $-\log p$, where $p$ is the probability the model gave to the class that was actually correct. Give the right class $p = 1$ and the cost is $0$; let $p$ fall towards $0$ and the cost grows without bound, which is why being confident and wrong is so expensive.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{\emph{A model with zero training error and zero test error has generalised.} Therefore a model with zero training error has generalised.}\\[2pt] \textbf{False.} A flexible enough model can drive the training error to zero by memorising the examples, noise and all. What tells you whether it has learned anything is the \emph{gap} between the training error and the error on data it has never seen.
+
+  \item \emph{\emph{Comparing two models by the same metric on the same held-out data is valid.} Comparing model $P$'s $\mathrm{MAE}$ of $1.0$ with model $Q$'s $\mathrm{MSE}$ of $1.375$ is therefore also valid, and shows $P$ to be better.}\\[2pt] \textbf{False.} MAE and MSE are different quantities in different units, and both come out of the same set of predictions --- one squares the errors, the other does not. Comparing $1.0$ of one against $1.375$ of the other compares nothing. To compare two models, pick one metric and compute it for both on the same held-out data.
+
+  \item \emph{\emph{For $y = +1$ and $f(x) = 0.4$ the hinge loss is $0.6$, and the point pulls on the boundary.} For $y = +1$ and $f(x) = 3$ the hinge loss is $0$, and the point does not pull on the boundary.}\\[2pt] \textbf{True.} Hinge loss is $\max(0,\,1 - y f(x))$. At $y f(x) = 3$ that is $\max(0,\,-2) = 0$: the point already sits well beyond the margin, costs nothing, and contributes no gradient. Only the points at or inside the margin --- the support vectors --- decide where the boundary goes.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ \emph{For $y = (4,\,4)$ and $\hat{y} = (3,\,5)$ the residuals are $-1$ and $+1$, so $\mathrm{MSE} = 1$ and $\mathrm{MAE} = 1$.} Now take $y = (30,\,30,\,30)$ and $\hat{y} = (28,\,35,\,25)$. \textbf{(a)} Compute the MSE and the MAE, showing your working. \textbf{(b)} State which of the two is more affected by the largest single residual, and why.
+
+\vspace{2pt}
+
+The residuals $\hat y_i - y_i$ are $-2,\ +5,\ -5$.
+
+\[ \mathrm{MSE} = \frac{4 + 25 + 25}{3} = \sol{18} \qquad\qquad \mathrm{MAE} = \frac{2 + 5 + 5}{3} = \sol{4} \]
+
+\sol{MSE} is the one the largest residual moves more. Squaring is what does it: the residual of $+5$ contributes $25$ to the squared total but only $5$ to the absolute one. This is the same fact as ``squared error is fitted by the mean, absolute error by the median'' seen from the other side --- squaring lets one far-away point pull the fitted value towards it, while taking sizes does not.
+
+\vspace{6pt}
+
+\textbf{D2.}\ \emph{Fold scores $(0.90,\ 0.91,\ 0.89)$ are tightly grouped, and their mean is a fair summary.} A five-fold run now returns $(0.89,\ 0.87,\ 0.91,\ 0.54,\ 0.90)$. \textbf{(a)} Explain why reporting only their mean would be inadequate. \textbf{(b)} State what you would investigate first, and why.
+
+\vspace{2pt}
+
+The mean of the folds hides how they are spread. Four of these agree closely and one sits far below them, so quoting a single number would suggest a model that performs uniformly well when in fact it is unstable across splits --- and which split you happen to draw would then decide the number you report.\par\vspace{1mm}So report the spread alongside the mean, and go and look at the low fold. Useful things to check: whether its class balance differs from the others; whether the rows are ordered or grouped so the split is not really random; whether a cluster of outliers or mislabelled rows has landed in it; and whether the dataset is simply small enough that any one fold is unrepresentative. Shuffling or stratifying and re-running settles most of these quickly.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ \emph{Worked analogue. A student tunes a threshold by trying twenty values and reporting the best test
+score. The reported figure is optimistic, because the test set has been consulted twenty times; the check is
+to re-run with the tuning done inside the training data only, and the score should fall.}
+
+\vspace{2mm}
+Now consider this case. A colleague reports a test accuracy of $0.97$ on a dataset of $100$ rows and $5000$
+columns, where the domain expert says the honest figure should be close to chance. The colleague scored all
+$5000$ columns against $y$ using all $100$ rows, kept the best $20$, then split into train and test, fitted a
+classifier and reported the test accuracy.
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} The step that chooses $20$ columns out of $5000$ is itself fitted to the data, and it was fitted using \emph{all} $100$ rows --- including the ones that later become the test rows. It therefore saw those rows' labels. With $5000$ columns and only $100$ rows, twenty of them will line up with $y$ by chance alone, and those twenty then look predictive at test time because the peeking has already happened. The honest figure is close to chance.\par\vspace{1mm}\textbf{(ii) How to check.} Put the selection inside a \texttt{Pipeline} and cross-validate, so the columns are chosen afresh from the training rows of each fold. Or, more brutally: shuffle $y$ at random, so there is no signal left to find, and re-run. Done the wrong way this still scores high; done properly it collapses to chance.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the score stays near $0.97$ once the selection is moved inside the fold, the ordering was not the problem and something else is going on --- duplicated rows spanning the split, or the target hiding among the features. Naming what you would expect to see is the part that turns a guess into a diagnosis: more than one explanation fits these facts, and yours has to account for all of them.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+\end{document}
