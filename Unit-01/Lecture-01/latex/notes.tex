@@ -69,6 +69,27 @@ The numbers in these notes were produced with Python 3.10, NumPy 2.2,
 pandas 2.3, scikit-learn 1.7 and matplotlib 3.10. Small differences in your
 versions will change the last decimal place, not the conclusions.
 
+\begin{keyidea}[One dataset, one seed --- the convention for this lecture]
+Almost everything in these notes is computed from \textbf{one dataset}: the
+\texttt{load\_iris} that ships inside scikit-learn, 150 flowers with four
+measurements each. Nothing is downloaded, so all of it runs on the campus
+network. Where a demonstration needs data iris cannot supply --- a curve to
+over-fit, two features on absurdly different scales, five thousand columns of
+pure noise --- the notes generate it, and say so.
+
+Wherever a listing below depends on chance, \textbf{the seed is 0}. Every split
+is written \texttt{random\_state=0} and every generator
+\texttt{np.random.default\_rng(0)}, shown in the listing rather than hidden in
+a helper, so you can see it and copy it. (The two synthetic \emph{figures} ---
+the over-fitting curve and the scaling demonstration --- keep their own fixed
+seeds, because there the seed defines the data rather than the experiment.)
+
+So every number printed in these notes reproduces \emph{exactly} if you run the
+code as written. If you get something different, the difference is in your code
+or your library versions, not in chance --- which is the only thing that makes a
+printed number worth anything to you.
+\end{keyidea}
+
 \subsection*{Learning outcomes}
 
 By the end of these notes you should be able to:
@@ -1181,14 +1202,14 @@ result is a coin flip, hence 0.50.
 \item Because training error measures how well the model reproduces data it has
 already seen, which a sufficiently flexible model can always do perfectly. It
 says nothing about new data. The degree-12 model's test RMSE was 40.52 against
-1.10 for degree 3 --- it is the worst model available, and training error ranked
+1.13 for degree 3 --- it is the worst model available, and training error ranked
 it best.
 
 \item Investigate the fourth fold. A single fold far below the others suggests
 either that the folds are not comparable (an unstratified split leaving one fold
 with an unusual class mix), or that a cluster of genuinely hard or mislabelled
 cases landed together. Reporting only the mean (0.886) hides the instability;
-the standard deviation (0.135) is the signal that something is wrong.
+the standard deviation (0.134) is the signal that something is wrong.
 
 \item Because \texttt{cross\_val\_score} refits the \emph{whole pipeline} inside
 each fold. The scaler's mean and standard deviation are computed from that

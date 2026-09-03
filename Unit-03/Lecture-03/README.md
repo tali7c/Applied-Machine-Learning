@@ -43,17 +43,24 @@ you picked, which is the whole payoff of having separated the two questions.
 
 ## The measurements the lecture turns on
 
-Every number below was produced by running code on scikit-learn's bundled
-`load_diabetes` (442 patients, 10 features) or on a synthetic quadratic with a
-fixed seed. Nothing downloads anything.
+Every number below was produced by running one script on scikit-learn's
+bundled `load_diabetes` (442 patients, 10 features, features and target both
+standardised) or on a deterministic synthetic quadratic. Every random number
+generator in that script is `np.random.default_rng(0)` — one dataset, one
+seed, so the deck, the notes and the figures all agree and anything you run
+yourself reproduces them. Nothing downloads anything.
 
 - The stability cliff: at `η = 1.00` the iterates bounce `0 → 6 → 0` forever;
   at `η = 1.05` they reach **−17.18** in twenty steps.
-- SGD reaches MSE **0.5268** after one epoch. Full-batch gradient descent needs
-  **80 epochs** for the same result, with identical arithmetic per epoch.
+- SGD reaches MSE **0.5355** after one epoch. Full-batch gradient descent needs
+  **71 epochs** for the same result, with identical arithmetic per epoch.
 - A single-example gradient is typically wrong by **6.32** when the true
   gradient has length **2.42**. A single SGD step often points uphill.
-- `B=32` reached the same MSE as `B=1` and ran **31× faster** per epoch.
+- `B=32` reached a slightly better MSE than `B=1` (**0.4860** against
+  **0.4969** after 30 epochs) with **31.6× fewer updates** per epoch — 442
+  against 14 — and about an order of magnitude less wall-clock time. The
+  update count is exact on any machine; the milliseconds are not, and are the
+  one measurement in this lecture a fixed seed cannot pin down.
 - Momentum with `β = 0.9` overshoots a minimum at 3 all the way to **5.13**,
   and on that well-conditioned problem it is **slower** than plain gradient
   descent (92 iterations against 36).

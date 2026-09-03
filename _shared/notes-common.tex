@@ -43,7 +43,20 @@
   title={#1}, boxrule=0.8pt, arc=2pt, left=6pt,right=6pt,top=4pt,bottom=4pt}
 
 % Output block: what the code above actually printed.
+%
+% Two settings here are not cosmetic and must not be removed:
+%   language={}     -- the global \lstset below selects Python, and listings
+%                      would then apply Python syntax rules to program OUTPUT.
+%                      An apostrophe in a printed sentence ("Adadelta's step")
+%                      opens a string literal and colours the rest of the line
+%                      teal; words like "in" or "for" get keyword-coloured.
+%                      Output is not source code and must not be highlighted.
+%   keepspaces=true -- with columns=fullflexible, listings silently collapses
+%                      runs of spaces, which destroys every aligned numeric
+%                      table a print statement produces.
 \lstdefinestyle{amlout}{
+  language={},
+  keepspaces=true,
   basicstyle=\ttfamily\footnotesize\color{black!80},
   backgroundcolor=\color{black!4},
   frame=leftline, framerule=2pt, rulecolor=\color{black!25},

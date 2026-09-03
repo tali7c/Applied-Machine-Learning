@@ -19,11 +19,24 @@ One lecture package covering the whole of Unit II. Budgeted at a minimum of
 Course outcome: **CO3** — evaluate the performance of machine learning models
 using appropriate metrics.
 
+## Reproducibility
+
+No dataset and no seed — and for once that is the correct answer rather than an
+omission. A loss function is arithmetic on numbers you already have, so nothing
+here samples, shuffles or initialises. Every example runs on a handful of
+values written out in full in the notes: four house prices, three emails, six
+sensor readings. There is no `random_state` and no `default_rng` anywhere.
+
+Every number in `notes.pdf` and `slides.pdf` is therefore not merely
+reproducible but inevitable. If you run a listing and get something different,
+it is a typing mistake. Randomness enters the course in Lecture 3, and with it
+the convention of one seed per lecture, always shown in the listing.
+
 ## Files
 
 | File | What it is |
 |---|---|
-| `slides.pdf` | 39 frames, 53 overlay pages — for the room |
+| `slides.pdf` | 40 frames, 54 overlay pages — for the room |
 | `notes.pdf` | 23 pages — written so you can learn this without attending |
 | `latex/` | sources |
 | `figures/` | six vector figures, every one produced by running code rather than drawn |

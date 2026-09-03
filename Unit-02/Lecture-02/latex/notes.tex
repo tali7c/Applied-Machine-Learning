@@ -61,6 +61,26 @@ Every number in these notes was produced with:
 numpy 2.2.6 | sklearn 1.7.2 | pandas 2.3.3
 \end{codeout}
 
+\begin{keyidea}[No dataset, no seed --- the convention for this lecture]
+Most lectures in this course fix one dataset and one seed, so that every
+printed number reproduces exactly. This lecture needs neither, and it is worth
+knowing why.
+
+A loss function is a piece of arithmetic applied to numbers you already have.
+It does not sample, shuffle or initialise anything. So every example below runs
+on a handful of numbers written out in full --- four house prices, three emails,
+six sensor readings --- and \textbf{there is not a single random number anywhere
+in these notes}. No \texttt{random\_state}, no \texttt{default\_rng}, nothing to
+seed.
+
+That makes L2 the strictest reproducibility case in the course: every value
+printed here is not merely reproducible but \emph{inevitable}. If you run a
+listing and get a different answer, you have made a typing mistake --- chance
+had no opportunity to intervene. From Lecture~3 onward, randomness enters, and
+with it the convention you met in Lecture~1: one seed per lecture, always shown
+in the listing.
+\end{keyidea}
+
 \subsection{Learning outcomes}
 
 By the end of this lecture you should be able to:
@@ -541,7 +561,7 @@ $p$ on correct class & loss & \\
 0.90  & 0.1054 & \\
 0.50  & 0.6931 & a coin flip costs $\log 2$\\
 0.10  & 2.3026 & \\
-0.01  & 4.6052 & confident and wrong --- 456$\times$ the cost of being right\\
+0.01  & 4.6052 & confident and wrong --- 458$\times$ the cost of being right\\
 0.001 & 6.9078 & and it keeps going\\
 \bottomrule
 \end{tabular}
@@ -925,7 +945,7 @@ observed numerically in Section~\ref{sec:meanmedian}.
 of identical values). Changing one to $0.001$:
 \[
   \frac{49 \times 0.3567 + 6.9078}{50}
-  = \frac{17.478 + 6.908}{50} = 0.4877 .
+  = \frac{17.477 + 6.908}{50} = 0.4877 .
 \]
 A single confidently wrong example raised the loss by $37\%$. That sensitivity
 is the design intent, but it also means one mislabelled training row can

@@ -15,6 +15,8 @@
   basicstyle=\ttfamily\scriptsize\color{black!75},
   backgroundcolor=\color{black!5}, frame=leftline, framerule=2pt,
   rulecolor=\color{black!30}, breaklines=true, columns=fullflexible,
+  keepspaces=true,   % several outputs below are aligned tables
+  language={},       % printed output is not Python: do not syntax-highlight it
   xleftmargin=4pt, aboveskip=1pt, belowskip=1pt, literate={-}{{-}}1}
 \lstnewenvironment{outblk}{\lstset{style=outblk}}{}
 
@@ -71,6 +73,26 @@
     \small Full derivations, more worked examples and 10 practice questions
     with solutions are in \texttt{notes.pdf}.
   \end{center}
+\end{frame}
+
+\begin{frame}[shrink=6]{No Dataset, No Seed}
+  \begin{block}{The reproducibility convention, and why today is the exception}
+    \small
+    \begin{itemize}
+      \item Every other lecture fixes \textbf{one dataset and one seed}, always
+        shown in the listing --- the convention from Lecture~1.
+      \item A loss function is arithmetic on numbers you already have. It does
+        not sample, shuffle or initialise.
+      \item So today there is \textbf{no dataset and no random number at all}:
+        four house prices, three emails, six sensor readings, written out.
+    \end{itemize}
+  \end{block}
+  \begin{alertblock}{What that buys you}
+    \small Every value in these slides is not just reproducible but
+    \emph{inevitable}. Run a listing and get something else, and it is a typing
+    mistake --- chance never got a turn. Randomness returns in Lecture~3, and
+    with it \texttt{np.random.default\_rng(0)} on every listing that needs one.
+  \end{alertblock}
 \end{frame}
 
 \begin{frame}{Where we are}
@@ -525,7 +547,7 @@ BCE sklearn   0.414931599615397
     \midrule
     0.99  & 0.0101 & confident and right --- nearly free\\
     0.50  & 0.6931 & a coin flip costs $\log 2$\\
-    0.01  & \textbf{4.6052} & \textbf{456$\times$} the cost of being right\\
+    0.01  & \textbf{4.6052} & \textbf{458$\times$} the cost of being right\\
     0.001 & 6.9078 & and it keeps going\\
     \bottomrule
   \end{tabular}

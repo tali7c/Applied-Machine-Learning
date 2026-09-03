@@ -78,6 +78,20 @@ Only one dataset is used, and it ships inside scikit-learn:
 progression-of-disease measurement as the target. Nothing here downloads
 anything, so all of it runs on the campus network.
 
+\begin{keyidea}[One dataset, one seed --- the convention for this lecture]
+Everything in these notes is computed from \textbf{one dataset} and
+\textbf{one seed}. The dataset is the \texttt{load\_diabetes} above, with the
+ten features and the target each standardised to zero mean and unit variance.
+The seed is \textbf{0}: every random number generator below is created as
+\texttt{np.random.default\_rng(0)}, and every listing that shuffles or samples
+shows that line rather than hiding it.
+
+So every number printed in these notes reproduces \emph{exactly} if you run
+the code as written. If you get something different, the difference is in your
+code or your library versions, not in chance --- which is the only thing that
+makes a printed number worth anything to you.
+\end{keyidea}
+
 \subsection{Learning outcomes}
 
 By the end of this lecture you should be able to:
@@ -691,8 +705,9 @@ arriving; the second says they must shrink fast enough to damp the noise.
 $\eta_t = \eta_0/(1 + ct)$ satisfies both. Here is the effect, measured.
 
 \begin{lstlisting}
-def run_decay(eta0=0.02, epochs=30, seed=1, decay=True):
-    rng = np.random.default_rng(seed); w = np.zeros(p); t = 0
+def run_decay(eta0=0.02, epochs=30, decay=True):
+    rng = np.random.default_rng(0)             # the one seed for this lecture
+    w = np.zeros(p); t = 0
     for _ in range(epochs):
         for i in rng.permutation(n):
             t += 1
@@ -705,14 +720,14 @@ print("SGD (B=1, 30 epochs), decayed step         MSE %.4f" % run_decay(decay=Tr
 print("least-squares optimum                      MSE %.4f" % mse(X, y, w_star))
 \end{lstlisting}
 \begin{codeout}
-SGD (B=1, 30 epochs), constant step 0.02   MSE 0.5395
-SGD (B=1, 30 epochs), decayed step         MSE 0.4834
+SGD (B=1, 30 epochs), constant step 0.02   MSE 0.5319
+SGD (B=1, 30 epochs), decayed step         MSE 0.4835
 least-squares optimum                      MSE 0.4823
 \end{codeout}
 
-With a constant step the run stalls at $0.5395$ and stays there --- it is not
-converging slowly, it is orbiting. Decaying the step closes almost the entire
-remaining gap, reaching $0.4834$ against an optimum of $0.4823$.
+With a constant step the run stalls at $0.5319$ and stays there --- it is not
+converging slowly, it is orbiting. Decaying the step closes $97\%$ of the
+remaining gap, reaching $0.4835$ against an optimum of $0.4823$.
 
 \begin{caution}[Two different things look the same on a loss curve]
 A loss that bounces without settling can mean $\eta$ is above the stability
@@ -808,8 +823,8 @@ If small batches give better value per unit of arithmetic, why not $B=1$? Run
 all three for thirty epochs at the same learning rate.
 
 \begin{lstlisting}
-def run(B, epochs=30, eta=0.005, seed=1):
-    rng = np.random.default_rng(seed)
+def run(B, epochs=30, eta=0.005):
+    rng = np.random.default_rng(0)             # the one seed for this lecture
     w = np.zeros(p)
     hist = [mse(X, y, w)]
     for _ in range(epochs):
@@ -830,16 +845,17 @@ print("least-squares optimum                                  %.4f" % mse(X, y, 
 \begin{codeout}
                 updates/epoch   after 1 epoch   after 30 epochs
 batch  B=442              1          0.9713            0.6219
-mini   B= 32             14          0.7393            0.4860
-SGD    B=  1            442          0.5268            0.4859
+mini   B= 32             14          0.7377            0.4860
+SGD    B=  1            442          0.5355            0.4969
 least-squares optimum                                  0.4823
 \end{codeout}
 
 Every one of those rows used the same number of per-example gradient
 evaluations. After thirty epochs batch gradient descent has reached $0.6219$,
-still a long way from $0.4823$, while both stochastic methods have essentially
-finished. And after a \emph{single} epoch SGD is already at $0.5268$ --- better
-than batch gradient descent manages in thirty.
+still a long way from $0.4823$, while the mini-batch run has essentially
+finished at $0.4860$ and SGD is parked on its noise floor at $0.4969$. And
+after a \emph{single} epoch SGD is already at $0.5355$ --- better than batch
+gradient descent manages in thirty.
 
 That comparison deserves a number of its own.
 
@@ -850,11 +866,11 @@ print("SGD reaches MSE %.4f after a single epoch." % target)
 print("Full-batch GD needs %d epochs to reach the same MSE." % np.argmax(h_long <= target))
 \end{lstlisting}
 \begin{codeout}
-SGD reaches MSE 0.5268 after a single epoch.
-Full-batch GD needs 80 epochs to reach the same MSE.
+SGD reaches MSE 0.5355 after a single epoch.
+Full-batch GD needs 71 epochs to reach the same MSE.
 \end{codeout}
 
-\textbf{Eighty passes over the data against one.} Both spend the same
+\textbf{Seventy-one passes over the data against one.} Both spend the same
 arithmetic per pass. The whole of that factor comes from SGD updating its
 parameters $442$ times per pass instead of once.
 
@@ -875,7 +891,7 @@ descends fastest. Per unit of \emph{work}, more data is worse --- the same
 curve on the left descends slowest. Optimisation is judged by the second
 criterion, because work is what you pay for. The right-hand panel also shows
 the noise floor plainly: past about a hundred updates the SGD curve stops
-descending and becomes a band of jitter around $0.49$.
+descending and becomes a band of jitter averaging $0.50$.
 
 \subsection{So why not $B=1$?}
 
@@ -897,21 +913,33 @@ for B in (1, 32, 442):
     print("B=%4d   %3d updates/epoch   %7.3f ms per epoch" % (B, -(-n//B), best*1000))
 \end{lstlisting}
 \begin{codeout}
-B=   1   442 updates/epoch     1.224 ms per epoch
-B=  32    14 updates/epoch     0.040 ms per epoch
+B=   1   442 updates/epoch     1.198 ms per epoch
+B=  32    14 updates/epoch     0.058 ms per epoch
 B= 442     1 updates/epoch     0.005 ms per epoch
 \end{codeout}
 
-Identical arithmetic; \textbf{$31$ times} the wall-clock cost for $B=1$ against
-$B=32$ on this machine. And $B=32$ reached MSE $0.4860$ after thirty epochs
-against SGD's $0.4859$ --- statistically the same answer, thirty-one times
-faster.
+Identical arithmetic; roughly \textbf{an order of magnitude} more wall-clock
+cost for $B=1$ than for $B=32$ --- about $21\times$ on the machine that
+produced the block above. And $B=32$ reached MSE $0.4860$ after thirty epochs
+against SGD's $0.4969$ --- a slightly \emph{better} answer as well as a much
+cheaper one, because at the same learning rate the larger batch also settles on
+a lower noise floor.
 
-\begin{caution}[These timings are machine-dependent]
-The ratio, not the absolute times, is the point. On a GPU the effect is far
-larger: a device with thousands of cores is almost entirely idle processing one
-example at a time, and batch sizes of $256$ or $1024$ can cost no more
-wall-clock time per update than a batch of $32$.
+\begin{caution}[Timings are the one thing a seed cannot fix]
+Every other number in these notes is reproducible: fixed dataset, fixed seed,
+same answer on your machine as on mine. The three millisecond figures above are
+not. They depend on your processor, your BLAS build and what else is running,
+and repeated runs on the same machine varied between roughly $20\times$ and
+$30\times$ for the same comparison.
+
+So quote the \emph{ratio} and never the timing --- and note that the update
+counts beside them, $442$ against $14$ per epoch, are exact: $31.6\times$
+fewer, on any machine. When you need a defensible speed claim, count operations
+rather than seconds.
+
+On a GPU the effect is far larger: a device with thousands of cores is almost
+entirely idle processing one example at a time, and batch sizes of $256$ or
+$1024$ can cost no more wall-clock time per update than a batch of $32$.
 \end{caution}
 
 \begin{figure}[htbp]
@@ -1272,8 +1300,8 @@ sampling noise, since the exponentially weighted average of $1/(1-\beta) = 10$
 recent mini-batch gradients is itself a lower-variance estimate.
 
 \begin{lstlisting}
-def run_mom(B, beta, eta, epochs=5, seed=1):
-    rng = np.random.default_rng(seed)
+def run_mom(B, beta, eta, epochs=5):
+    rng = np.random.default_rng(0)             # the one seed for this lecture
     w, v = np.zeros(p), np.zeros(p)
     for _ in range(epochs):
         order = rng.permutation(n) if B < n else np.arange(n)
@@ -1290,17 +1318,18 @@ print("least-squares optimum   MSE %.4f" % mse(X, y, w_star))
 \end{lstlisting}
 \begin{codeout}
 mini-batch B=32, eta=0.005, 5 epochs
-   beta=0.00   MSE 0.5358
-   beta=0.90   MSE 0.4870
-   beta=0.99   MSE 0.5674
+   beta=0.00   MSE 0.5356
+   beta=0.90   MSE 0.4885
+   beta=0.99   MSE 0.5321
 least-squares optimum   MSE 0.4823
 \end{codeout}
 
 Read the three rows carefully. Going from $\beta = 0$ to $\beta = 0.9$ moves
-the five-epoch result from $0.5358$ to $0.4870$ --- most of the remaining gap
-to the optimum, closed by one line. Going on to $\beta = 0.99$ makes things
-\emph{worse} than no momentum at all, at $0.5674$: with an effective learning
-rate of $100\eta$ the run is now overshooting badly.
+the five-epoch result from $0.5356$ to $0.4885$ --- seven eighths of the
+remaining gap to the optimum, closed by one line. Going on to $\beta = 0.99$
+throws that gain straight back: at $0.5321$ it finishes level with no momentum
+at all, because an effective learning rate of $100\eta$ makes the run overshoot
+and spend the five epochs recovering.
 
 \begin{caution}[When you raise $\beta$, lower $\eta$]
 Equation~\eqref{eq:effstep} says the effective step is $\eta/(1-\beta)$. Moving
@@ -1446,14 +1475,15 @@ above.
   \item SGD is very noisy: on the diabetes data a single-example gradient was
     typically wrong by $6.32$ against a true gradient of length $2.42$. It
     works because the errors cancel.
-  \item Per epoch, small batches win overwhelmingly. SGD reached MSE $0.5268$
-    in one epoch; full-batch gradient descent needed \textbf{$80$ epochs} for
+  \item Per epoch, small batches win overwhelmingly. SGD reached MSE $0.5355$
+    in one epoch; full-batch gradient descent needed \textbf{$71$ epochs} for
     the same result with the same arithmetic.
   \item Mini-batch noise falls as $1/\sqrt{B}$ while cost grows as $B$:
     measured, $B{=}1$ gave $6.32$ and $B{=}32$ gave $1.06$, a factor of $5.9$
     against $\sqrt{32} = 5.66$.
-  \item Mini-batch wins in practice because it vectorises. $B=32$ reached the
-    same MSE as $B=1$ and ran $31$ times faster per epoch on the same machine.
+  \item Mini-batch wins in practice because it vectorises. $B=32$ reached a
+    slightly better MSE than $B=1$ ($0.4860$ against $0.4969$) and ran $31$
+    times faster per epoch on the same machine.
   \item Momentum, $v \leftarrow \beta v + \nabla J$, $w \leftarrow w - \eta v$,
     is an exponentially weighted average of past gradients with effective step
     $\eta/(1-\beta)$.
@@ -1492,7 +1522,7 @@ Attempt these before reading Section~\ref{sec:solutions}.
     Predict the value at $B = 64$ from theory. The measured value is $0.7152$.
     Explain the discrepancy.
 
-  \item SGD with a constant step size stalled at MSE $0.5395$ while the optimum
+  \item SGD with a constant step size stalled at MSE $0.5319$ while the optimum
     was $0.4823$, and it stayed there for twenty more epochs. Explain what is
     happening, and give two different fixes.
 
@@ -1592,8 +1622,9 @@ gradients are not, so each step injects noise of a size set by $\eta$. The
 iterates settle into a stationary cloud around $w^\star$ rather than
 converging to it. Two fixes: (i) \textbf{decay the learning rate} on a
 Robbins--Monro schedule such as $\eta_t = \eta_0/(1+ct)$ --- this took our run
-from $0.5395$ to $0.4834$; (ii) \textbf{increase the batch size}, which divides
-the noise by $\sqrt{B}$ --- $B=32$ reached $0.4860$ at the same $\eta$. Both
+from $0.5319$ to $0.4835$; (ii) \textbf{increase the batch size}, which divides
+the noise by $\sqrt{B}$ --- at $\eta = 0.005$, thirty epochs of $B=32$ reached
+$0.4860$ where $B=1$ stalled at $0.4969$. Both
 work; increasing $B$ is usually cheaper because it also vectorises.
 
 \medskip
@@ -1620,7 +1651,8 @@ is $0.01/0.1 = 0.1$; at $\beta = 0.99$ it becomes $0.01/0.01 = 1.0$ --- ten
 times larger. They have unintentionally multiplied their learning rate by $10$,
 and the run will overshoot, oscillate, and quite possibly diverge. This is
 exactly the $\beta = 0.99$ row in Section~\ref{sec:momentum}, where the MSE
-went from $0.4870$ to $0.5674$, worse than no momentum. To hold the effective
+went from $0.4885$ at $\beta = 0.9$ to $0.5321$ at $\beta = 0.99$ --- level
+with the $0.5356$ that no momentum at all produced. To hold the effective
 step fixed they should have used
 $\eta = 0.01 \times (1-0.99)/(1-0.9) = 0.001$.
 

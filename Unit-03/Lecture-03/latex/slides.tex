@@ -15,6 +15,8 @@
   basicstyle=\ttfamily\scriptsize\color{black!75},
   backgroundcolor=\color{black!5}, frame=leftline, framerule=2pt,
   rulecolor=\color{black!30}, breaklines=true, columns=fullflexible,
+  keepspaces=true,   % several outputs below are aligned tables
+  language={},       % printed output is not Python: do not syntax-highlight it
   xleftmargin=4pt, aboveskip=1pt, belowskip=1pt, literate={-}{{-}}1}
 \lstnewenvironment{outblk}{\lstset{style=outblk}}{}
 
@@ -96,6 +98,32 @@
       \end{alertblock}
     \end{column}
   \end{columns}
+\end{frame}
+
+\begin{frame}{One dataset, one seed}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{The data}
+        \small scikit-learn's bundled \texttt{load\_diabetes}: 442 patients,
+        10 features, features and target both standardised. Nothing is
+        downloaded.
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{The randomness}
+        \small One seed for the whole lecture:
+        \texttt{np.random.default\_rng(0)}. Every listing that shuffles or
+        samples shows it.
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{0.5em}
+  \begin{exampleblock}{Why this matters to you}
+    \centering\small
+    Every number in this deck is printed by one script. Run the code as
+    written and you get the same numbers --- which is the only reason to
+    believe a number on a slide.
+  \end{exampleblock}
 \end{frame}
 
 % =====================================================================
@@ -470,18 +498,19 @@ one full-batch step:  gradient -20.6667  ->  w = 1.0333
 Unbiased is not noiseless. Near the optimum the full gradient vanishes but the
 per-example ones do not, so SGD orbits in a cloud whose size grows with $\eta$.
 \begin{lstlisting}
+rng = np.random.default_rng(0)                 # one seed for the whole lecture
 eta = eta0/(1 + 0.002*t) if decay else eta0    # Robbins-Monro schedule
 \end{lstlisting}
 \begin{outblk}
-SGD (B=1, 30 epochs), constant step 0.02   MSE 0.5395
-SGD (B=1, 30 epochs), decayed step         MSE 0.4834
+SGD (B=1, 30 epochs), constant step 0.02   MSE 0.5319
+SGD (B=1, 30 epochs), decayed step         MSE 0.4835
 least-squares optimum                      MSE 0.4823
 \end{outblk}
 \onslide<2->
 \begin{alertblock}{$\sum \eta_t = \infty$ and $\sum \eta_t^2 < \infty$}
   \footnotesize The first says do not stop before arriving; the second says
-  damp the noise. $\eta_t = \eta_0/(1+ct)$ does both --- and closed almost the
-  whole remaining gap here.
+  damp the noise. $\eta_t = \eta_0/(1+ct)$ does both --- and closed $97\%$ of
+  the remaining gap here.
 \end{alertblock}
 \end{frame}
 
@@ -516,7 +545,7 @@ least-squares optimum                      MSE 0.4823
 
 \begin{frame}[fragile]{Predict first \#2}
 Thirty epochs, same $\eta$, same total arithmetic per epoch. SGD reaches
-MSE \textbf{0.5268} after \emph{one} epoch.
+MSE \textbf{0.5355} after \emph{one} epoch.
 
 \begin{center}
   \textbf{How many epochs does full-batch gradient descent need to reach the
@@ -527,14 +556,14 @@ MSE \textbf{0.5268} after \emph{one} epoch.
 \begin{outblk}
                 updates/epoch   after 1 epoch   after 30 epochs
 batch  B=442              1          0.9713            0.6219
-mini   B= 32             14          0.7393            0.4860
-SGD    B=  1            442          0.5268            0.4859
-Full-batch GD needs 80 epochs to reach the same MSE.
+mini   B= 32             14          0.7377            0.4860
+SGD    B=  1            442          0.5355            0.4969
+Full-batch GD needs 71 epochs to reach the same MSE.
 \end{outblk}
 \onslide<3->
 \begin{center}\small
-  \textbf{Eighty passes against one} (optimum $0.4823$). All of it comes from
-  updating 442 times per pass instead of once.
+  \textbf{Seventy-one passes against one} (optimum $0.4823$). All of it comes
+  from updating 442 times per pass instead of once.
 \end{center}
 \end{frame}
 
@@ -593,8 +622,8 @@ B=  32   RMS ||g_B - g|| = 1.0641
 \end{frame}
 
 \begin{frame}[fragile]{Predict first \#3}
-$B=32$ does $32\times$ the arithmetic per update that $B=1$ does. Both reach
-essentially the same MSE (0.4860 against 0.4859 after 30 epochs).
+$B=32$ does $32\times$ the arithmetic per update that $B=1$ does, and after 30
+epochs it is at MSE 0.4860 against $B=1$'s 0.4969.
 
 \begin{center}
   \textbf{Per epoch --- identical total arithmetic --- which is faster in
@@ -603,15 +632,16 @@ essentially the same MSE (0.4860 against 0.4859 after 30 epochs).
 \vspace{0.4em}
 \onslide<2->
 \begin{outblk}
-B=   1   442 updates/epoch     1.224 ms per epoch
-B=  32    14 updates/epoch     0.040 ms per epoch
+B=   1   442 updates/epoch     1.198 ms per epoch
+B=  32    14 updates/epoch     0.058 ms per epoch
 B= 442     1 updates/epoch     0.005 ms per epoch
 \end{outblk}
 \onslide<3->
-\begin{alertblock}{$B=32$ is 31 times faster than $B=1$}
-  \footnotesize Same arithmetic, one vectorised matrix operation instead of 32
-  tiny ones. On a GPU the effect is far larger --- thousands of cores sit idle
-  processing one example at a time.
+\begin{alertblock}{$B=32$ is an order of magnitude faster than $B=1$}
+  \footnotesize Same arithmetic, a slightly better MSE: one vectorised matrix
+  operation instead of 32 tiny ones. The update counts are exact --- $442$
+  against $14$, so $31.6\times$ fewer. The milliseconds are the one thing here
+  a seed cannot pin down. Quote the ratio, never the timing.
 \end{alertblock}
 \end{frame}
 
@@ -628,8 +658,9 @@ B= 442     1 updates/epoch     0.005 ms per epoch
         \begin{itemize}
           \item Keeps almost all of SGD's update frequency --- 14 per epoch was
             enough here.
-          \item Recovers vectorised arithmetic: $31\times$ on this laptop, far
-            more on a GPU.
+          \item Recovers vectorised arithmetic: $31.6\times$ fewer updates per
+            epoch, and roughly an order of magnitude in wall-clock time on a
+            laptop --- far more on a GPU.
           \item Cuts gradient noise by $\sqrt{B}$ into the bargain.
         \end{itemize}
       \end{exampleblock}
@@ -822,15 +853,15 @@ beta=0.9   eta=0.2361   full-batch iterations to the optimum:   128
 \end{center}
 \begin{outblk}
 mini-batch B=32, eta=0.005, 5 epochs
-   beta=0.00   MSE 0.5358
-   beta=0.90   MSE 0.4870
-   beta=0.99   MSE 0.5674
+   beta=0.00   MSE 0.5356
+   beta=0.90   MSE 0.4885
+   beta=0.99   MSE 0.5321
 least-squares optimum   MSE 0.4823
 \end{outblk}
 \onslide<2->
 \begin{center}\small
-  $\beta = 0.99$ is \emph{worse than no momentum}: the effective step is
-  $100\eta$ and the run overshoots.
+  $\beta = 0.99$ throws the whole gain away: the effective step is $100\eta$,
+  the run overshoots, and it finishes \emph{level with no momentum at all}.
 \end{center}
 \end{frame}
 
@@ -872,12 +903,12 @@ least-squares optimum   MSE 0.4823
       \textbf{unbiased} gradient at $1/n$ the price. That is SGD.
     \item It is very noisy: true gradient length $2.42$, single-example error
       $6.32$. Steps often point uphill; the errors cancel.
-    \item Per epoch, small batches win: SGD reached $0.5268$ in one epoch;
-      batch GD needed \textbf{80}.
+    \item Per epoch, small batches win: SGD reached $0.5355$ in one epoch;
+      batch GD needed \textbf{71}.
     \item Noise falls as $1/\sqrt{B}$, cost grows as $B$. $B{=}32$ measured
       $5.9\times$ less noise than $B{=}1$ for $32\times$ the arithmetic.
-    \item \textbf{Mini-batch wins because it vectorises}: same MSE as $B{=}1$,
-      $31\times$ faster per epoch.
+    \item \textbf{Mini-batch wins because it vectorises}: $0.4860$ against
+      SGD's $0.4969$, with $31.6\times$ fewer updates per epoch.
     \item $v \leftarrow \beta v + \nabla J$: an exponentially weighted average,
       effective step $\eta/(1-\beta)$.
     \item Momentum \textbf{overshoots} --- to $5.13$ past a minimum at $3$ ---
