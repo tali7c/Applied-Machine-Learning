@@ -1,0 +1,306 @@
+% AML (CSAI2017P) --- Test-0 diagnostic --- SOLUTIONS issued to students.
+% Test-0 carries no marks. This sheet explains the subject only: it says nothing
+% about how scripts were read or what was looked for. Release after the sitting.
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=16mm,top=12mm,bottom=14mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage{fancyvrb}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2.5pt}
+\setlength{\emergencystretch}{3em}
+
+\pagestyle{fancy}\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\footnotesize CSAI2017P --- Applied Machine Learning --- Test-0 diagnostic: solutions}
+\fancyhead[R]{\footnotesize\bfseries No marks}
+\fancyfoot[R]{\footnotesize page \thepage\ of \pageref{LastPage}}
+\usepackage{lastpage}
+
+\DefineVerbatimEnvironment{code}{Verbatim}%
+  {fontsize=\small,xleftmargin=5mm,baselinestretch=0.98}
+
+\newcommand{\parthead}[2]{\vspace{2pt}\noindent\rule{\linewidth}{0.4pt}\par\vspace{2pt}%
+  \noindent{\bfseries Block #1}\hfill{\small #2}\par\vspace{1pt}}
+\newcommand{\sol}[1]{\textbf{#1}}
+
+\begin{document}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning}\\[2pt]
+{\large\bfseries Test-0 --- Diagnostic \quad\textbullet\quad Solutions}\\[3pt]
+{\small Sat 10 August 2026 \quad\textbullet\quad 30 minutes \quad\textbullet\quad \textbf{This test carried no marks}}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to the diagnostic you sat in week 2, with the reasoning behind each one.
+
+The test carried no marks and none were awarded, so there is nothing here to check a score against.
+What it is for is the other thing: you can now see how far your answer was from a complete one, and
+which of the six blocks you want to shore up before the material that depends on it arrives.
+
+\textbf{Several of these questions have more than one good route to the answer, and a route different
+from the one printed here is not automatically a worse one.} Where a second route is worth seeing, it
+is given. If you reached a different answer and can show your reasoning, bring your script.}}
+\vspace{4pt}
+
+\parthead{A --- Warm-up}{5 items, single answer}
+
+\textbf{A1.}\ A fair coin is tossed twice. The probability of exactly one head.
+
+\sol{(b)\ $1/2$.} The four outcomes HH, HT, TH, TT are equally likely, and two of them --- HT and TH ---
+have exactly one head, so the probability is $2/4$. The common wrong answer is $1/4$, which counts HT
+but forgets that TH is a different outcome with the same number of heads.
+
+\vspace{5pt}
+
+\textbf{A2.}\ \texttt{len(\{'a': 1, 'b': 2\})} evaluates to:
+
+\sol{(b)\ 2.} The braces here build a \emph{dictionary} with two key--value pairs, and \texttt{len} of a
+dictionary counts its keys, not its keys and values separately. Hence 2, not 4.
+
+\vspace{5pt}
+
+\textbf{A3.}\ $A$ is $3 \times 4$ and $v$ is a column vector. For $Av$ to be defined, $v$ must be:
+
+\sol{(b)\ $4 \times 1$.} In a product $A B$ the inner dimensions must agree: $(3 \times \mathbf{4})
+(\mathbf{4} \times 1)$ works and gives a $3 \times 1$ result. The rule to carry forward is that the
+number of \emph{columns} of $A$ must equal the number of \emph{rows} of $v$ --- which is exactly the
+check you will be doing on every design matrix later in the course.
+
+\vspace{5pt}
+
+\textbf{A4.}\ For $2, 3, 4, 5, 96$, which is larger, the mean or the median?
+
+\sol{(a)\ the mean.} The mean is $(2+3+4+5+96)/5 = 110/5 = 22$; the median is the middle value of the
+sorted list, $4$. One large value drags the mean a long way and leaves the median where it was. This is
+the same fact that decides, later in the course, why squared error is fitted by the mean and absolute
+error by the median.
+
+\vspace{5pt}
+
+\textbf{A5.}\ A \emph{training set} is:
+
+\sol{(a)\ data used to fit the model.} The final performance figure must come from data the model has
+not been fitted on, which is what a test set is for; and a training set is not defined by whether it
+carries labels.
+
+\parthead{B --- Working}{3 items}
+
+\textbf{B1.}\ Machine 1 makes 60\% of items, 2\% defective; machine 2 makes the rest, 5\% defective. An
+item is found defective. How likely is it that machine 1 made it?
+
+\vspace{2pt}
+
+\sol{$0.375$, that is $3/8$.} The quickest honest route is to stop using percentages and imagine a
+concrete batch --- say $1000$ items.
+
+\vspace{2pt}
+\hspace*{6mm}Machine 1 makes $600$ of them, and $2\%$ of $600 = 12$ are defective.\\
+\hspace*{6mm}Machine 2 makes $400$ of them, and $5\%$ of $400 = 20$ are defective.\\
+\hspace*{6mm}Defective items in total: $12 + 20 = 32$, of which $12$ came from machine 1.
+\vspace{2pt}
+
+So the answer is $12/32 = 0.375$. In Bayes' notation the same calculation is
+\[
+P(M_1 \mid D) \;=\; \frac{P(D \mid M_1)\,P(M_1)}{P(D \mid M_1)P(M_1) + P(D \mid M_2)P(M_2)}
+\;=\; \frac{0.02 \times 0.6}{0.02 \times 0.6 + 0.05 \times 0.4}
+\;=\; \frac{0.012}{0.032} \;=\; 0.375 .
+\]
+
+\textbf{The sanity check is the part worth having.} Machine 1 makes \emph{more} of the items but is
+less than half as likely to spoil one, so on being told an item is defective you should expect the
+answer to come out below $50\%$ --- and it does. An answer of $0.6$ means the question of which
+machine made it has been confused with the question of which machine spoiled it.
+
+\vspace{5pt}
+
+\textbf{B2.}\ Find the $c$ minimising $S(c) = \sum_{i=1}^{n}(y_i - c)^2$, and say how you know it is a
+minimum.
+
+\vspace{2pt}
+
+\sol{$c = \bar{y}$, the mean of the $y_i$.} Differentiating,
+\[
+S'(c) \;=\; \sum_{i=1}^{n} 2(y_i - c)(-1) \;=\; -2\sum_{i=1}^{n}(y_i - c) \;=\; 0
+\quad\Longrightarrow\quad \sum_{i=1}^{n} y_i \;=\; nc
+\quad\Longrightarrow\quad c \;=\; \frac{1}{n}\sum_{i=1}^{n} y_i .
+\]
+It is a minimum because $S''(c) = 2n > 0$ for every $c$ --- the second-order condition, which the
+question asked for explicitly and which a majority of scripts left out.
+
+\textbf{A route with no calculus in it.} Add and subtract $\bar{y}$ inside the bracket and expand; the
+cross term vanishes because $\sum (y_i - \bar{y}) = 0$, leaving
+\[
+S(c) \;=\; \sum_i (y_i - \bar{y})^2 \;+\; n(c - \bar{y})^2 .
+\]
+The first term does not involve $c$ at all and the second is $n$ times a square, so $S(c)$ is an
+upward parabola in $c$ whose least possible value is reached exactly when $c = \bar{y}$. This form
+also shows why the minimum is unique, and it is worth remembering --- the same decomposition returns
+as the bias--variance identity later in the course.
+
+\vspace{5pt}
+
+\textbf{B3.}\ For the given \texttt{summarise}, what does \texttt{summarise([2, 4, 6])} return, and
+what does \texttt{summarise([])} do?
+
+\vspace{2pt}
+
+\sol{\texttt{summarise([2, 4, 6])} returns \texttt{4.0}.} Tracing the loop: \texttt{total} runs
+$0 \to 2 \to 6 \to 12$, and the function returns $12 / 3$. Note the answer is the \emph{float}
+\texttt{4.0} and not the integer \texttt{4}: in Python 3 the \texttt{/} operator always performs true
+division, and \texttt{//} is the one that would give \texttt{4}.
+
+\sol{\texttt{summarise([])} raises \texttt{ZeroDivisionError: division by zero}.} The loop body never
+executes, so \texttt{total} is still \texttt{0}; then \texttt{len(values)} is \texttt{0} and the final
+line evaluates \texttt{0 / 0}. It does not return \texttt{0}, and it does not return \texttt{None} --- it
+raises, and the function has no guard against it.
+
+The habit being asked for is tracing a short function by hand on a specific input rather than reading
+it for what it looks like it does. The empty list is the standard edge case for anything that divides
+by a count, and it is worth reaching for automatically.
+
+\parthead{C --- Explain it}{1 item}
+
+\textbf{C1.}\ In at most 120 words, explain overfitting to a first-year student, with one concrete
+example.
+
+\vspace{2pt}
+
+There is no single correct wording here, and the form of the explanation was left to you deliberately
+--- an analogy, a sketch, a small table of training and test error, or a definition are all legitimate.
+A complete answer contains three things: what the model is doing, why that is a problem, and an
+instance you can point at. One version:
+
+\vspace{3pt}
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+A model overfits when it learns the accidents of the data it was trained on --- the noise, the
+particular rows it happened to see --- instead of the pattern that would hold on new data. You notice
+it by the gap: error on the training data keeps falling while error on data the model has never seen
+starts to rise. Fitting a high-degree polynomial to a handful of noisy points is the standard picture;
+the curve passes exactly through every point and is useless a little way beyond them. The everyday
+version is a student who has memorised past papers rather than the subject, and meets a question
+phrased differently.}}
+\vspace{3pt}
+
+The give-away that an answer has not landed is defining overfitting as ``the model is too accurate''
+or ``the model is too complex''. Complexity is a common \emph{cause}; the thing itself is the gap
+between performance on seen and unseen data, which is why the definition has to mention both.
+
+\parthead{D --- Debug}{1 item}
+
+\textbf{D1.}\ One fault in \texttt{evaluate}. State what is wrong, why it matters, and how you would
+confirm it.
+
+\vspace{2pt}
+
+\textbf{(i) What is wrong.} The scaler is fitted on the \emph{whole} of \texttt{X} before the split:
+
+\begin{code}
+X_scaled = scaler.fit_transform(X)          # <-- sees every row, test rows included
+X_train, X_test, ... = train_test_split(X_scaled, y, ...)
+\end{code}
+
+\texttt{fit\_transform} computes the mean and standard deviation of each column from all the rows and
+then rescales with them. The rows that become the test set have therefore already contributed to the
+numbers used to transform the training set. That is leakage: information from the test set has reached
+the model before it was evaluated.
+
+\textbf{(ii) Why it matters.} The figure the function returns is no longer an estimate of performance
+on unseen data, and it is optimistic --- the test rows have been mapped using statistics they helped
+to define. The effect is worst exactly where you can least afford it: small datasets, and columns with
+outliers or heavy tails, where a handful of test rows can move a column's mean or spread appreciably.
+It matters more here than it would for many models, because $k$-nearest-neighbours decides everything
+by distance, so the scaling \emph{is} the model's view of the data.
+
+\textbf{(iii) How to confirm it.} Split first, then fit the scaler on the training rows only and merely
+\texttt{transform} the test rows, and compare the two scores:
+
+\begin{code}
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0)
+scaler = StandardScaler().fit(X_train)      # fitted on training rows only
+model  = KNeighborsClassifier(n_neighbors=5).fit(scaler.transform(X_train), y_train)
+model.score(scaler.transform(X_test), y_test)
+\end{code}
+
+If the score drops, the leak was inflating it. The tidier form of the same fix is a
+\texttt{Pipeline(\lbrack('scaler', StandardScaler()), ('knn', KNeighborsClassifier())\rbrack)} passed to
+\texttt{cross\_val\_score}, which re-fits the scaler inside every fold and makes the mistake
+structurally hard to repeat.
+
+Two things that are \emph{not} the fault, both named in a number of scripts: \texttt{test\_size=0.25}
+and \texttt{n\_neighbors=5} are choices, not errors, and \texttt{random\_state=0} is what makes the
+result reproducible rather than what breaks it.
+
+\parthead{E --- Getting started}{1 item}
+
+\textbf{E1.}\ A shop wants to predict whether a customer will return next month. Describe how you
+would start.
+
+\vspace{2pt}
+
+\textbf{The question is under-specified on purpose,} and the efficient first move is to say so. Naming
+an algorithm straight away is not wrong, but it commits to a shape of solution before the problem has
+one. The things that have to be settled before any model can be fitted:
+
+\begin{itemize}[leftmargin=6mm,topsep=2pt,itemsep=1.5pt]
+  \item \textbf{What ``return'' means.} A purchase? A visit? Within a calendar month, or 30 days from
+        a fixed date? This is the target column, and nothing can be built until it is a rule you could
+        apply to a row by hand.
+  \item \textbf{What data exists,} and how far back --- transactions with dates and a customer
+        identifier at minimum. Without a way to link a purchase to a person there is no problem to
+        solve.
+  \item \textbf{What the base rate is.} If 90\% of customers return anyway, a model that predicts
+        ``yes'' for everybody is 90\% accurate and worthless, and you need to know that before you
+        report an accuracy.
+  \item \textbf{What a wrong prediction costs} in each direction, and \textbf{what the prediction is
+        for} --- a voucher sent to someone who was coming anyway is cheap; missing a customer who was
+        about to leave may not be.
+\end{itemize}
+
+Then the shape of a first attempt: pick a cut-off date, define the label from what happened in the
+month \emph{after} it, and build features only from data \emph{before} it --- recency, frequency and
+spend are the obvious three. Because the data are ordered in time, evaluate on a later period rather
+than on a random split, or you are predicting the past from the future. Start with a baseline dull
+enough to be beaten --- ``predict that whoever came last month comes again'' --- and treat any model
+that cannot beat it as not yet working.
+
+\parthead{F --- Estimation}{1 item}
+
+\textbf{F1.}\ Roughly how many numbers are in a $1000 \times 1000$ greyscale image, and how much
+memory would 500 of them need?
+
+\vspace{2pt}
+
+\sol{$10^6$ numbers per image; $5 \times 10^8$ numbers in total; about \textbf{500\,MB} at one byte per
+pixel.} Greyscale means one number per pixel, so the count is $1000 \times 1000 = 10^{6}$, and
+$500 \times 10^{6} = 5 \times 10^{8}$ numbers altogether.
+
+Turning that into memory needs an assumption, and \textbf{stating it was the point of the question}:
+an 8-bit greyscale pixel is one byte, so $5 \times 10^{8}$ bytes $\approx 500$\,MB. Load the same data
+as \texttt{float64} --- which is what happens by default if you convert to a NumPy float array without
+thinking --- and each number takes 8 bytes instead, giving $4 \times 10^{9}$ bytes $\approx 4$\,GB.
+
+That factor of eight is the practical content of the question. 500\,MB fits in memory on any laptop;
+4\,GB may not, and the fix is either to keep the data as \texttt{uint8} until the moment of use or to
+process it in batches. An answer of $5 \times 10^{8}$ with no unit and no assumption is only half of
+one, and an answer in the region of megabytes-per-image or terabytes-in-total has lost a factor of a
+thousand somewhere --- which is what checking the magnitude at the end is for.
+
+\vspace{8pt}
+\hrule
+\vspace{4pt}
+
+{\footnotesize\itshape Test-0 carried no marks and none were recorded. Questions on any of this are
+welcome in the next class or in office hours.}
+
+\end{document}

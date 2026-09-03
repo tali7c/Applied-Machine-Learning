@@ -1,0 +1,163 @@
+% AML (CSAI2017P) — Test-0 diagnostic — NO MARKS
+% Released after the sitting. Worked solutions: T00-Solutions.pdf in this folder.
+\documentclass[11pt]{article}
+
+\input{../../_shared/notes-common.tex}
+
+\usepackage{tcolorbox}
+
+\title{Applied Machine Learning (CSAI2017P)\\Test-0 --- Diagnostic\\
+       \large Duration 30 minutes \quad\textbullet\quad \textbf{This test carries no marks}}
+\author{Tofik Ali \\ School of Computer Science, UPES Dehradun}
+\date{B.Tech CSE (AI \& ML), Semester III \quad\textbullet\quad Autumn 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\noindent
+\begin{tabular}{@{}p{2.4cm}p{5.0cm}p{2.0cm}p{4.6cm}@{}}
+\textbf{Name:} & \hrulefill & \textbf{SAP ID:} & \hrulefill \\[10pt]
+\textbf{Batch:} & \hrulefill & \textbf{Date:} & \hrulefill \\
+\end{tabular}
+
+\vspace{0.6em}
+
+\begin{tcolorbox}[colback=gray!5,colframe=gray!55,title=\textbf{Read this first}]
+\textbf{This test carries no marks and will not affect your grade in any way.}
+
+Its purpose is to let me see how you think about a problem, so that I can pitch the lectures and the
+worked examples where they are actually needed. It does not sort you into anything, and it has no
+bearing on which version of any later test you are given --- those are handed out at random.
+
+There is \textbf{no penalty} for an incomplete answer that shows its reasoning, and \textbf{no credit}
+for a bare correct answer with no working.
+
+If you do not know something, say so, and say what you would need to find out. That is a useful
+answer, not a blank one.
+\end{tcolorbox}
+
+\noindent\textbf{Instructions.} Individual, closed book. Write by hand in the space provided; continue
+on the back of the sheet if you need to. Do not erase your working --- crossings-out are useful to me.
+Attempt every block; a partial attempt is better than a blank.
+
+\bigskip\hrule\bigskip
+
+\section*{Block A --- Warm-up \hfill \normalfont\small(5 items, about 4 minutes)}
+Circle one answer. No working needed for this block.
+
+\begin{enumerate}[label=A\arabic*.,leftmargin=*]
+  \item A fair coin is tossed twice. The probability of getting exactly one head is:\\
+    \hspace*{1em}(a) $1/4$ \qquad (b) $1/2$ \qquad (c) $3/4$ \qquad (d) $1$
+  \item In Python, \texttt{len(\{'a': 1, 'b': 2\})} evaluates to:\\
+    \hspace*{1em}(a) 1 \qquad (b) 2 \qquad (c) 4 \qquad (d) an error
+  \item $A$ is $3 \times 4$ and $v$ is a column vector. For $Av$ to be defined, $v$ must have shape:\\
+    \hspace*{1em}(a) $3 \times 1$ \qquad (b) $4 \times 1$ \qquad (c) $1 \times 3$ \qquad (d) $1 \times 4$
+  \item For the values $2, 3, 4, 5, 96$, which is larger?\\
+    \hspace*{1em}(a) the mean \qquad (b) the median \qquad (c) they are equal \qquad (d) cannot be determined
+  \item A \emph{training set} is:\\
+    \hspace*{1em}(a) data used to fit the model \qquad (b) data used to report final performance \\
+    \hspace*{1em}(c) data with no labels \qquad (d) a subset of the test set
+\end{enumerate}
+
+\bigskip\hrule\bigskip
+
+\section*{Block B --- Working \hfill \normalfont\small(3 items, about 8 minutes)}
+\textbf{Show your working.} There is more than one valid route through each of these; I am interested
+in the route you take.
+
+\begin{enumerate}[label=B\arabic*.,leftmargin=*]
+  \item A factory has two machines. The first makes 60\% of the items and 2\% of what it makes is
+    defective. The second makes the rest, and 5\% of what it makes is defective. An item is picked at
+    random and found to be defective. How likely is it that the first machine made it?
+
+    \vspace{45mm}
+
+  \item For a fixed set of numbers $y_1, \dots, y_n$, find the value of $c$ that makes
+    $\;S(c) = \sum_{i=1}^{n} (y_i - c)^2\;$ as small as possible. State how you know your answer is a
+    minimum and not a maximum.
+
+    \vspace{45mm}
+
+  \item Consider the following function.
+\begin{lstlisting}
+def summarise(values):
+    total = 0
+    for v in values:
+        total = total + v
+    return total / len(values)
+\end{lstlisting}
+    What does \texttt{summarise([2, 4, 6])} return? What does \texttt{summarise([])} do?
+    Explain how you worked each one out.
+
+    \vspace{35mm}
+\end{enumerate}
+
+\newpage
+
+\section*{Block C --- Explain it \hfill \normalfont\small(1 item, about 5 minutes)}
+\begin{enumerate}[label=C\arabic*.,leftmargin=*]
+  \item In at most 120 words, explain to a first-year student what it means for a model to
+    \textbf{overfit}, and give one concrete example. Use whatever form of explanation you find
+    clearest --- words, a sketch, a small table, a formula, an analogy.
+
+    \vspace{75mm}
+\end{enumerate}
+
+\bigskip\hrule\bigskip
+
+\section*{Block D --- Debug \hfill \normalfont\small(1 item, about 6 minutes)}
+\begin{enumerate}[label=D\arabic*.,leftmargin=*]
+  \item The function below is meant to train and evaluate a model honestly. There is exactly one
+    fault in it.
+\begin{lstlisting}
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+
+def evaluate(X, y):
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X_scaled, y, test_size=0.25, random_state=0)
+
+    model = KNeighborsClassifier(n_neighbors=5)
+    model.fit(X_train, y_train)
+    return model.score(X_test, y_test)
+\end{lstlisting}
+    Answer three things: \textbf{(i)} what is wrong, \textbf{(ii)} why it matters, and
+    \textbf{(iii)} how you would confirm that this is really the problem.
+
+    \vspace{60mm}
+\end{enumerate}
+
+\newpage
+
+\section*{Block E --- Getting started \hfill \normalfont\small(1 item, about 5 minutes)}
+\begin{enumerate}[label=E\arabic*.,leftmargin=*]
+  \item A shop wants you to predict whether a customer will return next month. Describe how you would
+    start.
+
+    \vspace{80mm}
+\end{enumerate}
+
+\bigskip\hrule\bigskip
+
+\section*{Block F --- Estimation \hfill \normalfont\small(1 item, about 2 minutes)}
+\begin{enumerate}[label=F\arabic*.,leftmargin=*]
+  \item Roughly how many numbers are stored in a $1000 \times 1000$ greyscale image, and roughly how
+    much memory would 500 such images need? Show your reasoning and state any assumption you make.
+
+    \vspace{55mm}
+\end{enumerate}
+
+\bigskip\hrule\bigskip
+
+\begin{center}
+\small\color{gray}
+End of Test-0. Hand in this sheet whether or not it is complete --- a partial script is still useful.\\
+Thank you; the tests you sit later this semester will be shaped by what I read here.
+\end{center}
+
+\end{document}
