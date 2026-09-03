@@ -1,0 +1,647 @@
+\documentclass[11pt,a4paper]{article}
+
+\newcommand{\CourseCode}{CSAI2017P: Applied Machine Learning}
+\newcommand{\AssignmentName}{A1 -- Theory Assignment 1}
+
+\input{../../../_shared/assignment-common.tex}
+
+\begin{document}
+
+\LAtitle{Theory Assignment 1: Losses, Optimisers, Preprocessing, Validation and Regression}{Units I--IV and Unit V (part) \textbullet\ Lecture packages L1--L10 \textbullet\ CO1, CO2, CO3}{at AS1, announced in class}{AT1, in class at AS1}
+
+\section*{What this assignment is for}
+
+This is the first of two theory assignments, and it is deliberately built as
+your \textbf{mid-semester preparation}. Sections A to C make you rehearse
+Units I--IV \emph{and the first three lectures of Unit V} in the three ways an
+examination asks for material: explain it, compute it by hand, and apply it in
+code. Section D is a full mock paper, to be attempted under examination
+conditions.
+
+\begin{warnbox}[The mid-semester syllabus is not confirmed yet]
+The examination cell has not issued the notice. \textbf{Units I--IV plus Unit V as far as
+L10 is an expectation, not an announcement} --- a well-founded one, because a
+paper can only examine what has been taught, and lecture packages L1--L10 are
+what the calendar delivers before the mid-semester point.
+\textbf{Unit V is covered only to L10:} regression foundations and least
+squares (L8), maximum likelihood and model adequacy (L9), and logistic
+regression (L10). Multiple linear regression (L11) and regularization (L12) are
+\emph{not} examinable here. I will tell you as soon as anything is confirmed.
+
+Nothing about that uncertainty should change what you do now. Everything in
+this assignment is examinable material whatever the mid-semester notice says
+--- if not in November then in the end-semester paper, which covers all seven
+units. The \emph{Mid-Semester Question Bank} released alongside this brief is
+organised unit by unit precisely so that it still works if the coverage turns
+out narrower or wider than expected; its opening pages explain what to do in
+each case.
+\end{warnbox}
+
+\begin{infobox}[How the marks work]
+The assignment is marked out of \textbf{50 raw}, scaled to the \textbf{1.0}
+submission mark. The in-class assessment test \textbf{AT1} that follows at AS1
+is worth \textbf{1.5} marks --- more than the submission itself. AT1 asks you
+about \emph{your own} submitted work: where a number came from, why you chose
+one option over another, what a fragment of your own code does. If you did the
+assignment, AT1 takes a few lines per answer. If you did not, no amount of
+polish on the submission will save it. This is the design, not an ambush.
+\end{infobox}
+
+\begin{center}\begin{tabular}{@{}p{0.8cm}p{5.2cm}p{5.0cm}r@{}}\toprule
+\textbf{Sec.} & \textbf{What it tests} & \textbf{Choice rule} & \textbf{Marks}\\
+\midrule
+A & Concepts, Units I--V(pt) & Attempt any 5 of \textbf{16} (2 marks each) & 10\\
+B & Numericals worked by hand & Attempt any 2 of \textbf{12} (5 marks each) & 10\\
+C & Pipeline, and a regression fit & Compulsory & 12\\
+D & Mock mid-semester paper (out of 35, scaled) & Compulsory & 18\\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Raw total}} & \textbf{50}\\
+\multicolumn{3}{@{}l}{Scaled to the submission mark} & \textbf{1.0}\\
+\multicolumn{3}{@{}l}{Assessment test AT1, in class at AS1} & \textbf{1.5}\\
+\bottomrule\end{tabular}\end{center}
+
+\noindent\small Course outcomes assessed: \textbf{CO1, CO2, CO3}. Attempting
+more than the choice rule allows is not penalised; your best attempts are
+marked.\normalsize
+
+\begin{infobox}[Why there are so many questions you do not have to answer]
+Sections A and B offer twenty-eight items and ask for seven. The marks are unchanged
+and so is the workload --- but the twenty-eight between them cover every part of
+Units I--V(pt) that the mid-semester paper can reach, so the ones you skip are
+still worth reading, and the ones you choose are yours. Pick the areas you are
+least sure of rather than the ones you can already do; the marks are the same
+either way and only one of those choices helps you in the examination hall.
+
+The \textbf{Mid-Semester Question Bank} released alongside this brief carries a
+further 314 questions across the same syllabus, 63 of them numerical. It is not
+assessed. It is the revision resource.
+\end{infobox}
+
+\section*{Instructions}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Sections A, B and D are handwritten}, on ruled A4, scanned to a
+    single PDF. This is on purpose --- the examination is handwritten and under
+    time pressure, and practising on a keyboard does not prepare you for that.
+  \item \textbf{Section C is a notebook}, all cells executed, outputs visible.
+  \item In Section B, \textbf{show every step}. A correct final number with no
+    working earns 1 mark out of 5. A wrong final number with correct method
+    earns most of the marks.
+  \item Report the metric named in the question. A number with no units or
+    context earns nothing.
+  \item Set \texttt{random\_state} everywhere in Section C. If your results are
+    not reproducible they are not results.
+  \item Fit every transformer inside a \texttt{Pipeline}. Nothing is fitted on
+    data the model will be evaluated on.
+\end{itemize}
+
+\subsection*{What to submit}
+
+\begin{itemize}[leftmargin=*]
+  \item \texttt{AML\_A1\_<SAPID>\_written.pdf} --- scanned Sections A, B and D.
+  \item \texttt{AML\_A1\_<SAPID>.ipynb} --- Section C, executed.
+  \item \texttt{AML\_A1\_<SAPID>\_report.pdf} --- 2--3 pages, or a
+    \texttt{README.md}, carrying your Section C results table and observations.
+  \item Do not upload datasets. Cite the source and include the loading code.
+  \item \textbf{Bring the printed or written submission to AS1.} AT1 is
+    open-submission and closed everything else.
+\end{itemize}
+
+\begin{warnbox}[Get the data before you start]
+Section C uses anchor dataset \textbf{A3 (Statlog German Credit)}, fetched with
+\texttt{fetch\_openml('credit-g', version=1, as\_frame=True)}. It downloads
+once (\textasciitilde0.2\,MB) and then caches. \textbf{Run the fetch at home,
+on your own connection.} The campus network may block it. Full details are in
+\texttt{Anchor-Datasets.pdf} alongside the lab assignments.
+\end{warnbox}
+
+\section*{Academic integrity}
+
+Discussing ideas with your classmates is encouraged and is how most people
+learn this material. Submitting someone else's code or text as your own is not.
+If you used a tutorial, a textbook chapter or an AI tool substantially, cite it
+in your report --- that is honest practice, not an admission of weakness, and
+it costs you no marks. What does cost marks is AT1, which you will not be able
+to answer about work you did not do.
+
+\vspace{0.5em}\hrule\vspace{0.8em}
+
+\section*{Section A (Concepts) --- attempt any 5 of 16 \quad (5 $\times$ 2 = 10)}
+
+\noindent\small Answer each in 4--6 lines. Marks are for precision, not length.
+The sixteen are ordered by unit: \textbf{A1--A2} Unit I, \textbf{A3--A4} Unit
+II, \textbf{A5--A6} Unit III, \textbf{A7--A12} Unit IV,
+\textbf{A13--A16} Unit V. \textbf{Choose at least
+one from each unit} --- five from one corner of the syllabus is not
+revision.\normalsize
+
+\begin{enumerate}[label=\textbf{A\arabic*.}, leftmargin=*]
+
+  \item \textbf{Types of learning} \QMarks{2}\\
+    Classify each of the following as supervised, unsupervised or reinforcement
+    learning, and state in one line what the training signal is in each case.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Predicting tomorrow's electricity demand from ten years of hourly meter readings.
+      \item Grouping 50{,}000 unlabelled customer profiles into segments for a marketing team.
+      \item Training a robot arm to stack blocks, where it is scored only on whether the tower stands.
+    \end{enumerate}
+
+  \item \textbf{The three libraries} \QMarks{2}\\
+    NumPy, Pandas and scikit-learn each own a distinct job in a Python ML
+    workflow. State the job of each in one line. Then explain what
+    scikit-learn's \texttt{fit}, \texttt{transform} and \texttt{predict} each do,
+    and why \texttt{fit\_transform} exists but \texttt{fit\_predict} is rare.
+
+  \item \textbf{Choosing a regression loss} \QMarks{2}\\
+    A house-price model is trained on data where about 2\% of the recorded
+    prices are data-entry errors an order of magnitude too large. Compare MSE,
+    MAE and Huber loss for this problem. Name the one you would use, and give
+    the property of the Huber loss that makes it a compromise between the other
+    two.
+
+  \item \textbf{Cross-entropy variants} \QMarks{2}\\
+    Binary, categorical and sparse categorical cross-entropy are the same idea
+    in three packagings. For each, state (i) the number of classes it applies
+    to, (ii) the shape and format the \emph{labels} must be in, and (iii) the
+    activation the model's final layer should use.
+
+  \item \textbf{Batch size and momentum} \QMarks{2}\\
+    Explain the trade-off between full-batch, mini-batch and stochastic
+    gradient descent in terms of gradient noise and cost per update. Then write
+    the momentum update rule and state, in one line each, what happens when
+    $\beta = 0$ and when $\beta$ is close to $1$.
+
+  \item \textbf{Adagrad, RMSprop and Adam} \QMarks{2}\\
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Write the update rule for each of the three.
+      \item State the one failure mode of Adagrad on a long training run, and
+        name the single change RMSprop makes to fix it.
+      \item Name the two things Adam adds on top of RMSprop.
+    \end{enumerate}
+
+  \item \textbf{Fitting the scaler} \QMarks{2}\\
+    A classmate standardises the whole dataset, then splits it 80/20 and
+    reports test accuracy. Name what has gone wrong, explain the mechanism in
+    two lines, and state whether the reported accuracy is likely to be
+    optimistic or pessimistic --- with a reason.
+
+  \item \textbf{Imbalance} \QMarks{2}\\
+    A fraud dataset is 2\% positive. State one advantage and one danger of
+    random oversampling, and the same for random undersampling. Then state
+    exactly where in a $k$-fold cross-validation loop the resampling must
+    happen, and why it must not happen before the loop.
+
+  \item \textbf{Masking} \QMarks{2}\\
+    A column of 12 sensor readings contains two obviously wrong values. The
+    $|z| > 3$ rule flags neither of them; the $1.5\times$IQR fence flags both.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Name the effect and explain the mechanism in two lines.
+      \item State the breakdown point of each of the two rules.
+      \item Name a third rule with a higher breakdown point than either.
+    \end{enumerate}
+
+  \item \textbf{The four scalers} \QMarks{2}\\
+    Name \texttt{StandardScaler}, \texttt{MinMaxScaler}, \texttt{RobustScaler}
+    and \texttt{MaxAbsScaler}, write each formula, and give the output range
+    each guarantees. State which one a single typing error destroys completely,
+    and why that one is the most dangerous despite producing output that looks
+    perfectly correct.
+
+  \item \textbf{Encoding} \QMarks{2}\\
+    A \texttt{colour} column holds \texttt{red}, \texttt{green}, \texttt{blue}.
+    A classmate applies \texttt{OrdinalEncoder} because ``it makes fewer
+    columns''.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item State the assertion this makes about the variable that is not true.
+      \item State which model families believe that assertion and which ignore
+        it.
+      \item Give the encoding that should have been used and the number of
+        columns it produces, with and without \texttt{drop='first'}.
+    \end{enumerate}
+
+  \item \textbf{PCA} \QMarks{2}\\
+    ``PCA reduces dimensionality by keeping the most important features.''
+    State precisely what is wrong with that sentence, say what PCA actually
+    keeps, and give one reason a hospital wanting to order fewer blood tests
+    would not be helped by it at all.
+
+  \item \textbf{The least-squares line} \QMarks{2}\\
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item State exactly which deviations least squares minimises --- be
+        precise about the word ``vertical''.
+      \item Give the two normal equations, and the estimators $b_1$ and $b_0$
+        that follow.
+      \item State the four properties of the fitted line, and say which one
+        requires the model to have an intercept.
+    \end{enumerate}
+
+  \item \textbf{Maximum likelihood} \QMarks{2}\\
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item State the noise assumption under which least squares \emph{is} the
+        maximum likelihood estimator, in one sentence.
+      \item Explain why the value of $\sigma^2$ cannot affect which
+        $\beta_0, \beta_1$ maximise the likelihood.
+      \item State what maximum likelihood minimises instead if the noise is
+        Laplace rather than Gaussian.
+    \end{enumerate}
+
+  \item \textbf{$R^2$ and what it hides} \QMarks{2}\\
+    A classmate reports $R^2 = 0.87$ on the training set and concludes the
+    model is good.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Give two distinct things wrong with that inference.
+      \item State why $R^2$ can never fall when a predictor is added, in one
+        sentence.
+      \item State the one plot that should accompany every reported $R^2$, and
+        what it would reveal that the number cannot.
+    \end{enumerate}
+
+  \item \textbf{Odds, log-odds and the sigmoid} \QMarks{2}\\
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Give the range of a probability, of the odds, and of the log-odds.
+        State which one a linear expression $w^\top x + b$ can safely produce,
+        and why that settles where the model is built.
+      \item Invert $\ln\!\big(p/(1-p)\big) = z$ to obtain $p = \sigma(z)$,
+        showing the steps.
+      \item State what $e^{\beta_j}$ is a change in. \emph{Answering
+        ``probability'' scores zero for this part.}
+    \end{enumerate}
+
+\end{enumerate}
+
+\section*{Section B (Numericals) --- attempt any 2 of 12 \quad (2 $\times$ 5 = 10)}
+
+\noindent\small Work by hand. Show every step. You may check your answer with
+Python afterwards, but the working is what is marked. Give final values to four
+decimal places.\normalsize
+
+\begin{enumerate}[label=\textbf{B\arabic*.}, leftmargin=*]
+
+  \item \textbf{Three losses on one set of errors} \QMarks{5}\\
+    A regression model produces these predictions:
+    \begin{center}\begin{tabular}{@{}lrrrrr@{}}\toprule
+    $y$ & 3.0 & $-0.5$ & 2.0 & 7.0 & 4.5\\
+    $\hat{y}$ & 2.5 & 0.0 & 2.0 & 8.0 & 1.5\\
+    \bottomrule\end{tabular}\end{center}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Compute the MSE and the MAE. \QMarks{2}
+      \item Compute the Huber loss with $\delta = 1$, showing which branch of
+        the piecewise definition each of the five points falls into. \QMarks{2}
+      \item The fifth point has error 3. Compute what \emph{fraction} of the
+        total MSE and of the total Huber loss that single point contributes,
+        and say in two lines what this tells you about robustness. \QMarks{1}
+    \end{enumerate}
+
+  \item \textbf{Gradient descent, with and without momentum} \QMarks{5}\\
+    Fit $\hat{y} = wx$ (no intercept) by minimising
+    $L(w) = \frac{1}{n}\sum_i (y_i - wx_i)^2$ on the three points
+    $(1,2)$, $(2,4)$, $(3,5)$. Start at $w_0 = 0$ with learning rate
+    $\eta = 0.1$.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Derive $\mathrm{d}L/\mathrm{d}w$ and evaluate it at $w_0$. \QMarks{1}
+      \item Perform two full-batch gradient descent updates. Report $w_1$ and $w_2$. \QMarks{1.5}
+      \item The least-squares optimum is $w^{*} = \sum x_iy_i / \sum x_i^2$.
+        Compute it and state how close $w_2$ is. \QMarks{1}
+      \item Now redo the same two steps with momentum, $v_t = \beta v_{t-1} + g_t$
+        and $w_t = w_{t-1} - \eta v_t$, with $\beta = 0.9$ and $v_0 = 0$.
+        Report $w_1$ and $w_2$, and explain in three lines what momentum has
+        done here relative to $w^{*}$. \QMarks{1.5}
+    \end{enumerate}
+
+  \item \textbf{Adam against RMSprop against SGD} \QMarks{5}\\
+    A single parameter starts at $w_0 = 1.0$. Two successive mini-batches give
+    gradients $g_1 = 0.5$ and $g_2 = 0.3$. Use $\eta = 0.1$,
+    $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\rho = 0.9$, $\varepsilon = 10^{-8}$.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Two steps of plain SGD. \QMarks{0.5}
+      \item Two steps of Adam. Tabulate $m_t$, $v_t$, $\hat{m}_t$, $\hat{v}_t$
+        and $w_t$ at each step. \QMarks{2.5}
+      \item Two steps of RMSprop, $v_t = \rho v_{t-1} + (1-\rho)g_t^2$. \QMarks{1}
+      \item Adam's first step is almost exactly $-\eta$ regardless of the size
+        of $g_1$. Show why from your numbers, and explain in three lines what
+        the bias-correction terms $1-\beta_1^t$ and $1-\beta_2^t$ are for.
+        \QMarks{1}
+    \end{enumerate}
+
+  \item \textbf{Outliers, scaling and the masking effect} \QMarks{5}\\
+    A feature column holds the values
+    $\;12,\;15,\;14,\;10,\;13,\;60,\;11,\;14$.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Compute the mean and the population standard deviation
+        ($\text{ddof}=0$, as \texttt{StandardScaler} uses). \QMarks{1}
+      \item Compute $Q_1$, $Q_3$, the IQR and the $1.5 \times \text{IQR}$
+        fences. Which values are flagged as outliers? \QMarks{1.5}
+      \item Compute the $z$-score of the value 60. Using the common
+        $|z| > 3$ rule, is it flagged? \QMarks{1}
+      \item You have two methods disagreeing about the same point. Explain the
+        mechanism --- what the value 60 does to the statistic used to judge it
+        --- and name which of the two rules you would trust here and why.
+        \QMarks{1}
+      \item Compute the min--max scaled value of 12 with the outlier present.
+        State in two lines what this shows about min--max scaling on
+        outlier-contaminated data. \QMarks{0.5}
+    \end{enumerate}
+
+  \item \textbf{Cross-entropy, three ways} \QMarks{5}\\
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Four emails have labels $y = (1,0,1,0)$ and predicted
+        probabilities of class 1 $p = (0.8,\,0.3,\,0.6,\,0.1)$. Write the
+        probability each assigns to its \emph{correct} class, then compute the
+        binary cross-entropy. \QMarks{2}
+      \item The third email's probability now falls to $0.02$. Recompute the
+        BCE and state the increase as a percentage. \QMarks{1}
+      \item A three-class model outputs
+        $P = \left(\begin{smallmatrix} 0.6 & 0.3 & 0.1\\ 0.2 & 0.7 & 0.1\\
+        0.1 & 0.3 & 0.6\end{smallmatrix}\right)$ with true classes $0,1,2$.
+        Compute the categorical cross-entropy from one-hot labels and the
+        sparse categorical cross-entropy from integer labels. \QMarks{1.5}
+      \item Your two answers in (c) are identical. Explain why the sparse form
+        exists at all, with a memory argument for $K = 10{,}000$ classes and a
+        batch of 256. \QMarks{0.5}
+    \end{enumerate}
+
+  \item \textbf{Imputation and the shrinkage it hides} \QMarks{5}\\
+    Eight students sat a test; two scripts were lost. The six recorded marks
+    are $48,\ 55,\ 60,\ 67,\ 72,\ 78$.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Compute the mean, median and standard deviation of the six observed
+        marks. State clearly which divisor you used. \QMarks{1}
+      \item Impute the two missing marks with the mean of the observed. Compute
+        the mean and the population standard deviation of all eight. \QMarks{1}
+      \item Repeat with median imputation. \QMarks{1}
+      \item Compute $\sqrt{m/n}$, where $m$ is the number observed. Compare it
+        with the ratio of your imputed standard deviation to the observed one,
+        and derive why the two agree. \QMarks{1.5}
+      \item State in two lines what this means for any standard error or
+        correlation computed after mean imputation. \QMarks{0.5}
+    \end{enumerate}
+
+  \item \textbf{PCA by hand} \QMarks{5}\\
+    Five points: $(1,1)$, $(2,3)$, $(3,2)$, $(4,5)$, $(5,4)$.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Compute the mean and write the centred matrix. \QMarks{0.5}
+      \item Compute the $2\times2$ covariance matrix using the divisor $n-1$.
+        \QMarks{1}
+      \item Find both eigenvalues. Verify that they sum to the trace, and give
+        the proportion of variance each component explains. \QMarks{1.5}
+      \item Give the first eigenvector, project the five centred points onto
+        it, and verify that the variance of the five scores equals
+        $\lambda_1$. \QMarks{1}
+      \item Reconstruct the five points from one component and compute the
+        total squared reconstruction error. Verify it equals
+        $(n-1)\lambda_2$. \QMarks{1}
+    \end{enumerate}
+
+  \item \textbf{The confusion matrix and the metric that lies} \QMarks{5}\\
+    A screening model on 10{,}000 patients returns $\text{TN} = 9900$,
+    $\text{FP} = 60$, $\text{FN} = 30$, $\text{TP} = 10$.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Compute accuracy, precision, recall, $F_1$ and balanced accuracy.
+        \QMarks{2.5}
+      \item Compute the accuracy of a model that predicts ``negative'' for
+        every patient. \QMarks{0.5}
+      \item State which of the two models scores higher on accuracy, and what
+        that tells you about accuracy as a metric here. \QMarks{1}
+      \item Name the metric you would put in front of a clinical audit
+        committee, and justify it in three lines in terms of the cost of a
+        false negative. \QMarks{1}
+    \end{enumerate}
+
+  \item \textbf{Least squares by hand} \QMarks{5}\\
+    Fit a least-squares line to $x = (0,\,1,\,2,\,3,\,4)$,
+    $y = (1,\,2,\,4,\,5,\,8)$.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Tabulate $x_i-\bar x$, $y_i-\bar y$, $(x_i-\bar x)^2$ and
+        $(x_i-\bar x)(y_i-\bar y)$; give $S_{xx}$, $S_{xy}$ and $S_{yy}$.
+        \QMarks{1.5}
+      \item Compute $b_1$ and $b_0$ and write the fitted line. \QMarks{1}
+      \item Give the fitted values and residuals, and verify \emph{both}
+        $\sum e_i = 0$ and $\sum x_ie_i = 0$. \QMarks{1}
+      \item Compute SSE, SSR and SST, verify the decomposition, and check SSR
+        a second independent way. \QMarks{1}
+      \item Predict $y$ at $x = 6$. \QMarks{0.5}
+    \end{enumerate}
+
+  \item \textbf{Which line is the least-squares line?} \QMarks{5}\\
+    Four candidates are proposed for the data of B9.
+    \begin{center}\begin{tabular}{@{}llll@{}}\toprule
+    A: $0.5 + 1.7x$ & B: $0.6 + 1.7x$ & C: $0.6 + 1.8x$ & D: $1.0 + 1.5x$\\
+    \bottomrule\end{tabular}\end{center}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item For each, compute SSE, $\sum e_i$ and $\sum x_ie_i$. \QMarks{3}
+      \item Identify the least-squares line using \emph{both} normal
+        equations. \QMarks{1}
+      \item One candidate satisfies $\sum e_i = 0$ and is still not the
+        answer. Name it, and explain in three lines why the first normal
+        equation alone cannot pin down a line. \QMarks{1}
+    \end{enumerate}
+
+  \item \textbf{$R^2$, and the two estimates of $\sigma^2$} \QMarks{5}\\
+    Using your fit from B9 (SSE $= 1.10$, SST $= 30$, $n = 5$):
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Compute $R^2$ from the definition, then verify it two further
+        independent ways. \QMarks{1.5}
+      \item Compute $r$ and confirm $r^2 = R^2$. \QMarks{0.5}
+      \item Compute $\hat\sigma^2_{\text{ML}} = \text{SSE}/n$, the unbiased
+        $s^2 = \text{SSE}/(n-2)$, and $s$. \QMarks{1}
+      \item Give the bias factor and the percentage by which the maximum
+        likelihood estimate understates $\sigma^2$ in expectation. \QMarks{1}
+      \item Explain \emph{why} the divisor is $n-2$. \QMarks{1}\\
+        \emph{An answer that says ``because we divide by $n$ instead of
+        $n-2$'' restates the formula and earns nothing.}
+    \end{enumerate}
+
+  \item \textbf{Logistic regression: one gradient step by hand} \QMarks{5}\\
+    Take $X = \begin{pmatrix} 1 & -1\\ 1 & 0\\ 1 & 1\\ 1 & 2\end{pmatrix}$,
+    $y = (0,\,0,\,1,\,1)$, $w = (0,\,0)$ and $\eta = 0.4$.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Compute $z$, then $p$, then the log-likelihood. Express the
+        per-row negative log-likelihood as a familiar constant and say what it
+        is the baseline for. \QMarks{1}
+      \item Compute $p - y$ and the gradient $X^\top(p-y)$, showing both
+        components. \QMarks{1.5}
+      \item Perform one gradient step and give the new $w$. \QMarks{0.5}
+      \item Compute the new $z$, the new $p$ and the new log-likelihood, and
+        state the improvement. \QMarks{1}
+      \item The intercept component of the gradient is exactly zero. Explain
+        why, and state what would have to change for it not to be. \QMarks{1}
+    \end{enumerate}
+
+\end{enumerate}
+
+\section*{Section C (Pipeline and regression) --- compulsory \quad (12)}
+
+\noindent\small\emph{Dataset: A3 (Statlog German Credit), 1000 rows, 20 mixed
+features, binary target \texttt{class} $\in$ \{good, bad\}. Roughly 70/30
+imbalanced.}\normalsize
+
+\begin{enumerate}[label=\textbf{C\arabic*.}, leftmargin=*]
+
+  \item \textbf{Build the pipeline} \QMarks{4}
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Load A3. Report the number of rows, the number of numeric and
+        categorical features separately, and the class balance.
+      \item Build a \texttt{ColumnTransformer} that median-imputes and
+        standardises the numeric columns and mode-imputes and one-hot encodes
+        the categorical ones. Use
+        \texttt{OneHotEncoder(handle\_unknown='ignore')} and say in one line
+        why that argument matters.
+      \item Wrap it with \texttt{LogisticRegression(max\_iter=2000)} in a
+        \texttt{Pipeline}. Split 80/20 with \texttt{stratify=y},
+        \texttt{random\_state=42}.
+      \item Report the number of columns \emph{after} encoding, the test
+        accuracy and the test ROC--AUC.
+      \item Run \texttt{StratifiedKFold(5, shuffle=True, random\_state=42)}
+        cross-validation on the training portion and report mean $\pm$ standard
+        deviation of ROC--AUC.
+    \end{enumerate}
+
+  \item \textbf{Make leakage visible} \QMarks{3}\\
+    This part uses \emph{pure noise}, so anything above chance is leakage and
+    nothing else.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Generate \texttt{X = rng.normal(size=(200, 5000))} and
+        \texttt{y = rng.randint(0, 2, 200)} with
+        \texttt{rng = np.random.RandomState(0)}. There is, by construction, no
+        relationship between \texttt{X} and \texttt{y}.
+      \item \emph{The wrong way.} Apply \texttt{SelectKBest(f\_classif, k=20)}
+        to the \emph{whole} of \texttt{X} and \texttt{y}, then cross-validate a
+        logistic regression on the selected 20 columns with
+        \texttt{StratifiedKFold(5, shuffle=True, random\_state=0)}. Report the
+        mean accuracy.
+      \item \emph{The right way.} Put the same \texttt{SelectKBest} inside a
+        \texttt{Pipeline} with the classifier and cross-validate the pipeline
+        on the full \texttt{X}. Report the mean accuracy.
+      \item Explain in 5--8 lines why (b) scores what it scores. Your answer
+        must name what the selector saw that it should not have, and say which
+        of the two numbers an honest report would quote.
+    \end{enumerate}
+
+  \item \textbf{Imbalance and the metric you report} \QMarks{3}\\
+    Back to A3, treating \texttt{bad} credit as the positive class.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Report accuracy, precision, recall and ROC--AUC for your C1
+        pipeline on the test set.
+      \item Refit with \texttt{class\_weight='balanced'} and report the same
+        four numbers.
+      \item Present both rows in one table. Three of the four numbers move in
+        an interesting way and one barely moves. Say which, and explain in
+        4--6 lines why ROC--AUC behaves differently from accuracy under a
+        change of class weighting.
+      \item A bank asks which of the two models to deploy. Answer in three
+        lines, and your answer must refer to the \emph{cost} of the two kinds
+        of error, not only to the numbers.
+    \end{enumerate}
+
+  \item \textbf{Regression, by hand and by library} \QMarks{2}\\
+    \emph{No download needed --- use \texttt{sklearn.datasets.load\_diabetes},
+    which ships with scikit-learn and works offline.} Take \texttt{bmi} as the
+    single predictor and the disease-progression score as the target.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Split 75/25 with \texttt{random\_state=0}. On the \emph{training}
+        rows only, compute $\bar x$, $\bar y$, $S_{xx}$, $S_{xy}$ and hence
+        $b_1$ and $b_0$ \textbf{in NumPy, from the formulae} --- no
+        \texttt{LinearRegression} in this part. \QMarks{0.75}
+      \item Now fit \texttt{LinearRegression()} on the same rows. Print your
+        two coefficients beside the library's and report the absolute
+        difference. \QMarks{0.5}
+      \item Report training and test RMSE, and the test $R^2$. \QMarks{0.5}
+      \item Report the RMSE of predicting the training mean for every test row,
+        and say in two lines what your $R^2$ means relative to it. \QMarks{0.25}
+    \end{enumerate}
+    \emph{If (b) does not agree to at least six decimal places, your (a) is
+    wrong --- find it before moving on. That agreement is the whole point of
+    the part.}
+
+\end{enumerate}
+
+\section*{Section D (Mock mid-semester paper) --- compulsory \quad (18)}
+
+\begin{warnbox}[Attempt this under examination conditions]
+\textbf{90 minutes. Closed book. No computer, no calculator beyond arithmetic.}
+Sit down, set a timer, and stop when it goes. The paper below is written to the
+mid-semester pattern and syllabus \emph{as currently expected} --- see the note
+on the first page; neither is confirmed. Marked out of \textbf{35 raw},
+scaled to \textbf{18} within this assignment --- the real paper is scaled the same
+way to its own weight. Submit your timed script with the rest of the assignment. The answer
+key is released after AS1; do not go looking for it first, because the whole
+value of this section is in finding out what you cannot yet do while there is
+still time to fix it.
+\end{warnbox}
+
+\subsection*{Mock paper --- Section A: attempt \emph{all} \quad (5 $\times$ 2 = 10)}
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*]
+  \item State exactly which deviations least squares minimises, write the two
+    normal equations, and give $b_1$ and $b_0$ in terms of $S_{xx}$ and
+    $S_{xy}$. \QMarks{2}
+  \item Write the formulae for MSE and MAE. State which is more sensitive to
+    outliers and justify it from the formula, not from memory. \QMarks{2}
+  \item A 4-class classifier outputs a softmax vector. Your labels are stored
+    as the integers $0,1,2,3$. Name the correct loss function, and state what
+    you would have to change to use categorical cross-entropy instead. \QMarks{2}
+  \item Write the SGD-with-momentum update rule and state in one line what
+    $\beta$ controls and what happens as $\beta \to 1$. \QMarks{2}
+  \item Define data leakage in one sentence and give two distinct examples of
+    preprocessing steps that cause it if performed before the train--test split.
+    \QMarks{2}
+\end{enumerate}
+
+\subsection*{Mock paper --- Section B: attempt any \emph{3} of 4 \quad (3 $\times$ 5 = 15)}
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*, start=6]
+  \item A model produces $y = (10, 12, 15, 9)$ and
+    $\hat{y} = (11, 10, 20, 9)$. Compute the MSE, the MAE and the Huber loss
+    with $\delta = 2$, showing the branch taken by each point. Comment in two
+    lines on which loss the third point dominates. \QMarks{5}
+  \item Fit a least-squares line to $x = (0,1,2,3,4)$, $y = (1,2,4,5,8)$.
+    Give $S_{xx}$, $S_{xy}$, $b_1$ and $b_0$; the fitted values and residuals;
+    and verify \emph{both} $\sum e_i = 0$ and $\sum x_ie_i = 0$. Compute SSE,
+    SSR, SST and $R^2$, checking SSR a second independent way. \QMarks{5}
+  \item Write the update rules for Adagrad, RMSprop and Adam. State the one
+    failure mode of Adagrad on long training runs, name the change RMSprop
+    makes to fix it, and name the two things Adam adds on top of RMSprop.
+    \QMarks{5}
+  \item Take $X$ with rows $(1,-1), (1,0), (1,1), (1,2)$, $y = (0,0,1,1)$,
+    $w = (0,0)$ and $\eta = 0.4$.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Compute $p$ and the log-likelihood, and express the per-row
+        negative log-likelihood as a familiar constant. \QMarks{1.5}
+      \item Compute the gradient $X^\top(p-y)$, showing both components, and
+        perform one gradient step. \QMarks{2}
+      \item Give the new $p$ and the new log-likelihood. \QMarks{1}
+      \item Explain why the intercept component of the gradient is exactly
+        zero here. \QMarks{0.5}
+    \end{enumerate}
+\end{enumerate}
+
+\subsection*{Mock paper --- Section C: compulsory \quad (1 $\times$ 10 = 10)}
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*, start=10]
+  \item A hospital gives you 5000 patient records: 12 numeric features (two of
+    them with about 4\% missing values and visible outliers), 3 categorical
+    features, and a binary target that is 8\% positive. You must build and
+    validate a model, and defend it to a clinical audit committee.
+    \begin{enumerate}[label=(\alph*), leftmargin=*]
+      \item Set out the complete preprocessing sequence, from raw table to
+        model input, in order. For each step state \emph{what} it does and
+        \emph{why} it is at that position in the order. \QMarks{3}
+      \item State precisely which steps are fitted on training data only, and
+        describe what happens inside a single fold of 5-fold stratified
+        cross-validation --- fold sizes, number of positives, and which objects
+        are refitted. \QMarks{3}
+      \item You decide to oversample the minority class. State exactly where in
+        the fold this happens, and explain what goes wrong if you oversample
+        before the folds are cut. \QMarks{2}
+      \item The committee asks for a single headline number. Explain why
+        accuracy is a poor choice here, name the metric you would report
+        instead, and justify it in terms of the clinical cost of a false
+        negative. \QMarks{2}
+    \end{enumerate}
+\end{enumerate}
+
+\vspace{0.8em}\hrule\vspace{0.6em}
+\noindent\small\textbf{End of A1.} The assessment test AT1 follows at AS1 and
+is worth 1.5 marks. Bring your submission.\normalsize
+
+\end{document}
