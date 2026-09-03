@@ -39,6 +39,11 @@ assignment.
   - `Txx-Solutions.pdf` — worked solutions for every set
   - `latex/` — the LaTeX sources of those two documents
   - Published only after every group has sat that quiz
+- `test-0/` — the unmarked week-2 diagnostic: paper, worked solutions and sources
+- `theory-assignments/Axx/`
+  - `assignment.pdf` — the brief you are marked against
+  - `Mid-Sem-Question-Bank.pdf` — practice questions for the mid-semester paper (A1 only)
+  - `latex/` — sources
 - `Course-Handbook/Course-Handbook.pdf` — the student handbook (syllabus, marks, calendar, resources); source in `Course-Handbook/latex/`
 - `_shared/` — common LaTeX preambles and the UPES beamer theme
 
@@ -86,14 +91,27 @@ Material is published as it is delivered, not all at once. Currently released:
 | **Lab Assignments 1–10** | All ten briefs and starter notebooks, covering experiments 1–14 |
 | **Anchor-Datasets.pdf** | The three dataset families, with sources and loading code |
 | **student-guides/** | VS Code tutorial video + step list for the submission workflow |
+| **Unit III — Lecture 4** | Adaptive optimisers: Adagrad, RMSprop, Adadelta, Adam |
+| **Unit IV — Lectures 5–7** | Data cleaning; feature engineering and dimensionality reduction; splitting, cross-validation and imbalance |
+| **Unit V — Lectures 8–12** | Least squares; maximum likelihood and model adequacy; logistic regression; multiple regression; regularization |
+| **Unit VI — Lectures 13–19** | KNN; decision trees; Bayesian algorithms; ensembles; neural networks; SVM; ROC and AUC |
+| **Unit VII — Lectures 20–24** | Clustering foundations; similarity measures; hierarchical; partitioning; density-based and consolidation |
+| **Test-0** | The unmarked diagnostic — paper and worked solutions |
 | **Theory Quiz 1 (T01)** | Paper and worked solutions, sets A–H — prerequisites, L1, L2 |
+| **Theory Quiz 2 (T02)** | Paper, sets A–H — L3 principally. Solutions to follow |
+| **Theory Assignment 1 (A1)** | The brief and the 314-question Mid-Semester Question Bank |
 
 Each theory quiz paper and its worked solutions are published here **after every
 group has sat it** — so you can check your own answers against a full solution
-for your set. Later lectures appear here as the semester progresses. **All ten lab assignments
-are published up front** so you can see where the lab is going and get the data
-in advance — but work them in order, and check the release schedule for when
-each one is due.
+for your set. **All twenty-four lecture packages are now published**, so you can
+read ahead as far as you like; they are still taught in order, and a package you
+have not been taught yet is meant to be read after the ones before it, not
+instead of them. **All ten lab assignments are published up front** too, so you
+can see where the lab is going and get the data in advance — but work them in
+order, and check the release schedule for when each one is due.
+
+What is *not* here, and will not be: marking schemes, answer keys and the
+question papers of assessments still to come.
 
 > **Get your data early.** Several datasets download over the internet on first
 > use and the campus network blocks that download. See *Getting the data* in

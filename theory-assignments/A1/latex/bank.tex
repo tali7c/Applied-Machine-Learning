@@ -1,0 +1,1613 @@
+\documentclass[11pt,a4paper]{article}
+
+\newcommand{\CourseCode}{CSAI2017P: Applied Machine Learning}
+\newcommand{\AssignmentName}{Mid-Semester Question Bank -- Units I--V(pt)}
+
+\input{../../../_shared/assignment-common.tex}
+
+% Likelihood tags.
+\newcommand{\LA}{{\footnotesize\textbf{[$\star\star\star$]}}}
+\newcommand{\LB}{{\footnotesize\textbf{[$\star\star$]}}}
+\newcommand{\LC}{{\footnotesize\textbf{[$\star$]}}}
+\newcommand{\NUM}{{\footnotesize\textbf{[NUM]}}}
+\newcommand{\Q}[1]{\item[\textbf{#1}]}
+
+\setlist[enumerate]{itemsep=0.45em, topsep=0.4em}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE \textbf{Mid-Semester Question Bank}}\\[0.3em]
+  {\large Units I--IV and Unit V (part) \textbullet\ Lecture packages L1--L10}\\[0.25em]
+  {\large \CourseCode}\\[0.4em]
+  \normalsize Dr.\ Tofik Ali \textbullet\ Autumn 2026 \textbullet\ 314 questions, 63 of them numerical
+\end{center}
+\vspace{0.4em}\hrule\vspace{0.8em}
+
+\section*{How to use this}
+
+This is not homework. Nothing in here is marked, nothing is collected, and you
+may work through it in any order. It exists because you deserve to know what
+the mid-semester syllabus means in practice rather than in syllabus headings.
+
+Every question below is one that could reasonably be set on your paper. They
+are drawn from the seven lecture packages you have been taught --- the worked
+examples, the key ideas, the cautions and the practice questions --- with the
+numbers changed so that you have to do the work rather than recall the answer.
+
+\begin{infobox}[Three tags, and what they mean]
+\LA\ \textbf{Near certain.} This was a board item, a predict-first reveal, or a
+named examinable skill. If it does not appear on the paper in some form, I will
+be mildly surprised.
+
+\LB\ \textbf{Likely.} A worked example or a ``key idea'' box from the notes.
+
+\LC\ \textbf{Possible.} Taught, examinable, but peripheral.
+
+\NUM\ \textbf{Numerical.} Compute it by hand, on paper, showing every step.
+These are the questions that separate scripts, and they are the ones students
+skip in revision because reading feels like progress and arithmetic feels like
+work. Do them.
+\end{infobox}
+
+\begin{warnbox}[Do the numericals with a pen]
+There are \textbf{63} \NUM\ questions here. Reading a worked solution produces
+the feeling of understanding and almost none of the substance. You will find
+out in the examination hall which of the two you have. Work each one on paper,
+\emph{then} check it against the key.
+
+The answer key is released \textbf{after AS1}. That is deliberate.
+\end{warnbox}
+
+\section*{The paper you are preparing for}
+
+\begin{center}\begin{tabular}{@{}llll@{}}\toprule
+\textbf{Section} & \textbf{Questions} & \textbf{Rule} & \textbf{Marks}\\
+\midrule
+A & 5 short answers & all compulsory & $5 \times 2 = 10$\\
+B & 4 medium questions & attempt any 3 & $3 \times 5 = 15$\\
+C & 1 long question & compulsory & $1 \times 10 = 10$\\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Total raw}} & \textbf{35}\\
+\multicolumn{3}{@{}l}{Scaled to the mid-semester weight} & \textbf{20}\\
+\multicolumn{3}{@{}l}{Duration} & \textbf{90 min}\\
+\bottomrule\end{tabular}\end{center}
+
+\begin{warnbox}[Neither the syllabus nor the pattern is confirmed yet --- read this]
+The examination cell has not yet issued the mid-semester notice. Both the
+paper pattern above \emph{and} the exact unit coverage are \textbf{expectations,
+not announcements}, and I will tell you the moment either is confirmed.
+
+\textbf{Why Units I--IV plus Unit V to L10 is the working assumption.} A
+mid-semester paper can only examine what has been taught by the time you sit
+it. The calendar delivers lecture packages \textbf{L1--L10} before the
+mid-semester point --- Units I to IV in full, and Unit V as far as logistic
+regression. That is where the paper is expected to come from, and it is what
+this bank covers. \textbf{Unit V stops at L10:} multiple linear regression
+(L11) and regularization (L12) are not here and are not expected.
+
+\textbf{What to do if it turns out otherwise.} This bank is organised strictly
+by unit, so it survives either kind of surprise:
+
+\begin{itemize}[leftmargin=*, itemsep=0.15em]
+  \item \textbf{Narrower} (say it stops at Unit IV, or at Unit III): work the
+    parts that are in and skip the rest. Nothing else changes; the questions you
+    skip become end-semester revision, which you will need anyway.
+  \item \textbf{Wider} (reaching past L10 into L11 or L12): everything here
+    still applies --- nothing in Units I--V(pt) stops being examinable --- and I
+    will issue a supplement rather than reissuing this document.
+  \item \textbf{A different section pattern}: only the two mock papers are
+    affected, and only in their shape. The questions inside them stay valid,
+    because a 5-mark question does not become wrong when it is worth 6.
+\end{itemize}
+
+None of these is a reason to delay starting. The overlap between any plausible
+mid-semester syllabus and this bank is large, and every question in it is
+end-semester material too.
+\end{warnbox}
+
+\section*{Coverage map}
+
+\begin{center}\footnotesize\begin{tabular}{@{}p{0.9cm}p{5.4cm}p{1.0cm}p{2.4cm}p{3.0cm}@{}}\toprule
+\textbf{Unit} & \textbf{What it covers} & \textbf{Lect.} & \textbf{Questions here} & \textbf{Weight to expect}\\
+\midrule
+I & ML types, the Python stack, generalisation, overfitting, leakage & L1 & 24 (U1.1--U1.24) & light --- at most 1 short, or a part of one\\
+II & MSE, MAE, RMSE, Huber, cross-entropy, hinge, triplet & L2 & 38 (U2.1--U2.38) & light--moderate --- expect 1 short, possibly 1 medium\\
+III & GD, SGD, mini-batch, momentum, Adagrad, RMSprop, Adadelta, Adam & L3, L4 & 52 (U3.1--U3.52) & moderate --- expect 1 short and up to 1 medium\\
+IV & Cleaning, outliers, transformation, features, encoding, PCA, selection, CV, imbalance & L5, L6, L7 & 96 (U4.1--U4.96) & \textbf{heavy} --- expect 1--2 short and 1 medium, and it is a likely source for the long question\\
+V\,(pt) & Least squares, MLE, $R^2$, adequacy, over-fitting, logistic regression & L8, L9, L10 & 84 (U5.1--U5.84) & \textbf{heavy} --- expect 1 short and 1--2 medium, and it is the other likely source for the long question\\
+--- & Two full mock papers (B and C) & --- & 20 & ---\\
+\bottomrule\end{tabular}\end{center}
+
+\noindent\small The ``weight to expect'' column is \emph{indicative}, not a
+prediction of the actual paper --- the entries deliberately overlap, because
+which unit supplies which question is not knowable in advance. What it does say
+is reliable: weight follows \textbf{teaching time}, not unit numbers. Units IV
+and V are three lecture packages each and will dominate; Units I and II are one
+package each and will not carry much. Budget your revision that way. If the
+coverage is announced differently, this column is the only part of the map that
+changes.\normalsize
+
+\vspace{0.6em}\hrule
+
+% =====================================================================
+\section*{Unit I --- Introduction and the Python ML stack \quad (L1)}
+
+\subsection*{§A --- Two-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U1.1}\LA\ State Mitchell's definition of machine learning, naming $T$, $P$
+  and $E$. Then fill in all three for a system that predicts whether a student
+  will pass a course.
+\Q{U1.2}\LA\ Classify each as supervised, unsupervised or reinforcement
+  learning, and name the training signal: (a) forecasting monthly rainfall from
+  50 years of records; (b) grouping 20{,}000 news articles by topic with no
+  labels; (c) training an agent to play Pong from the score alone.
+\Q{U1.3}\LB\ State the containment relationship between artificial
+  intelligence, machine learning and deep learning. Give one task where deep
+  learning is \emph{not} the right choice, with a reason.
+\Q{U1.4}\LB\ Give three situations in which you should \emph{not} use machine
+  learning, one line each.
+\Q{U1.5}\LA\ Name the job of NumPy, Pandas and scikit-learn in one line each.
+\Q{U1.6}\LA\ Explain what \texttt{fit}, \texttt{transform} and \texttt{predict}
+  each do. State why \texttt{fit\_transform} must never be called on test data.
+\Q{U1.7}\LB\ What are the ``first four calls, every time'' on a new DataFrame,
+  and what does each tell you?
+\Q{U1.8}\LC\ State the NumPy axis mnemonic. For \texttt{a} of shape $(3,4)$,
+  give the shape of \texttt{a.sum(axis=0)} and \texttt{a.sum(axis=1)}.
+\Q{U1.9}\LB\ Define overfitting in terms of two numbers. State the single
+  diagnostic that reveals it.
+\Q{U1.10}\LA\ Define data leakage in one sentence. Give two examples.
+\Q{U1.11}\LB\ Why is a three-way train/validation/test split needed once you
+  start comparing models? Answer in three lines.
+\Q{U1.12}\LC\ A classmate reports ``accuracy 95.33\%'' from a single 25\% test
+  split of 150 rows. State what is wrong with the way that number is
+  \emph{written}, and what should replace it.
+\Q{U1.13}\LB\ Name three model families that need feature scaling and two that
+  do not, with the reason each way.
+\end{enumerate}
+
+\subsection*{§B --- Five-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U1.14}\LA\NUM\ Five training flowers are recorded as (petal length, petal
+  width) in cm with their species:
+  \begin{center}\begin{tabular}{@{}lll@{}}\toprule
+  $(1.5,\,0.3)$ setosa & $(1.4,\,0.2)$ setosa & $(4.8,\,1.5)$ versicolor\\
+  $(4.2,\,1.2)$ versicolor & $(5.9,\,2.4)$ virginica & \\
+  \bottomrule\end{tabular}\end{center}
+  A new flower measures $(4.6,\,1.4)$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute the Euclidean distance to each of the five, to four decimals.
+    \item Give the 1-NN prediction.
+    \item Give the 3-NN prediction and the vote.
+    \item State what would change if petal width had been recorded in
+      millimetres instead of centimetres, and why.
+  \end{enumerate}
+\Q{U1.15}\LA\NUM\ A model predicts $\hat y = (4.5,\,2.5,\,7.0,\,5.0)$ against
+  true values $y = (5,\,2,\,8,\,4)$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute MSE, MAE and RMSE.
+    \item One prediction is now changed: $\hat y_3$ becomes $1.0$. Recompute
+      all three.
+    \item State the factor by which each metric grew, and explain the ordering.
+  \end{enumerate}
+\Q{U1.16}\LB\NUM\ A dataset has 569 rows. State (a) the size of a 20\% test
+  split; (b) the training and validation fold sizes under 10-fold
+  cross-validation; (c) how many model fits 10-fold CV costs; (d) the number of
+  row-fits, using $n(k-1)$.
+\Q{U1.17}\LA\ The table below was measured on 30 points from a gentle curve
+  with 40\% held out.
+  \begin{center}\begin{tabular}{@{}lrr@{}}\toprule
+  \textbf{Polynomial degree} & \textbf{Train RMSE} & \textbf{Test RMSE}\\
+  \midrule
+  1 & 1.32 & 1.60\\ 2 & 0.89 & 1.14\\ 3 & 0.86 & 1.10\\ 12 & 0.57 & 40.52\\
+  \bottomrule\end{tabular}\end{center}
+  \begin{enumerate}[label=(\alph*)]
+    \item Which degree would you deploy, and why?
+    \item Describe what is happening at degree 12 in terms of the two columns.
+    \item Degree 12 has the lowest training error of the four. Explain in three
+      lines why that is not an argument in its favour.
+    \item Sketch the shape of both curves against degree and label the region
+      called ``overfitting''.
+  \end{enumerate}
+\Q{U1.18}\LA\ A student runs \texttt{SelectKBest(f\_classif, k=20)} on all
+  100 rows of a dataset of 5000 pure-noise features with coin-flip labels, then
+  cross-validates a classifier on the 20 selected columns and reports 0.81.
+  \begin{enumerate}[label=(\alph*)]
+    \item State the accuracy an honest procedure would report, and why.
+    \item Explain the mechanism producing 0.81 in five lines.
+    \item State the one-line code change that fixes it.
+  \end{enumerate}
+\Q{U1.19}\LB\ Write out, in twelve lines or fewer, a complete scikit-learn
+  workflow that loads a dataset, splits it with stratification and a fixed
+  seed, scales the features inside a pipeline, fits a $k$-NN classifier and
+  reports test accuracy. Annotate the two lines that prevent leakage.
+\Q{U1.20}\LB\ Vectorised NumPy was measured at $1.85$\,ms against $162.9$\,ms
+  for a Python loop over $10^6$ elements. Explain where the $88\times$ comes
+  from, and name one situation where the loop would be the better choice.
+\end{enumerate}
+
+\subsection*{§C --- Ten-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U1.21}\LB\ ``The goal of machine learning is never to fit the data; it is to
+  generalise.'' Develop this into a full answer covering: what a training score
+  measures; why a held-out set is needed; what cross-validation adds over a
+  single split; the three-way split and what each part is for; and two distinct
+  mechanisms by which a reported score can be optimistically biased. Use a
+  worked numerical illustration for at least one point.
+\Q{U1.22}\LB\ You are handed a labelled dataset and asked to ``build a model''.
+  Set out the complete workflow from receiving the file to reporting a number
+  you would defend, naming the scikit-learn object used at every stage, and
+  stating at each stage what could go wrong and how the pipeline prevents it.
+\Q{U1.23}\LC\ Compare a rule-based spam filter with a learned one across:
+  how each is built; how each adapts to new spam; how each is debugged; how
+  each is explained to a regulator; and what happens to each when the
+  distribution of email changes. Conclude with the conditions under which you
+  would choose each.
+\Q{U1.24}\LC\ Explain the estimator/transformer API as a design decision.
+  Why does scikit-learn insist that every object implements the same three or
+  four methods? Discuss what this buys for pipelines, cross-validation and grid
+  search, and give a concrete example of a bug the design makes impossible.
+\end{enumerate}
+
+\vspace{0.4em}\hrule
+
+% =====================================================================
+\section*{Unit II --- Loss functions \quad (L2)}
+
+\subsection*{§A --- Two-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U2.1}\LA\ Write the formulae for MSE, MAE and RMSE. State which is most
+  sensitive to outliers and justify it \emph{from the formula}.
+\Q{U2.2}\LA\ Distinguish a loss, a cost (objective) and a metric. Give one
+  example of a problem where the loss and the metric deliberately differ.
+\Q{U2.3}\LA\ State the two properties a function must have to serve as a loss.
+\Q{U2.4}\LA\ Which constant minimises $\sum_i (y_i - c)^2$? Which minimises
+  $\sum_i |y_i - c|$? Which minimises the 0--1 loss?
+\Q{U2.5}\LA\ Write the Huber loss with parameter $\delta$. State why the second
+  branch is $\delta(|r| - \tfrac12\delta)$ rather than $\delta|r|$.
+\Q{U2.6}\LB\ State the units of $\delta$ in the Huber loss, and one wrong way
+  to choose it.
+\Q{U2.7}\LA\ Why can accuracy not be used as a training loss? Give two reasons.
+\Q{U2.8}\LA\ Write the binary cross-entropy formula. State what it becomes for
+  a single example whose predicted probability on the correct class is $p$.
+\Q{U2.9}\LA\ Categorical and sparse categorical cross-entropy: state the label
+  format each expects, and whether the two give different numbers.
+\Q{U2.10}\LB\ Why does the sparse form exist at all? Give the memory argument
+  with a concrete example.
+\Q{U2.11}\LB\ Why do libraries clip predicted probabilities to
+  $[\varepsilon, 1-\varepsilon]$ before taking logs?
+\Q{U2.12}\LA\ Define the margin $m_i$ for a binary classifier with
+  $y \in \{-1,+1\}$. Write the hinge loss in terms of it.
+\Q{U2.13}\LA\ State the one behavioural difference between hinge loss and
+  logistic loss for a point that is already correctly and confidently
+  classified. Say what consequence this has for SVMs.
+\Q{U2.14}\LB\ Write the triplet loss. Name its three inputs and say what
+  $\alpha$ does.
+\Q{U2.15}\LB\ Why is random triplet sampling ineffective, and what is the
+  remedy called?
+\Q{U2.16}\LC\ What is a surrogate loss? Name the two standard surrogates for
+  the 0--1 loss.
+\Q{U2.17}\LB\ For each, name the loss you would train with: (a) house prices
+  with 2\% data-entry errors; (b) 10-class image labels stored as integers;
+  (c) a face-embedding model; (d) a two-class medical screen where you need
+  calibrated probabilities.
+\end{enumerate}
+
+\subsection*{§B --- Five-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U2.18}\LA\NUM\ A model gives $\hat y = (3.5,\,5.0,\,4.5,\,8.0,\,5.0)$
+  against $y = (3,\,6,\,2,\,9,\,5)$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Tabulate the residuals, their squares and their absolute values.
+    \item Compute MSE, MAE and RMSE.
+    \item Compute the fraction of the total squared error, and of the total
+      absolute error, contributed by the single worst point.
+    \item Comment in three lines on what those two fractions tell you.
+  \end{enumerate}
+\Q{U2.19}\LA\NUM\ Using the residuals of U2.18, compute the Huber loss at
+  $\delta = 1$, $\delta = 1.5$ and $\delta = 3$. For each, state which points
+  took the quadratic branch. Explain in three lines what happens to the Huber
+  loss as $\delta$ grows large, and what it converges to.
+\Q{U2.20}\LA\NUM\ Six exam marks are $20, 22, 24, 25, 27, 28$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute the mean and the median.
+    \item The last mark is now recorded as $148$ by mistake. Recompute both.
+    \item State which constant minimises the squared error on the corrupted
+      set, and which minimises the absolute error.
+    \item Explain in four lines why ``MSE fits the mean, MAE fits the median''
+      is the same statement as (c).
+  \end{enumerate}
+\Q{U2.21}\LA\NUM\ Four emails have true labels $y = (1,\,0,\,1,\,0)$ and the
+  model predicts $p = (0.8,\,0.3,\,0.6,\,0.1)$ for class 1.
+  \begin{enumerate}[label=(\alph*)]
+    \item Write down the probability each example assigns to its \emph{correct}
+      class.
+    \item Compute $-\log$ of each and the binary cross-entropy.
+    \item The third email's probability now falls to $0.02$. Recompute the BCE
+      and state the increase.
+    \item Explain in three lines why one confidently wrong prediction can
+      dominate the loss over a large batch.
+  \end{enumerate}
+\Q{U2.22}\LB\NUM\ A three-class model outputs
+  $P = \begin{pmatrix} 0.6 & 0.3 & 0.1\\ 0.2 & 0.7 & 0.1\\ 0.1 & 0.3 & 0.6\end{pmatrix}$
+  and the true classes are $0, 1, 2$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute the categorical cross-entropy using one-hot labels.
+    \item Compute the sparse categorical cross-entropy using integer labels.
+    \item State the relationship between your two answers and explain it.
+    \item State the memory saved by the sparse form for $K = 10{,}000$ classes
+      and a batch of 256.
+  \end{enumerate}
+\Q{U2.23}\LA\NUM\ Complete this table and comment on the last column.
+  \begin{center}\begin{tabular}{@{}rrr@{}}\toprule
+  $p$ on the correct class & $-\log p$ & ratio to the $p=0.99$ row\\
+  \midrule
+  0.99 & & \\ 0.90 & & \\ 0.50 & & \\ 0.10 & & \\ 0.01 & & \\
+  \bottomrule\end{tabular}\end{center}
+  State the exact value of the $p = 0.50$ row and why it is a familiar
+  constant.
+\Q{U2.24}\LA\NUM\ Four points have true labels $y = (+1,\,-1,\,+1,\,-1)$ and
+  scores $f = (1.5,\,-0.4,\,0.2,\,-0.9)$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute the margin of each point.
+    \item Compute the hinge loss of each and the mean.
+    \item Compute the squared hinge loss of each and the mean.
+    \item Every point is correctly classified. Three of them still cost
+      something. Explain why in four lines, and say what the loss is asking of
+      the model that mere correctness does not.
+  \end{enumerate}
+\Q{U2.25}\LB\NUM\ Compute the triplet loss for each, taking $\alpha$ as given:
+  (a) $d(a,p) = 0.9$, $d(a,n) = 1.6$, $\alpha = 1.0$;
+  (b) $d(a,p) = 0.4$, $d(a,n) = 2.1$, $\alpha = 1.0$;
+  (c) $d(a,p) = 1.2$, $d(a,n) = 1.4$, $\alpha = 0.5$.
+  For each, state whether the triplet produces a gradient, and explain what
+  case (b) implies about sampling triplets at random.
+\Q{U2.26}\LB\ A regression model trained with MSE reports RMSE $1.17$ and a
+  model trained with MAE reports MAE $1.00$ on the same data. A classmate
+  concludes the second model is better. Give a full rebuttal.
+\Q{U2.27}\LB\ Explain why the MAE is harder to optimise with gradient methods
+  than the MSE. Your answer must mention the gradient of each, the point
+  $r = 0$, and what happens on an even-sized sample.
+\Q{U2.28}\LB\ A classifier is being trained on 4 classes. Sketch and explain
+  what goes wrong in each case: (a) softmax output with binary cross-entropy;
+  (b) integer labels with categorical cross-entropy; (c) sigmoid output on 4
+  units with categorical cross-entropy.
+\Q{U2.29}\LC\ Explain the family portrait of margin losses: the 0--1 loss and
+  three smooth surrogates plotted against the margin. State which are upper
+  bounds on the 0--1 loss, where the hinge loss reaches exactly zero, and how
+  hinge and squared hinge differ for very negative margins.
+\end{enumerate}
+
+\subsection*{§C --- Ten-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U2.30}\LA\ ``Choosing a loss is not choosing how to score your model; it is
+  choosing what your model will become.'' Defend this claim in full. Cover: the
+  constant-prediction result for MSE, MAE and 0--1 loss; a worked numerical
+  demonstration on a small contaminated sample; the Huber compromise and the
+  role of $\delta$; and a case where the loss you train with should differ from
+  the metric you report.
+\Q{U2.31}\LA\ Give a complete account of cross-entropy: the binary form, the
+  categorical form, the sparse categorical form; what each expects of the
+  labels and of the output layer; why the negative log appears; the cost of
+  being confidently wrong with numbers; and why cross-entropy rather than
+  accuracy is used as the training objective.
+\Q{U2.32}\LB\ Compare MSE, MAE and Huber loss across: definition; sensitivity
+  to outliers; the constant they fit; differentiability; gradient behaviour;
+  hyperparameters; and the situation each is right for. Include one worked
+  numerical comparison on a five-point sample of your own construction.
+\Q{U2.33}\LC\ Explain margin-based losses in full: the definition of a margin;
+  the hinge loss and its geometry; why it produces support vectors; the squared
+  hinge; the triplet loss and metric learning; and why triplet mining is
+  necessary.
+\end{enumerate}
+
+\subsection*{§D --- Statements to judge (2 marks each: true or false, \emph{with} a reason)}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U2.34}\LB\ ``MAE $= 1.0$ is a better result than MSE $= 1.375$ on the same
+  predictions.''
+\Q{U2.35}\LB\ ``The Huber loss is differentiable everywhere, including at
+  $|r| = \delta$.''
+\Q{U2.36}\LB\ ``Categorical and sparse categorical cross-entropy are different
+  loss functions.''
+\Q{U2.37}\LB\ ``A point classified correctly always contributes zero hinge
+  loss.''
+\Q{U2.38}\LC\ ``RMSE is just MSE in different units, so the two always rank
+  models identically.''
+\end{enumerate}
+
+\vspace{0.4em}\hrule
+
+% =====================================================================
+\section*{Unit III --- Optimiser functions \quad (L3, L4)}
+
+\subsection*{§A --- Two-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U3.1}\LA\ Write the gradient descent update rule in vector form. Define
+  every symbol.
+\Q{U3.2}\LA\ Least squares has a closed-form solution. Give two reasons to use
+  gradient descent instead.
+\Q{U3.3}\LA\ Define \emph{epoch} and \emph{update}. How many updates per epoch
+  does batch gradient descent perform? SGD? Mini-batch with batch size $B$ on
+  $n$ rows?
+\Q{U3.4}\LA\ State the stability condition on $\eta$ for a quadratic with
+  largest curvature $L$. What value of $\eta$ converges in exactly one step,
+  and what is that method called?
+\Q{U3.5}\LA\ Write the SGD update. State the property of the per-example
+  gradient that makes SGD work at all.
+\Q{U3.6}\LB\ State the Robbins--Monro conditions on a step-size schedule and
+  give a schedule satisfying both.
+\Q{U3.7}\LA\ How does the standard deviation of a mini-batch gradient depend on
+  $B$? State the practical consequence in one line.
+\Q{U3.8}\LA\ Write the momentum update rule. State what $\beta$ controls and
+  what happens as $\beta \to 1$.
+\Q{U3.9}\LA\ Give the effective step size of momentum in terms of $\eta$ and
+  $\beta$. What does this imply when you raise $\beta$ from $0.9$ to $0.99$?
+\Q{U3.10}\LB\ Define the condition number $\kappa$. State the convergence rate
+  of gradient descent and of momentum in terms of it.
+\Q{U3.11}\LB\ Name a situation in which momentum makes optimisation
+  \emph{slower}, and say why.
+\Q{U3.12}\LA\ Write the Adagrad update. State the one thing $s_t$ accumulates.
+\Q{U3.13}\LA\ State Adagrad's flaw on long training runs. Give the rate at
+  which its effective learning rate decays.
+\Q{U3.14}\LA\ Write the RMSprop update. State the single symbol that differs
+  from Adagrad and what it changes.
+\Q{U3.15}\LB\ What does RMSprop give up relative to Adagrad?
+\Q{U3.16}\LB\ State Adadelta's motivating argument in one sentence. What does
+  it remove from the update?
+\Q{U3.17}\LB\ ``$\varepsilon$ is Adadelta's hidden learning rate.'' Explain in
+  three lines.
+\Q{U3.18}\LA\ Write all four Adam equations.
+\Q{U3.19}\LA\ Why does Adam need bias correction? Answer in terms of the
+  initialisation of $m$ and $v$.
+\Q{U3.20}\LA\ Show that Adam's first corrected step is exactly $\pm\eta$,
+  whatever the size of $g_1$.
+\Q{U3.21}\LB\ Adam is not simply ``better'' than SGD. State what adaptive
+  optimisers actually buy you.
+\Q{U3.22}\LB\ Name the two distinct reasons a single scalar $\eta$ can fail.
+  State which one momentum addresses and which it does not.
+\Q{U3.23}\LB\ Give the four signatures of a loss curve and the action each
+  calls for.
+\Q{U3.24}\LC\ \texttt{SGDRegressor} has no \texttt{batch\_size} argument.
+  What does that tell you about its implementation?
+\Q{U3.25}\LC\ Name the two conventions for the momentum update and state the
+  factor by which they differ.
+\end{enumerate}
+
+\subsection*{§B --- Five-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U3.26}\LA\NUM\ Minimise $f(w) = (w-4)^2$ by gradient descent from
+  $w_0 = 0$ with $\eta = 0.15$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Write $f'(w)$ and show the update simplifies to $w \leftarrow 0.7w + 1.2$.
+    \item Tabulate $k$, $w_k$, $f(w_k)$ and $f'(w_k)$ for $k = 0,1,2,3$ and
+      give $w_4$.
+    \item State the ratio by which successive gradients fall, and show it
+      equals $|1 - 2\eta|$.
+    \item Give the closed form $w_k = 4 - 4(1-2\eta)^k$ and verify $w_4$.
+  \end{enumerate}
+\Q{U3.27}\LA\NUM\ For $f(w) = 3w^2$:
+  \begin{enumerate}[label=(\alph*)]
+    \item State $f''$ and the range of $\eta$ for which gradient descent
+      converges.
+    \item Give the $\eta$ that converges in one step.
+    \item For $\eta = 0.4$ and $w_0 = 1$, compute $w_1$ to $w_4$ and describe
+      the behaviour.
+    \item State what a loss curve would look like in case (c), and the first
+      thing you would do about it.
+  \end{enumerate}
+\Q{U3.28}\LA\NUM\ Fit $\hat y = wx$ by minimising
+  $J(w) = \frac1n\sum(y_i - wx_i)^2$ on $(1,3)$, $(2,5)$, $(4,9)$, from
+  $w_0 = 0$ with $\eta = 0.05$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute the full-batch gradient at $w_0$ and the resulting $w$ after
+      one batch update.
+    \item Perform one epoch of SGD, visiting the points in the order given,
+      using the per-example gradient $2x_i(wx_i - y_i)$. Report $w$ after each
+      of the three updates.
+    \item Compute the exact optimum $w^\star = \sum x_iy_i / \sum x_i^2$.
+    \item Compare (a) and (b) against (c) and comment in three lines.
+  \end{enumerate}
+\Q{U3.29}\LA\NUM\ Repeat U3.26(b) with momentum, $v_t = \beta v_{t-1} + g_t$
+  and $w_t = w_{t-1} - \eta v_t$, using $\beta = 0.9$, $v_0 = 0$, for three
+  steps. Tabulate $g_t$, $v_t$ and $w_t$. Compare $w_3$ with plain gradient
+  descent's $w_3$ and with the optimum, and explain what you observe.
+\Q{U3.30}\LB\NUM\ You tuned $\eta = 0.01$ with $\beta = 0.9$ and now wish to
+  use $\beta = 0.99$.
+  \begin{enumerate}[label=(\alph*)]
+    \item State the effective step size in each case.
+    \item Give the rescaling rule and the new $\eta$.
+    \item Explain in three lines what happens if you raise $\beta$ without
+      rescaling.
+  \end{enumerate}
+\Q{U3.31}\LA\NUM\ Perform three steps of \textbf{Adagrad} on $f(w) = (w-4)^2$
+  from $w_0 = 0$ with $\eta = 0.5$, $s_0 = 0$, $\varepsilon = 10^{-8}$.
+  Tabulate $t$, $g_t$, $s_t$, $\sqrt{s_t}$, the step and $w_t$. Then state, with
+  numbers, the percentage by which the step shrank against the percentage by
+  which the gradient shrank, and explain the difference.
+\Q{U3.32}\LA\NUM\ Repeat U3.31 for \textbf{RMSprop} with $\gamma = 0.9$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Tabulate the same six columns.
+    \item Show that the first step equals $\eta/\sqrt{1-\gamma}$ and evaluate
+      it.
+    \item At which step does $s_t$ first \emph{fall}, and why can Adagrad's
+      $s_t$ never do this?
+  \end{enumerate}
+\Q{U3.33}\LA\NUM\ Perform three steps of \textbf{Adam} on $f(w) = (w-4)^2$
+  from $w_0 = 0$ with $\eta = 0.2$, $\beta_1 = 0.9$, $\beta_2 = 0.999$,
+  $\varepsilon = 10^{-8}$. Tabulate $t$, $g_t$, $m_t$, $v_t$, $\hat m_t$,
+  $\hat v_t$, $\sqrt{\hat v_t}$, the step and $w_t$. Comment on the three step
+  sizes.
+\Q{U3.34}\LA\NUM\ Repeat U3.33 \emph{without} bias correction.
+  \begin{enumerate}[label=(\alph*)]
+    \item Report the three uncorrected steps.
+    \item Compute the ratio $(1-\beta_1)/\sqrt{1-\beta_2}$ and show it matches
+      the first-step discrepancy.
+    \item Explain in four lines why the two moments are biased by different
+      factors, and why that mismatch — rather than the shrinkage itself — is
+      the problem.
+  \end{enumerate}
+\Q{U3.35}\LB\NUM\ Bias correction matters until $1/(1-\beta^t)$ is within 1\%
+  of 1.
+  \begin{enumerate}[label=(\alph*)]
+    \item Derive the condition on $t$.
+    \item Evaluate it for $\beta = 0.9$, $0.99$ and $0.999$.
+    \item Comment on what your answer for $\beta_2 = 0.999$ implies for a
+      training run of 2000 steps.
+  \end{enumerate}
+\Q{U3.36}\LB\NUM\ Adadelta's first step is
+  $\Delta w_1 = -\dfrac{\sqrt{d_0 + \varepsilon}}{\sqrt{s_1 + \varepsilon}}g_1$
+  with $d_0 = 0$ and $s_1 = (1-\rho)g_1^2$. Take $g_1 = -8$, $\rho = 0.9$.
+  Compute $\Delta w_1$ for $\varepsilon = 10^{-6}$, $10^{-8}$ and $10^{-12}$,
+  and state the relationship you observe. Explain what this means for the claim
+  that Adadelta has no learning rate.
+\Q{U3.37}\LB\NUM\ Complete the table and answer the question below it.
+  \begin{center}\begin{tabular}{@{}rrr@{}}\toprule
+  $B$ & relative gradient noise $1/\sqrt B$ & work per update\\
+  \midrule
+  1 & & \\ 4 & & \\ 16 & & \\ 64 & & \\ 256 & & \\
+  \bottomrule\end{tabular}\end{center}
+  Doubling $B$ costs twice the work. By what factor does it reduce the noise?
+  State the practical conclusion this leads to about the choice of $B$.
+\Q{U3.38}\LB\ Complete the optimiser summary table and add one line of comment
+  under each row.
+  \begin{center}\begin{tabular}{@{}lllll@{}}\toprule
+  \textbf{Method} & $B$ & \textbf{Updates/epoch} & \textbf{Noise} & \textbf{Cost/update}\\
+  \midrule
+  Batch & & & & \\ Mini-batch & & & & \\ Stochastic & & & & \\
+  \bottomrule\end{tabular}\end{center}
+\Q{U3.39}\LA\ Write from memory the update rules for SGD, momentum, Adagrad,
+  RMSprop and Adam, in that order. For each, state in one line what it added
+  over its predecessor.
+\Q{U3.40}\LB\ ``Every optimiser in this lecture is the line
+  $w_i \leftarrow w_i - \frac{\eta}{\sqrt{s_i}}g_i$; they differ only in what
+  $s_i$ accumulates.'' Justify this for Adagrad, RMSprop and Adam, stating
+  $s_i$ in each case.
+\Q{U3.41}\LB\ Give the dimensional-analysis argument for Adadelta. What are the
+  units of a plain SGD step, of an Adagrad step, and of a Newton step? Which is
+  dimensionally correct, and why is it not used?
+\Q{U3.42}\LB\ A model has 20 dense features and 20 very rare ones. Explain why
+  a single learning rate cannot serve both, name the optimiser you would reach
+  for, and justify it in terms of what that optimiser accumulates.
+\Q{U3.43}\LC\ Explain why standardising features is an \emph{optimisation}
+  decision, not merely a preprocessing one. Refer to the condition number and
+  to the stability limit $2/L$.
+\Q{U3.44}\LB\ Give the six-step recipe for training a model with gradient
+  methods, from raw features to a final learning-rate decay.
+\end{enumerate}
+
+\subsection*{§C --- Ten-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U3.45}\LA\ Give a complete account of the learning rate: the update rule;
+  the four regimes of $\eta$ with the multiplier $|1-\eta f''|$ in each; the
+  stability threshold $2/L$ and its derivation for a quadratic; the four loss
+  curve signatures; and how you would find a good $\eta$ in practice. Include a
+  worked numerical example on a one-dimensional quadratic.
+\Q{U3.46}\LA\ Trace the development from batch gradient descent to Adam as a
+  chain of fixes, at each step naming the problem, the fix, the update rule and
+  what the fix cost. Cover batch $\to$ SGD $\to$ mini-batch $\to$ momentum
+  $\to$ Adagrad $\to$ RMSprop $\to$ Adam.
+\Q{U3.47}\LA\ Explain momentum completely: the ravine problem; the heavy-ball
+  rule; the exponentially weighted average interpretation and the unrolled
+  form; the effective step $\eta/(1-\beta)$; the modified stability ceiling;
+  overshoot; the improvement in convergence rate from $\kappa$ to $\sqrt\kappa$;
+  and when momentum does not help.
+\Q{U3.48}\LA\ Explain Adam in full: the two moments and what each is for; the
+  bias-correction derivation for a constant gradient; the first-step result;
+  the size of the error if correction is omitted; the defaults and what each
+  controls; and the most common misconception about Adam.
+\Q{U3.49}\LB\ Compare Adagrad, RMSprop, Adadelta and Adam across: what is
+  accumulated; whether it decays; the size of the first step; the
+  hyperparameters; the problem each was invented to fix; and the situation each
+  is right for. Support with at least two hand-computed steps of any two of
+  them.
+\Q{U3.50}\LB\ ``The real benefit of an adaptive optimiser is not a better final
+  answer but a wider window of learning rates that work.'' Explain and defend
+  this, and describe the experiment you would run to demonstrate it.
+\end{enumerate}
+
+\subsection*{§D --- Statements to judge (2 marks each)}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U3.51}\LB\ ``Adam is always a better choice than SGD with momentum.''
+\Q{U3.52}\LB\ ``Because Adam is adaptive, it does not need a learning-rate
+  schedule.''
+\end{enumerate}
+
+\vspace{0.4em}\hrule
+
+% =====================================================================
+\section*{Unit IV --- Data preprocessing \quad (L5, L6, L7)}
+
+\subsection*{§A --- Two-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U4.1}\LA\ Name Han, Kamber and Pei's four preprocessing tasks.
+\Q{U4.2}\LA\ Give the probability that a row survives listwise deletion when
+  each of $d$ columns is independently missing with probability $p$. Evaluate
+  it for $p = 0.05$, $d = 30$.
+\Q{U4.3}\LA\ Name three imputation strategies for a numeric column and one for
+  a categorical column, with the situation each suits.
+\Q{U4.4}\LA\ State the factor by which mean imputation shrinks the standard
+  deviation of a column, in terms of the fraction observed.
+\Q{U4.5}\LA\ Define MCAR, MAR and MNAR. Give one example of each.
+\Q{U4.6}\LB\ For which of the three mechanisms can a multivariate imputer
+  recover the bias, and for which can nothing in the data help?
+\Q{U4.7}\LB\ What is a missingness indicator, and when is adding one leakage?
+\Q{U4.8}\LA\ Write the $z$-score rule, the Tukey fence rule and the modified
+  $z$-score rule for outlier detection.
+\Q{U4.9}\LA\ Give the breakdown point of each of the three outlier rules.
+\Q{U4.10}\LA\ Define \emph{masking}. Explain in two lines why it defeats the
+  $z$-score rule.
+\Q{U4.11}\LB\ State the largest $|z|$ attainable in a sample of size $n$.
+  For what $n$ does the $|z| > 3$ rule become capable of firing at all?
+\Q{U4.12}\LB\ Why is $0.6745$ the constant in the modified $z$-score? Why is
+  the fence multiplier $1.5$?
+\Q{U4.13}\LB\ Distinguish skew from contamination. State the order in which you
+  should transform and detect outliers, with a reason.
+\Q{U4.14}\LB\ Name four ways to dispose of an identified outlier, and state
+  when each is appropriate.
+\Q{U4.15}\LC\ Distinguish equal-width from equal-depth binning. Name the three
+  smoothing methods.
+\Q{U4.16}\LA\ Write the Box--Cox transformation. State its one restriction on
+  the data and name the transformation that removes it.
+\Q{U4.17}\LB\ Why does the Box--Cox formula subtract 1 and divide by $\lambda$?
+\Q{U4.18}\LB\ How is $\lambda$ chosen in practice? State what it is \emph{not}
+  chosen to do.
+\Q{U4.19}\LA\ Name the four scalers, write each formula and give each output
+  range.
+\Q{U4.20}\LA\ Which of the four scalers is completely destroyed by a single
+  extreme value, and why? Which is the safest?
+\Q{U4.21}\LA\ Why does scaling not change a decision tree's predictions?
+  Give the argument from the form of a split.
+\Q{U4.22}\LB\ Distinguish scaling from transformation. Which one changes
+  skewness?
+\Q{U4.23}\LA\ Distinguish nominal from ordinal variables. State the encoding
+  each requires.
+\Q{U4.24}\LA\ What is the dummy variable trap? State what it breaks and what it
+  does \emph{not} break.
+\Q{U4.25}\LB\ State the default ordering \texttt{OrdinalEncoder} applies, and
+  why that is a dangerous default.
+\Q{U4.26}\LB\ What does \texttt{handle\_unknown='ignore'} do, and what happens
+  without it?
+\Q{U4.27}\LB\ Name Han, Kamber and Pei's three kinds of data reduction.
+\Q{U4.28}\LA\ State the curse of dimensionality in terms of nearest and
+  farthest distances. Name the class of method it damages.
+\Q{U4.29}\LA\ Give the four steps of PCA.
+\Q{U4.30}\LA\ What does the $j$th eigenvalue of the covariance matrix equal?
+  What does the trace equal?
+\Q{U4.31}\LA\ Why must you standardise before PCA? Give the failure mode
+  concretely.
+\Q{U4.32}\LA\ ``PCA reduces dimensionality by keeping the most important
+  features.'' State precisely what is wrong with this sentence.
+\Q{U4.33}\LB\ PCA has never seen the labels. Give a concrete case where this
+  makes it the wrong tool, and name a supervised alternative.
+\Q{U4.34}\LA\ Name the three families of feature selection with one method
+  from each, and state the cost and risk of each family.
+\Q{U4.35}\LB\ The ANOVA $F$ test and mutual information rank features
+  differently. State what each measures and construct a feature that one finds
+  and the other misses.
+\Q{U4.36}\LB\ ``L1 selects, L2 shrinks.'' Explain.
+\Q{U4.37}\LA\ State the single rule that determines what may be fitted on the
+  full dataset and what may not.
+\Q{U4.38}\LA\ Which leaks more: fitting a scaler on all the data, or performing
+  feature selection on all the data? Give the reason.
+\Q{U4.39}\LA\ Why must a test set be stratified for classification? Name the
+  scikit-learn argument.
+\Q{U4.40}\LA\ State the default value of \texttt{shuffle} in \texttt{KFold} and
+  the failure it causes on a sorted file.
+\Q{U4.41}\LA\ What is the ``unit of independence''? Give three examples where
+  it is not the row.
+\Q{U4.42}\LA\ Name the splitter for each: repeated measurements per patient;
+  time-ordered rows; imbalanced classes; imbalanced classes \emph{and} repeated
+  measurements.
+\Q{U4.43}\LB\ Give the $k$-fold cost model: number of fits, rows per fit, and
+  total row-fits.
+\Q{U4.44}\LB\ Why is LOOCV rarely worth it? Give both the cost and the variance
+  argument.
+\Q{U4.45}\LB\ Why is \texttt{cross\_val\_score(...).std()} not the uncertainty
+  of the mean?
+\Q{U4.46}\LA\ Distinguish the roles of a validation set and a test set. How
+  many times may you look at each?
+\Q{U4.47}\LB\ Why is \texttt{GridSearchCV.best\_score\_} not a performance
+  estimate? What is?
+\Q{U4.48}\LA\ Write the formulae for accuracy, precision, recall, $F_1$ and
+  balanced accuracy from a confusion matrix.
+\Q{U4.49}\LA\ What is the chance baseline of ROC--AUC? Of PR--AUC?
+\Q{U4.50}\LA\ Write the SMOTE interpolation formula and define every symbol.
+\Q{U4.51}\LB\ Give two situations in which SMOTE is the wrong tool.
+\Q{U4.52}\LA\ Where in a cross-validation loop must resampling happen? State
+  what goes wrong if it happens earlier.
+\Q{U4.53}\LB\ Name a cheaper alternative to resampling that achieves the same
+  effect on recall, and state two further advantages it has.
+\end{enumerate}
+
+\subsection*{§B --- Five-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U4.54}\LA\NUM\ Eight students sat a test; two scripts were lost. The six
+  recorded marks are $48, 55, 60, 67, 72, 78$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute the mean, median and standard deviation of the observed
+      marks (use $\text{ddof}=1$ for the sd, and state the population sd too).
+    \item Impute the two missing marks with the mean. Recompute the mean and
+      the population standard deviation of all eight.
+    \item Repeat with median imputation.
+    \item Compute $\sqrt{m/n}$ and compare it with the ratio of the imputed sd
+      to the observed sd. Explain the agreement.
+  \end{enumerate}
+\Q{U4.55}\LA\NUM\ Complete the survival table for listwise deletion.
+  \begin{center}\begin{tabular}{@{}rrrrr@{}}\toprule
+  $p$ & $d=5$ & $d=20$ & $d=30$ & $d=50$\\
+  \midrule
+  0.01 & & & & \\ 0.05 & & & & \\ 0.10 & & & & \\
+  \bottomrule\end{tabular}\end{center}
+  \begin{enumerate}[label=(\alph*)]
+    \item Fill in all twelve cells.
+    \item At $p = 0.05$, find the number of columns at which half the rows are
+      lost.
+    \item At $p = 0.10$ and $d = 50$, how many raw rows must you collect to
+      retain 1000 complete ones?
+    \item State in three lines when listwise deletion is nevertheless the right
+      choice.
+  \end{enumerate}
+\Q{U4.56}\LA\NUM\ A sensor column reads
+  $20,\ 21,\ 19,\ 22,\ 20,\ 21,\ 23,\ 19,\ 20,\ 22,\ 120,\ 125$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute the mean, the sample standard deviation, the median and the
+      MAD.
+    \item Compute $Q_1$, $Q_3$, the IQR and the $1.5\times$IQR fences.
+    \item Score the value 120 under all three rules: $|z| > 3$, the Tukey
+      fence, and the modified $z$ at threshold $3.5$. State which rules fire.
+    \item Compute the standard deviation of the ten genuine readings alone, and
+      the $z$-score the value 120 would then have. Explain the discrepancy with
+      (c) and name the effect.
+  \end{enumerate}
+\Q{U4.57}\LA\NUM\ Complete the table and answer the question.
+  \begin{center}\begin{tabular}{@{}rrl@{}}\toprule
+  $n$ & largest attainable $|z|$ & can $|z|>3$ ever fire?\\
+  \midrule
+  5 & & \\ 8 & & \\ 10 & & \\ 11 & & \\ 20 & & \\
+  \bottomrule\end{tabular}\end{center}
+  Derive the bound $|z_1| \le (n-1)/\sqrt n$. State what it means for a
+  practitioner who writes \texttt{if abs(z) > 3} in a script that processes
+  batches of eight readings.
+\Q{U4.58}\LB\NUM\ Nine prices are $5, 8, 14, 17, 20, 26, 27, 30, 36$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Partition them into three equal-depth bins and give each bin's mean,
+      median and boundaries.
+    \item Write the column smoothed by bin means, by bin medians and by bin
+      boundaries.
+    \item State the bin widths and bin sizes that equal-width binning would
+      have produced instead.
+    \item State one thing binning gains and one thing it costs.
+  \end{enumerate}
+\Q{U4.59}\LB\NUM\ Using the sensor column of U4.56, apply each treatment and
+  report the resulting mean and standard deviation: (a) leave it alone;
+  (b) winsorise at the 10th and 90th percentiles; (c) cap at the IQR fences;
+  (d) drop the points flagged by the modified $z$. Rank the four by how close
+  they come to the truth (mean $20.7$, sd $1.34$) and justify your ranking.
+\Q{U4.60}\LB\NUM\ The values $2, 6, 18, 54$ are in geometric progression.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute the gaps between consecutive values.
+    \item Compute the natural logarithm of each and the gaps between those.
+    \item State the exact value the log gaps take and why.
+    \item Explain in three lines why this makes the log the useful ``middle
+      rung'' of the ladder of powers.
+  \end{enumerate}
+\Q{U4.61}\LB\NUM\ Apply the Box--Cox formula $(x^\lambda - 1)/\lambda$ to
+  $x = 1, 4, 16, 64$ for $\lambda = 0.5$, $-0.5$ and $0.001$. Compare the
+  $\lambda = 0.001$ column with $\log x$ and explain what you observe.
+\Q{U4.62}\LA\NUM\ The values $3, 5, 5, 5, 6, 6, 8, 10$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute the mean, population sd, min, max, median, $Q_1$, $Q_3$ and
+      IQR.
+    \item Transform the column with \texttt{StandardScaler},
+      \texttt{MinMaxScaler}, \texttt{RobustScaler} and \texttt{MaxAbsScaler},
+      giving all eight values in each case.
+    \item State the output range each scaler guarantees.
+  \end{enumerate}
+\Q{U4.63}\LA\NUM\ A typing error appends the value $400$ to the column of
+  U4.62.
+  \begin{enumerate}[label=(\alph*)]
+    \item Recompute the mean, sd, median and IQR.
+    \item For \texttt{StandardScaler}, \texttt{MinMaxScaler} and
+      \texttt{RobustScaler}, compute the span the eight \emph{good} values now
+      occupy, and the factor by which each has been compressed.
+    \item Name the scaler that survives, and explain why in terms of the
+      statistics each one uses.
+    \item Explain in three lines why \texttt{MinMaxScaler} is described as
+      ``the dangerous one'' despite producing output that looks correct.
+  \end{enumerate}
+\Q{U4.64}\LA\NUM\ Three customers are recorded as (age, annual income in
+  rupees): $A = (30,\ 500\,000)$, $B = (55,\ 505\,000)$,
+  $C = (31,\ 900\,000)$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute $d(A,B)^2$ and $d(A,C)^2$ on the raw values, showing each
+      coordinate's contribution and the percentage income supplies.
+    \item Standardise all three columns (population sd) and recompute both
+      squared distances.
+    \item State $A$'s nearest neighbour before and after.
+    \item Explain in four lines what ``choosing not to scale'' actually chooses.
+  \end{enumerate}
+\Q{U4.65}\LA\NUM\ A nominal colour variable is ordinal-encoded alphabetically:
+  blue $=0$, green $=1$, red $=2$. The true group means of the target are
+  blue 30, green 70, red 15.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute $\bar x$, $\bar y$, $S_{xy}$ and $S_{xx}$.
+    \item Fit the least-squares line, giving slope and intercept.
+    \item Give the prediction for each colour, the SSE, the SST and $R^2$.
+    \item State the $R^2$ a one-hot encoding would achieve and explain the
+      difference in four lines.
+  \end{enumerate}
+\Q{U4.66}\LB\NUM\ A categorical column has 5 levels.
+  \begin{enumerate}[label=(\alph*)]
+    \item How many columns does one-hot encoding produce, with and without
+      \texttt{drop='first'}?
+    \item A design matrix has an intercept column and all 5 dummies. State its
+      rank and why.
+    \item State what rank deficiency breaks, and what it does \emph{not} break.
+    \item State when you should use \texttt{drop='first'} and when you should
+      not.
+  \end{enumerate}
+\Q{U4.67}\LB\NUM\ \texttt{PolynomialFeatures} generates $\binom{d+k}{k} - 1$
+  features. Evaluate for $(d,k) = (2,2), (10,2), (30,2), (10,3), (100,2)$.
+  Comment on what this implies for ``just generate all the interactions''.
+\Q{U4.68}\LA\NUM\ Perform PCA by hand on the five points
+  $(1,1), (2,3), (3,2), (4,5), (5,4)$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute the mean and the centred matrix.
+    \item Compute the $2\times2$ covariance matrix with divisor $n-1$.
+    \item Find both eigenvalues and the first eigenvector. Verify the trace.
+    \item Give the proportion of variance explained by each component.
+    \item Project onto PC1, give the five scores, and verify their variance
+      equals $\lambda_1$.
+    \item Reconstruct from one component and compute the total squared
+      reconstruction error. Verify it equals $(n-1)\lambda_2$.
+  \end{enumerate}
+\Q{U4.69}\LB\NUM\ A PCA on six standardised features gives eigenvalues
+  $4.8,\ 2.4,\ 1.3,\ 0.8,\ 0.4,\ 0.3$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Give the proportion of variance explained by each component.
+    \item Give the cumulative proportions.
+    \item State the smallest $k$ reaching 80\%, 90\% and 95\%.
+    \item State the relative reconstruction error at each of those three $k$,
+      without further computation, and justify why no computation is needed.
+  \end{enumerate}
+\Q{U4.70}\LA\NUM\ Twelve rows contain three positives, all at the end of the
+  file. Four rows are held out as a test set.
+  \begin{enumerate}[label=(\alph*)]
+    \item If the last four rows are taken, how many positives are in the test
+      set and how many in training? State the consequence.
+    \item If the rows are shuffled first, compute the probability that the test
+      set contains \emph{no} positive, as a ratio of binomial coefficients.
+    \item State exactly what \texttt{stratify=y} produces.
+    \item State what \texttt{recall} evaluates to on a fold containing no
+      positives, and what scikit-learn does about it.
+  \end{enumerate}
+\Q{U4.71}\LA\NUM\ A screening model on 10{,}000 patients gives
+  $\text{TN} = 9900$, $\text{FP} = 60$, $\text{FN} = 30$, $\text{TP} = 10$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute accuracy, precision, recall, $F_1$ and balanced accuracy.
+    \item Compute the accuracy of a model that predicts ``negative'' always.
+    \item State which of the two models scores higher on accuracy, and what
+      that tells you about the metric.
+    \item Name the metric you would report to a clinical committee and justify
+      it in three lines.
+  \end{enumerate}
+\Q{U4.72}\LA\NUM\ Complete the cross-validation cost table for $n = 5000$.
+  \begin{center}\begin{tabular}{@{}lrrr@{}}\toprule
+  \textbf{Scheme} & \textbf{Fits} & \textbf{Rows per fit} & \textbf{Row-fits}\\
+  \midrule
+  2-fold & & & \\ 5-fold & & & \\ 10-fold & & & \\ LOOCV & & & \\
+  \bottomrule\end{tabular}\end{center}
+  If one fit on 4000 rows takes $0.4$ seconds and cost is linear in rows, give
+  the wall-clock time of each scheme. State which you would use and why.
+\Q{U4.73}\LB\NUM\ A dataset has 5000 rows and an 8\% positive rate, and you run
+  5-fold stratified cross-validation.
+  \begin{enumerate}[label=(\alph*)]
+    \item Give the number of rows and positives in each validation fold and in
+      each training portion.
+    \item The training portion is randomly oversampled to balance. Give the
+      resulting row count and class counts, and the percentage of minority rows
+      that are duplicates.
+    \item Repeat for random undersampling, and state the percentage of majority
+      rows discarded.
+    \item State what happens to the validation fold in each case, and why.
+  \end{enumerate}
+\Q{U4.74}\LB\NUM\ Two minority patients are at $A = (2,3)$ and $B = (6,11)$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute the SMOTE synthetic point for $u = 0,\ 0.25,\ 0.5,\ 0.75,\ 1$.
+    \item State the geometric object all synthetic points lie on.
+    \item State the assumption SMOTE is making, in one sentence.
+    \item Give one dataset for which that assumption is clearly false.
+  \end{enumerate}
+\Q{U4.75}\LB\NUM\ A model reports accuracy $0.91$ on a test set of 44 rows.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute the standard error of that accuracy.
+    \item State how much one row is worth in accuracy points.
+    \item Compute the test-set size needed to halve the standard error.
+    \item Explain in three lines why comparing two models on one 44-row test
+      set is unsound.
+  \end{enumerate}
+\Q{U4.76}\LA\ A student oversamples the minority class, then splits 80/20, and
+  reports $F_1 = 0.89$. Doing it the other way round gives $F_1 = 0.11$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Name the error.
+    \item Explain the mechanism in five lines, referring to what appears in
+      both the training and test sets.
+    \item State what fraction of the minority test rows are likely to be exact
+      copies of training rows, and why.
+    \item State the one-line fix.
+  \end{enumerate}
+\end{enumerate}
+
+\subsection*{§C --- Ten-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U4.77}\LA\ You receive 5000 patient records: 12 numeric features (two with
+  about 4\% missing values and visible outliers), 3 categorical features, and a
+  binary target that is 8\% positive. Design and defend a complete pipeline.
+  Cover: the order of every preprocessing step and why it sits where it does;
+  exactly which objects are fitted on training data only; what happens inside
+  one fold of 5-fold stratified cross-validation, with fold sizes and positive
+  counts; where resampling goes and what breaks if it goes earlier; and which
+  single metric you would report, with a justification in terms of the clinical
+  cost of a false negative.
+\Q{U4.78}\LA\ Give a complete account of missing data: listwise deletion and
+  its exponential cost; the three simple imputers; the variance-shrinkage
+  result with its derivation; MCAR, MAR and MNAR with an example of each; which
+  mechanisms a multivariate imputer can repair; the missingness indicator and
+  when it is itself leakage; and a recommendation with the reason it is not the
+  choice of imputer that matters most.
+\Q{U4.79}\LA\ Give a complete account of outlier detection and treatment: the
+  three rules with their formulae; their breakdown points; masking and
+  swamping, with a worked numerical demonstration; the $z$-score ceiling and
+  its proof; why skew is not contamination and what to do about it; and the
+  four disposal options with the circumstances for each. Conclude with the
+  distinction between detection and disposal.
+\Q{U4.80}\LA\ Explain feature scaling completely: the three mechanisms by which
+  units matter; the four scalers with formulae and output ranges; a worked
+  numerical demonstration that a nearest neighbour can change; which model
+  families are affected and which are provably not, with the argument; what a
+  single typo does to each scaler; and why scaling is fitted on the training
+  split.
+\Q{U4.81}\LA\ Explain PCA completely: the question it asks; the four-step
+  recipe; the meaning of the eigenvalues and of the trace; a worked
+  by-hand example on five points including the reconstruction error identity;
+  how $k$ is chosen and why there is no universal rule; why standardising comes
+  first; why PCA is not feature selection; and why being unsupervised can make
+  it the wrong tool.
+\Q{U4.82}\LA\ Explain cross-validation completely: what a single held-out score
+  estimates and how noisy it is; the $k$-fold recipe and its cost model; how
+  $k$ trades bias against variance against time; why LOOCV's across-fold
+  standard deviation is not what it appears to be; the three failure modes
+  requiring stratified, grouped and time-ordered splitters; and how tuning
+  destroys the estimate unless nested.
+\Q{U4.83}\LA\ Explain imbalanced data completely: why accuracy fails, with a
+  worked confusion matrix; the metrics that do not fail and their chance
+  baselines; the four available remedies; SMOTE's arithmetic and its
+  assumption; the empirical result that resampling improves recall while
+  costing precision; the threshold-moving alternative; and the rule about where
+  resampling belongs, with the size of the error when it is broken.
+\Q{U4.84}\LA\ ``Anything you learn from the data --- a mean, a category list, a
+  feature subset, a hyperparameter, a resampled row --- is part of the model,
+  and belongs inside the loop.'' Take this as a thesis and defend it. Give at
+  least four distinct leaks, ranked by the size of the error each produces, and
+  say for each what the correct construction is.
+\Q{U4.85}\LB\ Explain feature selection: the three families with two methods
+  each; what a filter measures and why choosing one is choosing an assumption;
+  the disagreement between the ANOVA $F$ test and mutual information; recursive
+  feature elimination and its cost; how L1 differs from L2; why four selectors
+  can disagree almost completely; and why ``select features because it is good
+  practice'' is bad advice.
+\Q{U4.86}\LB\ Explain feature engineering: what it is; the four moves; a worked
+  example where one constructed column changes $R^2$ from 0.66 to 1.00; why a
+  representation is good or bad only relative to a model, with the binning
+  result; and why automatic feature generation is not a substitute for a
+  reason.
+\end{enumerate}
+
+\subsection*{§D --- Statements to judge (2 marks each)}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U4.87}\LA\ ``The $z$-score rule detects outliers more than three standard
+  deviations from the mean.''
+\Q{U4.88}\LA\ ``PCA reduces dimensionality by keeping the most important
+  features.''
+\Q{U4.89}\LB\ ``Scaling the inputs to a decision tree improves its accuracy.''
+\Q{U4.90}\LB\ ``Mean imputation is safe because it does not change the mean.''
+\Q{U4.91}\LB\ ``One-hot encoding a variable with 257 levels is fine; the model
+  will ignore the useless columns.''
+\Q{U4.92}\LA\ ``Fitting the scaler on the whole dataset is a serious leak that
+  will badly inflate your score.''
+\Q{U4.93}\LB\ ``LOOCV is the most thorough form of cross-validation and should
+  be used whenever it is affordable.''
+\Q{U4.94}\LA\ ``SMOTE generates new data.''
+\Q{U4.95}\LB\ ``A model with 99\% accuracy on a 1\%-positive problem is
+  performing well.''
+\Q{U4.96}\LC\ ``\texttt{random\_state=42} is a formality.''
+\end{enumerate}
+
+\vspace{0.4em}\hrule
+
+% =====================================================================
+\section*{Unit V (part) --- Regression \quad (L8, L9, L10)}
+
+\begin{infobox}[This unit is covered only as far as L10]
+Unit V runs from L8 to L12. The mid-semester paper reaches only \textbf{L8, L9
+and L10} --- regression foundations and least squares, maximum likelihood and
+model adequacy, and logistic regression. \textbf{Multiple linear regression
+(L11) and regularization (L12) are not in this bank} and are not expected on
+the paper.
+
+One consequence worth knowing: L10's separation problem is \emph{fixed} by
+regularization, which is L12. So a question here may ask you to \emph{diagnose}
+perfect separation and \emph{name} the remedy, but not to work with ridge or
+lasso.
+\end{infobox}
+
+\subsection*{§A --- Two-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U5.1}\LA\ Write the simple linear regression model, naming every symbol.
+  State which symbols are Greek and which are Roman, and why the distinction
+  matters.
+\Q{U5.2}\LA\ ``Linear'' in linear regression means linear in \emph{what}?
+  Classify each as linear or not: (a) $y = \beta_0 + \beta_1 x + \beta_2 x^2$;
+  (b) $y = \beta_0 + \beta_0\beta_1 x$; (c) $y = \beta_0 + \beta_1 \log x$;
+  (d) $y = \beta_0 e^{\beta_1 x}$.
+\Q{U5.3}\LA\ State the criterion least squares minimises. Write it out in full,
+  and say precisely which deviations are being squared.
+\Q{U5.4}\LA\ Write the two normal equations for simple linear regression.
+\Q{U5.5}\LA\ Give the least-squares estimators $b_1$ and $b_0$ in terms of
+  $S_{xx}$ and $S_{xy}$, and define both.
+\Q{U5.6}\LB\ Give three reasons for choosing squared deviations over absolute
+  deviations, and one thing you give up.
+\Q{U5.7}\LB\ Why vertical deviations rather than perpendicular ones? Name what
+  you get if you minimise perpendicular distance instead.
+\Q{U5.8}\LA\ State the second-order condition for the least-squares solution.
+  Give the Hessian and the exact condition under which the solution exists and
+  is unique.
+\Q{U5.9}\LB\ Give a dataset on which the least-squares line does not exist, and
+  say which quantity is zero.
+\Q{U5.10}\LA\ Write the matrix form of the normal equations and its solution.
+  State the condition on $X$.
+\Q{U5.11}\LA\ State the four properties of the least-squares line. Which one
+  requires an intercept?
+\Q{U5.12}\LB\ Prove that the residuals sum to zero, from the normal equations.
+\Q{U5.13}\LB\ Prove that the line passes through $(\bar x, \bar y)$.
+\Q{U5.14}\LA\ Write the ANOVA decomposition of the total sum of squares and
+  name each term.
+\Q{U5.15}\LA\ Give $\operatorname{Var}(b_1)$. State what a designer of an
+  experiment should therefore do when choosing the $x$ values.
+\Q{U5.16}\LB\ Define the leverage $h_i$. Give the rule for flagging a
+  high-leverage point.
+\Q{U5.17}\LB\ Compare the closed form with gradient descent for fitting a
+  linear model, across cost, memory, tuning and when each fails.
+\Q{U5.18}\LA\ State the probability model behind maximum likelihood estimation
+  for regression. What exactly is assumed about $\varepsilon_i$?
+\Q{U5.19}\LA\ Write the likelihood and the log-likelihood for the Gaussian
+  linear model.
+\Q{U5.20}\LA\ State in one sentence the central result linking maximum
+  likelihood to least squares.
+\Q{U5.21}\LA\ Why does the value of $\sigma^2$ not affect which $\beta_0,
+  \beta_1$ maximise the likelihood?
+\Q{U5.22}\LB\ Give the maximum likelihood estimate of $\sigma^2$, and the
+  unbiased alternative. State the reason for the difference --- \emph{not} by
+  restating the formula.
+\Q{U5.23}\LB\ Change the noise model from Gaussian to Laplace. What criterion
+  does maximum likelihood then minimise?
+\Q{U5.24}\LA\ Define $R^2$ two ways. State its range on training data, and why
+  that range does not apply to held-out data.
+\Q{U5.25}\LA\ Why can $R^2$ never decrease when a predictor is added? Answer in
+  one sentence.
+\Q{U5.26}\LB\ Write adjusted $R^2$. State what it is and what it is not.
+\Q{U5.27}\LA\ ``$R^2 = 0.85$, so the model is good.'' State two distinct things
+  wrong with that inference.
+\Q{U5.28}\LB\ Name the four assumptions of the linear model. For each, state
+  what its violation invalidates.
+\Q{U5.29}\LB\ Define over-fitting. State why it is a property of the model
+  \emph{and} the data, not the model alone.
+\Q{U5.30}\LA\ Why does linear regression fail on a 0/1 target? Give two
+  distinct failures.
+\Q{U5.31}\LA\ Define odds and log-odds. Give the range of each, and say which
+  one $w^\top x + b$ can safely produce.
+\Q{U5.32}\LA\ Write the logistic regression model in log-odds form, then invert
+  it to get $p(x)$.
+\Q{U5.33}\LA\ State three properties of the sigmoid, including its derivative.
+\Q{U5.34}\LA\ Write the log-likelihood for logistic regression. State its
+  relationship to binary cross-entropy.
+\Q{U5.35}\LA\ Write the gradient of the logistic log-likelihood in matrix form.
+  State in words what it is measuring.
+\Q{U5.36}\LA\ Why is there no closed form for logistic regression? Contrast the
+  score equations with the normal equations.
+\Q{U5.37}\LB\ Write the Hessian of the logistic log-likelihood and state what
+  its definiteness buys you --- and what it does not.
+\Q{U5.38}\LA\ Interpret a logistic coefficient $\beta_j$. State exactly what
+  $e^{\beta_j}$ is a change in.
+\Q{U5.39}\LA\ State the divide-by-four rule and what it bounds.
+\Q{U5.40}\LB\ Why is the decision threshold not part of the model? Who should
+  choose it?
+\Q{U5.41}\LB\ Write the softmax. Show that it reduces to the sigmoid when
+  $K = 2$.
+\Q{U5.42}\LA\ What is perfect separation? State what happens to the maximum
+  likelihood estimate, and name the fix.
+\Q{U5.43}\LC\ Why is squared error the wrong loss for logistic regression?
+  Give two reasons.
+\end{enumerate}
+
+\subsection*{§B --- Five-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+
+\Q{U5.44}\LA\NUM\ Fit a least-squares line to
+  $x = (0, 1, 2, 3, 4)$, $y = (1, 2, 4, 5, 8)$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Tabulate $x_i - \bar x$, $y_i - \bar y$, $(x_i-\bar x)^2$ and
+      $(x_i-\bar x)(y_i-\bar y)$, and give $S_{xx}$, $S_{xy}$, $S_{yy}$.
+    \item Compute $b_1$ and $b_0$ and write the fitted line.
+    \item Give the fitted values and residuals. Verify $\sum e_i = 0$ and
+      $\sum x_i e_i = 0$.
+    \item Compute SSE, SSR and SST, and verify the decomposition. Check SSR
+      two independent ways.
+    \item Predict $y$ at $x = 6$.
+  \end{enumerate}
+\Q{U5.45}\LA\NUM\ Repeat the fit of U5.44 by the matrix route.
+  \begin{enumerate}[label=(\alph*)]
+    \item Write the design matrix $X$ and compute $X^\top X$ and $X^\top y$
+      from the raw sums.
+    \item Compute $\det(X^\top X)$ and verify it equals $n S_{xx}$.
+    \item Invert the $2\times2$ matrix and solve for $b$.
+    \item State the exact condition under which this route fails, and give a
+      five-row dataset on which it does.
+  \end{enumerate}
+\Q{U5.46}\LA\ Derive the least-squares estimators from a blank page. Your
+  answer must contain: the object being minimised; both partial derivatives;
+  both normal equations; the substitution that isolates $b_1$; the
+  identification of $S_{xx}$ and $S_{xy}$; and the second-order condition.
+  \emph{Stopping at the first-order conditions is not a complete answer.}
+\Q{U5.47}\LA\NUM\ Four candidate lines are proposed for the data of U5.44.
+  \begin{center}\begin{tabular}{@{}llll@{}}\toprule
+  A: $\hat y = 0.5 + 1.7x$ & B: $\hat y = 0.6 + 1.7x$ &
+  C: $\hat y = 0.6 + 1.8x$ & D: $\hat y = 1.0 + 1.5x$\\
+  \bottomrule\end{tabular}\end{center}
+  For each, compute SSE, $\sum e_i$ and $\sum x_ie_i$. Identify the
+  least-squares line \textbf{using both normal equations}, and explain why one
+  of them alone is not enough --- naming the candidate that proves it.
+\Q{U5.48}\LB\NUM\ Refit the data of U5.44 \emph{without} an intercept.
+  \begin{enumerate}[label=(\alph*)]
+    \item Derive the estimator $b_1 = \sum x_iy_i/\sum x_i^2$ from scratch.
+    \item Evaluate it.
+    \item Give the residuals and their sum.
+    \item Property 1 has died. Explain exactly which normal equation is
+      missing and why.
+    \item Compare the two SSEs and say whether the comparison is fair.
+  \end{enumerate}
+\Q{U5.49}\LA\NUM\ For the data of U5.44:
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute the leverage $h_i = 1/n + (x_i-\bar x)^2/S_{xx}$ of every
+      point, and verify the leverages sum to 2.
+    \item Adding $\delta$ to $y_i$ changes $b_1$ by $\delta(x_i-\bar x)/S_{xx}$.
+      Derive this.
+    \item Adding 3 to one $y$ value: give the new $b_1$ for each of the five
+      choices.
+    \item One point cannot move the slope at all. Say which and why.
+  \end{enumerate}
+\Q{U5.50}\LB\NUM\ $\operatorname{Var}(b_1) = \sigma^2/S_{xx}$ with
+  $\sigma^2 = 4$. Three designs, all with the same budget:
+  all with $n = 5$: equally spaced $x$ over $[0,8]$; five points clustered on
+  $[3,5]$; and three points at $x=0$ with two at $x=8$.
+  Compute $S_{xx}$, $\operatorname{Var}(b_1)$ and $\operatorname{sd}(b_1)$ for
+  each. Rank them, then state the one thing the best design cannot do.
+\Q{U5.51}\LA\ Derive the maximum likelihood estimators for the Gaussian linear
+  model from a blank page: the probability model, the one-row density, the
+  likelihood, the log-likelihood, and the argument that maximising it is
+  identical to minimising SSE for \emph{every} $\sigma^2 > 0$.
+\Q{U5.52}\LA\NUM\ Using the fit of U5.44 (SSE $= 1.10$, $n = 5$):
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute $\hat\sigma^2_{\text{ML}} = \text{SSE}/n$.
+    \item Compute the unbiased estimate $s^2 = \text{SSE}/(n-2)$ and the
+      standard error of the estimate $s$.
+    \item Give the bias factor and the percentage by which the ML estimate
+      understates $\sigma^2$ in expectation.
+    \item Explain \emph{why} the divisor is $n-2$ --- an answer that restates
+      the formula earns nothing.
+  \end{enumerate}
+\Q{U5.53}\LB\NUM\ For each of $(n, \text{SSE}) = (8, 20)$, $(6, 12)$,
+  $(12, 45)$, compute $\hat\sigma^2_{\text{ML}}$, $s^2$, the bias factor and
+  the percentage understatement. Then find the smallest $n$ for which the
+  understatement falls below 1\%.
+\Q{U5.54}\LA\NUM\ For the fit of U5.44:
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute SS$_{\text{tot}}$, SS$_{\text{res}}$ and SS$_{\text{reg}}$.
+    \item Compute $R^2$ from the definition.
+    \item Verify $R^2$ two further independent ways.
+    \item Compute $r$ and confirm $r^2 = R^2$.
+    \item State one thing this $R^2$ does \emph{not} tell you, and what you
+      would look at instead.
+  \end{enumerate}
+\Q{U5.55}\LB\NUM\ With $n = 25$ and $R^2 = 0.55$ held fixed, compute adjusted
+  $R^2$ for $p = 1, 5, 10, 15$. Find the smallest $p$ at which adjusted $R^2$
+  turns negative, showing the inequality. Explain what a negative adjusted
+  $R^2$ is telling you.
+\Q{U5.56}\LA\NUM\ On a held-out set, $y = (2, 4, 6)$ and the model predicts
+  $(7, 4, 1)$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute SS$_{\text{tot}}$, SS$_{\text{res}}$ and $R^2$.
+    \item Compute $R^2$ for a model that predicts the constant 4.
+    \item State the lower bound on held-out $R^2$.
+    \item Explain in four lines why $R^2 \in [0,1]$ is a training-set
+      statement only.
+  \end{enumerate}
+\Q{U5.57}\LB\NUM\ For $x = (1,2,3,4,5)$, $y = (2,3,6,5,9)$, compute
+  $S_{xx}$, $S_{xy}$, $S_{yy}$, the direct slope $S_{xy}/S_{xx}$ and the
+  inverse slope $S_{yy}/S_{xy}$. Show that their ratio equals $r^2$ and
+  evaluate it. State which line you would report and why, and what goes wrong
+  if you invert the direct fit to predict $x$ from $y$.
+\Q{U5.58}\LA\ A student reports a degree-3 polynomial on 331 rows with
+  training $R^2 = 0.918$, and concludes the model is excellent. The
+  cross-validated $R^2$ is $-1212.18$ and the held-out $R^2$ is $-22.04$;
+  predicting the training mean scores $-0.0001$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Name every fault in the reasoning.
+    \item State how many parameters a degree-3 expansion of 10 features has,
+      and compare it with the row count.
+    \item Explain what a held-out $R^2$ of $-22$ means in plain words.
+    \item State what should have been reported instead.
+  \end{enumerate}
+\Q{U5.59}\LA\NUM\ Six tumour sizes $x = (1,2,3,4,5,6)$ mm carry labels
+  $y = (0,0,0,1,1,1)$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Fit a least-squares line. Give $S_{xx}$, $S_{xy}$, the slope and
+      the intercept.
+    \item Give the six predictions. How many lie outside $[0,1]$?
+    \item Give the $x$ at which the prediction crosses $0.5$.
+    \item A malignant tumour at $x = 20$ mm is added. Refit and give the new
+      boundary. State how far it moved and which original point is now
+      misclassified.
+    \item Explain the mechanism in three lines, referring to what squared
+      error charges for.
+  \end{enumerate}
+\Q{U5.60}\LA\NUM\ Complete the table and answer what follows.
+  \begin{center}\begin{tabular}{@{}rrr@{}}\toprule
+  $p$ & odds & log-odds\\
+  \midrule
+  0.05 & & \\ 0.20 & & \\ 0.50 & & \\ 0.80 & & \\ 0.95 & & \\
+  \bottomrule\end{tabular}\end{center}
+  State the antisymmetry property you can see in the third column, and say
+  what it implies about relabelling the two classes.
+\Q{U5.61}\LA\ Derive the logistic regression gradient from a blank page:
+  the Bernoulli probability of one row, the likelihood, the log-likelihood,
+  the three chain-rule factors, and the cancellation that produces
+  $\partial\ell/\partial w_j = \sum_i (y_i - p_i)x_{ij}$.
+  \emph{Show the cancellation explicitly.}
+\Q{U5.62}\LA\NUM\ Take $X = \begin{pmatrix}1 & -1\\ 1 & 0\\ 1 & 1\\
+  1 & 2\end{pmatrix}$, $y = (0,0,1,1)$, $w = (0,0)$, $\eta = 0.4$.
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute $z$, then $p$, then the log-likelihood. Express the per-row
+      negative log-likelihood as a familiar constant.
+    \item Compute $p - y$ and the gradient $X^\top(p-y)$.
+    \item Perform one gradient step and give the new $w$.
+    \item Compute the new $z$, the new $p$ and the new log-likelihood. State
+      the improvement.
+    \item The intercept component of the gradient is exactly zero. Explain
+      why.
+  \end{enumerate}
+\Q{U5.63}\LA\NUM\ A logistic model has coefficient $\beta = \ln 3$ on a
+  feature.
+  \begin{enumerate}[label=(\alph*)]
+    \item State the odds ratio.
+    \item For starting probabilities $0.1$, $0.2$, $0.5$ and $0.8$, compute
+      the new probability after a one-unit increase, via the odds.
+    \item Give $\Delta p$ in each case and state where it is largest.
+    \item Compute the divide-by-four bound and confirm your table respects it.
+    \item Correct this sentence: ``a one-unit increase raises the probability
+      by 200\%''.
+  \end{enumerate}
+\Q{U5.64}\LB\NUM\ Compute $\sigma(z)$ and $\sigma(z)(1-\sigma(z))$ for
+  $z = -3, -1.5, 0, 1.5, 3$. Verify $\sigma(-z) = 1 - \sigma(z)$ on your
+  table, state where the derivative is largest and its value there, and
+  explain what that maximum has to do with the divide-by-four rule.
+\Q{U5.65}\LA\NUM\ A screening model gives these held-out counts.
+  \begin{center}\begin{tabular}{@{}rrrrr@{}}\toprule
+  threshold & TN & FP & FN & TP\\
+  \midrule
+  0.10 & 90 & 20 & 1 & 39\\
+  0.25 & 98 & 12 & 3 & 37\\
+  0.50 & 105 & 5 & 7 & 33\\
+  0.75 & 109 & 1 & 12 & 28\\
+  \bottomrule\end{tabular}\end{center}
+  \begin{enumerate}[label=(\alph*)]
+    \item Compute accuracy, precision, recall and $F_1$ at every threshold.
+    \item A missed cancer costs ten times a false alarm. Compute
+      $10\,\text{FN} + \text{FP}$ for each row.
+    \item State the threshold chosen by accuracy and the threshold chosen by
+      cost, and say which you would deploy.
+    \item The ROC--AUC is the same for all four rows. Explain why.
+  \end{enumerate}
+\Q{U5.66}\LB\ A logistic fit returns coefficients $(48.2, -31.7, 0.4)$, an
+  accuracy of $1.0000$ and a \texttt{ConvergenceWarning}.
+  \begin{enumerate}[label=(\alph*)]
+    \item Name the phenomenon.
+    \item Explain what happens to the log-likelihood as $\|w\| \to \infty$,
+      and why the maximum likelihood estimate does not exist.
+    \item State why accuracy cannot detect this.
+    \item Name the fix, state what it costs, and say which lecture covers it.
+  \end{enumerate}
+\Q{U5.67}\LB\ Explain why there is no closed form for logistic regression.
+  Write both sets of equations side by side, say precisely what makes one
+  solvable and the other not, and name the two iterative methods used instead.
+\end{enumerate}
+
+\subsection*{§C --- Ten-mark questions}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U5.68}\LA\ Give a complete account of least squares: the model and its
+  assumptions; why squared vertical deviations; the full derivation including
+  the second-order condition; the matrix form; the four properties of the
+  fitted line; $\operatorname{Var}(b_1) = \sigma^2/S_{xx}$ and its design
+  implication; and what least squares will not tell you. Include a worked
+  numerical fit.
+\Q{U5.69}\LA\ Give a complete account of maximum likelihood for the linear
+  model: the probability model; the likelihood and log-likelihood; the central
+  equivalence with least squares and why $\sigma^2$ is irrelevant to it; the ML
+  estimate of $\sigma^2$, its bias, and the unbiased alternative with the
+  degrees-of-freedom reason; and what changes under a Laplace noise model.
+\Q{U5.70}\LA\ Give a complete account of $R^2$ and model adequacy: the
+  decomposition; the two definitions of $R^2$ and the identity chain in simple
+  regression; why $R^2$ cannot decrease with an added predictor; adjusted
+  $R^2$ and its limits; negative held-out $R^2$; and why a residual plot must
+  accompany every reported $R^2$. Use Anscombe's quartet as the illustration.
+\Q{U5.71}\LA\ Give a complete account of over-fitting and its detection: what
+  it is; why training error cannot detect it; the degree curve with numbers;
+  why it depends on $n$ as well as the model; cross-validation as the
+  detector; why one validation split is not enough; and the rule about what
+  must be refitted inside every fold.
+\Q{U5.72}\LA\ Derive logistic regression completely: why a straight line fails
+  on 0/1 labels, with a worked numerical demonstration; odds, log-odds and the
+  inversion to the sigmoid; the Bernoulli likelihood and log-likelihood; the
+  gradient with the cancellation shown in full; why there is no closed form;
+  concavity and what it does and does not guarantee; and one gradient step
+  worked by hand.
+\Q{U5.73}\LA\ Explain the interpretation and deployment of a logistic model:
+  the odds-ratio derivation; why $e^\beta$ is multiplicative in the odds and
+  not additive in the probability, with a worked table; the divide-by-four
+  rule; why raw coefficients cannot be compared across features; the decision
+  threshold as a choice made outside the model; and choosing that threshold
+  under asymmetric costs with a worked confusion matrix.
+\Q{U5.74}\LB\ Compare least squares and logistic regression across: what is
+  being modelled; the loss; whether a closed form exists; the shape of the
+  objective; how the parameters are found; how a coefficient is interpreted;
+  and what pathology each suffers from. Support with numbers from a worked fit
+  of each.
+\Q{U5.75}\LB\ ``State the noise distribution, write the likelihood, take
+  logarithms, maximise.'' Show that this single recipe produces least squares
+  under Gaussian noise, least absolute deviations under Laplace noise, and
+  cross-entropy under a Bernoulli model. Do the derivation in each case.
+\end{enumerate}
+
+\subsection*{§D --- Statements to judge (2 marks each)}
+
+\begin{enumerate}[leftmargin=2.2cm]
+\Q{U5.76}\LA\ ``Least squares is chosen because it is differentiable.''
+\Q{U5.77}\LB\ ``The residuals of a least-squares fit always sum to zero.''
+\Q{U5.78}\LA\ ``$\hat\sigma^2_{\text{ML}}$ is biased because we divide by $n$
+  instead of $n-2$.''
+\Q{U5.79}\LA\ ``$R^2$ measures how good the model is.''
+\Q{U5.80}\LB\ ``A higher $R^2$ means a better model, so add the predictor.''
+\Q{U5.81}\LA\ ``$e^{\beta_j}$ is the increase in the probability.''
+\Q{U5.82}\LB\ ``Logistic regression is not a linear model, because the sigmoid
+  is not linear.''
+\Q{U5.83}\LB\ ``The model reached 100\% accuracy, so the fit is sound.''
+\Q{U5.84}\LC\ ``\texttt{LogisticRegression()} in scikit-learn returns the
+  maximum likelihood estimate.''
+\end{enumerate}
+
+\vspace{0.6em}\hrule\vspace{0.4em}
+
+% =====================================================================
+\section*{Mock paper B \quad (90 minutes, 35 marks, scaled to 20)}
+
+\begin{warnbox}[Sit this one properly]
+Closed book. No computer. 90 minutes on a timer. Mock paper A is Section D of
+Assignment A1; this is the second of three. Do not read the questions before
+you start.
+\end{warnbox}
+
+\subsection*{Section A --- attempt all \quad (5 $\times$ 2 = 10)}
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*]
+\item Write the Huber loss with parameter $\delta$ and state the one property
+  that makes it a compromise between MSE and MAE. \QMarks{2}
+\item State the stability condition on the learning rate for a quadratic with
+  largest curvature $L$, and say what happens at exactly $\eta = 2/L$.
+  \QMarks{2}
+\item Give the formula for the probability that a row survives listwise
+  deletion, and evaluate it for $p = 0.05$ and $d = 20$. \QMarks{2}
+\item Name the four scalers and state which one a single extreme value
+  destroys, with the reason. \QMarks{2}
+\item State the four properties of a least-squares fitted line, and say which
+  one requires the model to have an intercept. \QMarks{2}
+\end{enumerate}
+
+\subsection*{Section B --- attempt any 3 of 4 \quad (3 $\times$ 5 = 15)}
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*, start=6]
+\item Perform three steps of \textbf{RMSprop} on $f(w) = (w-4)^2$ from
+  $w_0 = 0$ with $\eta = 0.5$, $\gamma = 0.9$, $\varepsilon = 10^{-8}$.
+  Tabulate $t$, $g_t$, $s_t$, $\sqrt{s_t}$, the step and $w_t$. Show that the
+  first step equals $\eta/\sqrt{1-\gamma}$, and state at which step $s_t$ first
+  falls and why Adagrad's cannot. \QMarks{5}
+\item A column reads $20, 21, 19, 22, 20, 21, 23, 19, 20, 22, 120, 125$.
+  Compute the mean, sample sd, median, MAD, $Q_1$, $Q_3$, IQR and the
+  $1.5\times$IQR fences. Score the value 120 under all three outlier rules and
+  state which fire. Name the effect that explains the disagreement. \QMarks{5}
+\item Fit a least-squares line to $x = (0,1,2,3,4)$, $y = (1,2,4,5,8)$:
+  give $S_{xx}$, $S_{xy}$, $b_1$, $b_0$, the fitted values and the residuals;
+  verify $\sum e_i = 0$ and $\sum x_ie_i = 0$; compute SSE, SSR, SST and
+  $R^2$, checking SSR a second way. \QMarks{5}
+\item Take $X$ with rows $(1,-1), (1,0), (1,1), (1,2)$, $y = (0,0,1,1)$,
+  $w = (0,0)$ and $\eta = 0.4$. Compute $p$, the log-likelihood, the gradient
+  $X^\top(p-y)$, one gradient step, and the new log-likelihood. Explain why
+  the intercept component of the gradient is exactly zero. \QMarks{5}
+\end{enumerate}
+
+\subsection*{Section C --- compulsory \quad (10)}
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*, start=10]
+\item Trace the development from batch gradient descent to Adam as a chain of
+  fixes.
+  \begin{enumerate}[label=(\alph*)]
+    \item For each of batch GD, SGD, mini-batch, momentum, Adagrad, RMSprop and
+      Adam, state the problem it was invented to fix and write its update rule.
+      \QMarks{4}
+    \item Explain why a single scalar learning rate can fail for two entirely
+      distinct reasons, and state which of the two momentum addresses.
+      \QMarks{2}
+    \item Derive Adam's bias correction for a constant gradient $g$, and show
+      that the first corrected step is exactly $\pm\eta$. \QMarks{2}
+    \item ``Adam is better than SGD.'' Give the strongest case for this claim
+      and the strongest case against it, and state what adaptive optimisers
+      actually buy. \QMarks{2}
+  \end{enumerate}
+\end{enumerate}
+
+\vspace{0.4em}\hrule\vspace{0.4em}
+
+% =====================================================================
+\section*{Mock paper C \quad (90 minutes, 35 marks, scaled to 20)}
+
+\subsection*{Section A --- attempt all \quad (5 $\times$ 2 = 10)}
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*]
+\item State Mitchell's definition of learning and name $T$, $P$ and $E$ for a
+  credit-scoring system. \QMarks{2}
+\item Write the binary cross-entropy formula and state what it evaluates to for
+  a single example given probability $0.5$ to the correct class. \QMarks{2}
+\item Write the momentum update rule and give the effective step size in terms
+  of $\eta$ and $\beta$. \QMarks{2}
+\item State the factor by which mean imputation shrinks a column's standard
+  deviation, and evaluate it when 25\% of values are missing. \QMarks{2}
+\item Define odds and log-odds, give the range of each, and state which of the
+  two a linear expression $w^\top x + b$ can safely produce. \QMarks{2}
+\end{enumerate}
+
+\subsection*{Section B --- attempt any 3 of 4 \quad (3 $\times$ 5 = 15)}
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*, start=6]
+\item A model gives $\hat y = (3.5, 5.0, 4.5, 8.0, 5.0)$ against
+  $y = (3, 6, 2, 9, 5)$. Compute MSE, MAE, RMSE and the Huber loss at
+  $\delta = 1.5$, showing the branch each point takes. Compute the share of the
+  total squared error and of the total absolute error carried by the worst
+  point, and comment. \QMarks{5}
+\item A nominal colour variable is ordinal-encoded blue $=0$, green $=1$,
+  red $=2$, with target group means 30, 70 and 15. Compute $S_{xy}$, $S_{xx}$,
+  the least-squares slope and intercept, the three predictions, SSE, SST and
+  $R^2$. State what one-hot encoding would achieve and explain the difference.
+  \QMarks{5}
+\item A fit on five rows gives SSE $= 1.10$ with $n = 5$ and
+  SS$_{\text{tot}} = 30$. Compute $R^2$, $\hat\sigma^2_{\text{ML}}$, the
+  unbiased $s^2$ and $s$. Give the bias factor and the percentage
+  understatement, and explain \emph{why} the divisor is $n-2$ --- restating
+  the formula earns nothing. \QMarks{5}
+\item A logistic model has coefficient $\beta = \ln 3$. State the odds ratio;
+  compute the new probability after a one-unit increase from starting
+  probabilities $0.1$, $0.2$, $0.5$ and $0.8$, via the odds; state where
+  $\Delta p$ is largest; give the divide-by-four bound; and correct the
+  sentence ``a one-unit increase raises the probability by 200\%''. \QMarks{5}
+\end{enumerate}
+
+\subsection*{Section C --- compulsory \quad (10)}
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*, start=10]
+\item Logistic regression, from the failure of the straight line to a deployed
+  threshold.
+  \begin{enumerate}[label=(\alph*)]
+    \item Fit a least-squares line to $x = (1,2,3,4,5,6)$ mm with labels
+      $y = (0,0,0,1,1,1)$. Give the slope, the intercept, the six predictions
+      and the $0.5$ crossing. State two distinct things wrong with using this
+      as a classifier. \QMarks{3}
+    \item Derive the sigmoid by inverting the logit link, and state three
+      properties of $\sigma$ including its derivative. \QMarks{2}
+    \item Derive $\partial\ell/\partial w_j = \sum_i (y_i - p_i)x_{ij}$ from
+      the Bernoulli log-likelihood, showing the cancellation explicitly.
+      \QMarks{3}
+    \item There is no closed form for $w$. Say precisely why, contrasting the
+      score equations with the normal equations, and name what concavity does
+      and does not guarantee. \QMarks{2}
+  \end{enumerate}
+\end{enumerate}
+
+\vspace{0.6em}\hrule\vspace{0.5em}
+
+\section*{Eleven ways to lose marks you have earned}
+
+\begin{enumerate}[leftmargin=*, itemsep=0.3em]
+\item \textbf{Restating the definition instead of answering.} ``The $z$-score
+  rule detects outliers more than three standard deviations from the mean'' is
+  the definition. If the question asks why it failed, that sentence earns
+  nothing.
+\item \textbf{A number with no working.} Full marks need the steps. A correct
+  final value alone typically earns 1 of 5.
+\item \textbf{Working with no number.} The converse also fails. Finish the
+  arithmetic.
+\item \textbf{Naming without justifying.} ``Use the IQR rule'' is half an
+  answer. \emph{Why} is the other half, and it usually carries the mark.
+\item \textbf{Forgetting the units.} An MAE of 1.0 in lakhs of rupees is not an
+  MAE of 1.0.
+\item \textbf{Answering a different question.} If asked for the effect on
+  \emph{precision}, do not write about accuracy.
+\item \textbf{One example given twice.} Asked for two examples of leakage,
+  ``scaling on all the data'' and ``normalising before the split'' are one.
+\item \textbf{Ignoring the mark allocation.} A 2-mark question wants four lines.
+  A 10-mark question wants structure, a worked illustration and a conclusion.
+  Writing four lines for ten marks is the most common way to lose a grade.
+\item \textbf{Skipping the numericals in revision.} They are the most
+  predictable marks on the paper and the ones most often left blank.
+\item \textbf{Stopping a derivation at the first-order conditions.} Both the
+  least-squares derivation and the maximum-likelihood one carry marks for the
+  \emph{second-order} check. Setting a derivative to zero finds a stationary
+  point; it does not establish that you have found a minimum.
+\item \textbf{Saying ``odds'' when you mean ``probability'', or the reverse.}
+  $e^{\beta}$ multiplies the \emph{odds}. It is not an increase in probability,
+  and no amount of surrounding correct working rescues a sentence that says it
+  is.
+\end{enumerate}
+
+\vspace{0.5em}\hrule\vspace{0.4em}
+\noindent\small\textbf{Answer key} released after AS1. Until then, the lecture
+notes for \textbf{L1--L10} carry their own practice questions \emph{with} full
+solutions --- work those first if you want something to check yourself
+against.\normalsize
+
+\end{document}
