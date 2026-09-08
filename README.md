@@ -104,7 +104,6 @@ Material is published as it is delivered, not all at once. Currently released:
 | **Unit VII — Lectures 20–24** | Clustering foundations; similarity measures; hierarchical; partitioning; density-based and consolidation |
 | **Test-0** | The unmarked diagnostic — paper and worked solutions |
 | **Theory Quiz 1 (T01)** | Paper and worked solutions, sets A–H — prerequisites, L1, L2 |
-| **Theory Quiz 2 (T02)** | Paper, sets A–H — L3 principally. Solutions to follow |
 | **Theory Assignment 1 (A1)** | The brief, the 314-question Mid-Semester Question Bank, and the bank answers |
 | **Projects P01–P08** | Handbook, catalogue and all eight theme briefs — 15 marks, 10 of them individual |
 
