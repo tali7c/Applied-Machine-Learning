@@ -157,8 +157,8 @@ against the Academic Handbook.
 \midrule
 Theory assignments & 5 & Two assignments, each followed by a short in-class assessment test\\
 Theory quizzes / tests & 10 & Ten 40-minute tests through the semester\\
-Project --- individual & 10 & A quiz on your own group's project; \textbf{marked individually}\\
-Project --- group & 5 & The state of what your group submitted\\
+Project --- individual & 10 & A written quiz on your own group's project; \textbf{marked individually}\\
+Project --- group & 5 & The state and commit history of your group's GitHub repository; the same mark for every member\\
 Lab assignments & 10 & Ten assignments covering experiments 1--14\\
 Lab quizzes & 10 & Ten 60-minute quizzes on \emph{your own} submitted lab code\\
 Mid-Semester examination & 20 & Common paper, university schedule\\
@@ -350,17 +350,20 @@ someone else's good one.
 
 \subsection{Project --- 15 marks}
 
-Ten projects are offered. You form your own group and choose one. Each project is
-normally taken by one group only; two groups may take the same one only with
-prior approval.
+Eight project themes are offered, P01--P08. You form your own group of
+\textbf{4 to 8 students} and choose one; \textbf{at most two groups} may take the
+same theme, first come, first served. The full briefs are in
+\texttt{projects/} in the course repository --- one folder per theme, plus the
+project handbook,
+which you should read before choosing.
 
 \begin{center}
 \begin{tabular}{@{}p{5.4cm}cp{6.8cm}@{}}
 \toprule
 \textbf{Sub-component} & \textbf{Marks} & \textbf{Basis}\\
 \midrule
-Project quiz & 10 & An oral and written test on your group's project. \textbf{Marked individually} --- everyone is asked separately.\\
-Project state & 5 & Completeness, correctness, reproducibility and documentation of the artefact. \textbf{Awarded to the group.}\\
+Project quiz & 10 & A \textbf{written paper} on your group's project, one set per theme. \textbf{Marked individually} --- every member sits it separately.\\
+Repository & 5 & State \emph{and commit history} of the group's GitHub repository: process, completeness, correctness, reproducibility, documentation. \textbf{Identical mark for every member.}\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -371,11 +374,11 @@ Project state & 5 & Completeness, correctness, reproducibility and documentation
 \textbf{\#} & \textbf{Milestone}\\
 \midrule
 1 & Project catalogue released\\
-2 & Groups formed and project selected\\
-3 & Checkpoint 1 --- data secured, baseline model\\
-4 & Checkpoint 2 --- full pipeline, initial results\\
-5 & Final submission (code, report, reproducibility notes)\\
-6 & Individual project quiz\\
+2 & Groups formed, theme selected, \textbf{GitHub repository created}\\
+3 & Checkpoint 1 --- data secured, baseline model (tag \texttt{checkpoint-1})\\
+4 & Checkpoint 2 --- full pipeline, initial results (tag \texttt{checkpoint-2})\\
+5 & Final submission --- \textbf{the repository URL, and nothing else}\\
+6 & Individual written project quiz\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -390,7 +393,14 @@ weak group can still score well. A passenger in a strong group cannot --- the
 group mark will not save them, because it is only 5 of the 15.
 
 Group marks are not divided by contribution. All individual differentiation
-happens through the individual quiz.
+happens through the individual written quiz.
+
+You submit only a \textbf{GitHub repository URL}, and its \textbf{commit history
+is graded}: created in Unit IV, at least 20 commits across at least six distinct
+weeks, no more than 40\,\% of them in the final week, every member committing
+from their own account, and both checkpoint tags pushed on time. A repository
+that appears in one to three commits in the last few days scores at most 1.5 of
+the 5 group marks, whatever is inside it.
 \end{keyidea}
 
 \newpage

@@ -1,0 +1,468 @@
+% Generated from the Markdown source -- edit the .md, not this file.
+% Source of truth: projects/AML-Project-Catalogue.md
+\documentclass[11pt]{article}
+
+\input{../../_shared/notes-common.tex}
+
+\usepackage{longtable}
+\usepackage{array}
+
+\DeclareUnicodeCharacter{2713}{\ensuremath{\checkmark}}
+\DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}
+\DeclareUnicodeCharacter{2212}{\ensuremath{-}}
+\DeclareUnicodeCharacter{2265}{\ensuremath{\geq}}
+\DeclareUnicodeCharacter{2264}{\ensuremath{\leq}}
+\DeclareUnicodeCharacter{2248}{\ensuremath{\approx}}
+\DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
+\DeclareUnicodeCharacter{00B1}{\ensuremath{\pm}}
+\DeclareUnicodeCharacter{00B2}{\ensuremath{^2}}
+\DeclareUnicodeCharacter{00B3}{\ensuremath{^3}}
+\DeclareUnicodeCharacter{2500}{\textbar}
+\DeclareUnicodeCharacter{2502}{\textbar}
+\DeclareUnicodeCharacter{251C}{\textbar}
+\DeclareUnicodeCharacter{2514}{\textbar}
+
+% Section numbers come from the Markdown headings themselves (the documents
+% cross-reference them as "handbook 3.3"), so LaTeX must not add its own.
+\setcounter{secnumdepth}{0}
+\setcounter{tocdepth}{2}
+
+% pandoc fragments rely on these being defined by its default template.
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\passthrough}[1]{#1}
+
+% Dataset URLs are long and unbreakable; xurl (from notes-common) plus a
+% tolerant line-breaker keeps them inside the text block.
+\sloppy
+% Coloured rather than boxed links: legible on screen, clean in print.
+\hypersetup{colorlinks=true, linkcolor=UPESBlueD, urlcolor=UPESBlueD,
+            citecolor=UPESBlueD, linktoc=all}
+
+\title{Project Catalogue\\[4pt]\large Eight themes, P01--P08}
+\author{Dr.\ Tofik Ali \\ School of Computer Science, UPES Dehradun}
+\date{Applied Machine Learning (CSAI2017P) \quad\textbullet\quad B.Tech CSE (AI \& ML), Semester III \\[2pt] Autumn 2026, AY 2026-27}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\hypertarget{applied-machine-learning-csai2017p-project-catalogue-autumn-2026}{%
+\section{Applied Machine Learning (CSAI2017P) --- Project Catalogue, Autumn 2026}\label{applied-machine-learning-csai2017p-project-catalogue-autumn-2026}}
+
+This file is the overview. \textbf{The rules are in \texttt{Project-Handbook.md}; the full brief for each theme is in its own folder} (\texttt{P01-bike-demand/}, \texttt{P02-air-quality/}, \ldots). Read the handbook, then the folder for the theme you pick.
+
+\hypertarget{how-the-component-works}{%
+\subsection{How the component works}\label{how-the-component-works}}
+
+{\footnotesize
+\begin{longtable}[]{@{}lll@{}}
+\toprule
+\begin{minipage}[b]{0.30\columnwidth}\raggedright
+Sub-component\strut
+\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
+Marks\strut
+\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
+Granularity\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Project quiz --- a written paper, \textbf{one set per theme}\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+\textbf{10}\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+per student\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Repository submission --- state \textbf{and commit history} of the group's GitHub repo\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+\textbf{5}\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+per group, identical for every member\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+}
+
+Read the weighting before you choose a group. The quiz is worth twice the repo mark, and the repo mark is \textbf{not} divided by contribution --- every member of a group receives the same 5. A passenger therefore collects the group marks and then sits a paper about work they did not do; a contributor in a weak group can still score well. Every member sits the paper separately.
+
+\textbf{Groups:} 4--8 students, self-formed. \textbf{At most two groups per theme}, first come, first served on the sign-up sheet. Themes P01--P08.
+
+\textbf{You submit one thing: the GitHub repository URL.} No zip, no attachment. I read the commit history --- created in Unit IV, at least 20 commits across at least 6 distinct weeks, no more than 40 \% of them in the final week, every member committing under their own account, and both checkpoint tags pushed on time. A repository that appears in 1--3 commits in the last few days before submission scores at most 1.5 of 5, however good the code inside it is. Full conditions in \texttt{Project-Handbook.md} §3.
+
+\textbf{Timeline} (anchored to units, not dates)
+
+{\footnotesize
+\begin{longtable}[]{@{}ll@{}}
+\toprule
+\begin{minipage}[b]{0.47\columnwidth}\raggedright
+Milestone\strut
+\end{minipage} & \begin{minipage}[b]{0.47\columnwidth}\raggedright
+Anchored to\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+Catalogue released; groups formed; theme selected; \textbf{repo created}\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+during / end of Unit IV\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+Checkpoint 1 --- data loaded and shown, one baseline number (tag \texttt{checkpoint-1})\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+end of Unit V\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+Checkpoint 2 --- full pipeline, initial results (tag \texttt{checkpoint-2})\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+end of Unit VI\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+Final submission --- the repository URL\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+end of Unit VII\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+Project quiz --- written, individual\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+final lecture / final lab (Lab experiment 15 slot)\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+}
+
+\textbf{Data on campus.} The UPES network breaks Python downloads (\texttt{fetch\_*}, \texttt{ucimlrepo}, \texttt{yfinance}, \texttt{requests}) --- see \texttt{../lab-assignments/Anchor-Datasets.pdf}. Every theme below therefore uses a file you \textbf{download once in a browser} (or at home). Files under 50 MB are committed to \texttt{data/raw/}; the two larger ones (P05, P08) are gitignored with download instructions in the README --- your theme brief says which applies. Do not disable certificate verification.
+
+\textbf{Common deliverables for every theme:} a Git repository with \texttt{README.md}, \texttt{requirements.txt}, notebooks/scripts that run top-to-bottom from a clean checkout, a 4--6 page report (problem, data, method, results, limitations), and reproducibility notes (random seeds, environment, exact commands). The exact layout is in \texttt{Project-Handbook.md} §3.4.
+
+
+
+\hypertarget{the-eight-themes}{%
+\subsection{The eight themes}\label{the-eight-themes}}
+
+Each theme is stated as a question, not a technique. The ``done'' line is the minimum for full group marks; the ``further'' items are where a strong group separates itself. \textbf{The summaries below are not the brief} --- open the theme's folder for the phase-by-phase instructions, the pitfalls and the ``done'' checklist.
+
+{\footnotesize
+\begin{longtable}[]{@{}ll@{}}
+\toprule
+Theme & Folder\tabularnewline
+\midrule
+\endhead
+P01 & \href{P01-bike-demand/README.md}{\texttt{P01-bike-demand/}}\tabularnewline
+P02 & \href{P02-air-quality/README.md}{\texttt{P02-air-quality/}}\tabularnewline
+P03 & \href{P03-hotel-cancellations/README.md}{\texttt{P03-hotel-cancellations/}}\tabularnewline
+P04 & \href{P04-student-dropout/README.md}{\texttt{P04-student-dropout/}}\tabularnewline
+P05 & \href{P05-review-sentiment/README.md}{\texttt{P05-review-sentiment/}}\tabularnewline
+P06 & \href{P06-fashion-mnist/README.md}{\texttt{P06-fashion-mnist/}}\tabularnewline
+P07 & \href{P07-retail-segmentation/README.md}{\texttt{P07-retail-segmentation/}}\tabularnewline
+P08 & \href{P08-household-power/README.md}{\texttt{P08-household-power/}}\tabularnewline
+\bottomrule
+\end{longtable}
+}
+
+\hypertarget{p01-hourly-bike-rental-demand-for-fleet-rebalancing}{%
+\subsubsection{P01 · Hourly bike-rental demand for fleet rebalancing}\label{p01-hourly-bike-rental-demand-for-fleet-rebalancing}}
+
+\textbf{Question.} Given hour, calendar and weather, how many bikes will be rented in the next hour --- and which factors matter most?\\
+\textbf{Data.} UCI Bike Sharing, \texttt{hour.csv} (17 379 rows, 1.1 MB). \url{https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset} --- browser download of the zip. CC BY 4.0.\\
+\textbf{Done.} Cleaned features (cyclic encoding of hour/month, categorical weather), a leakage-free chronological split, linear regression and ridge/lasso baselines, one non-linear model (tree ensemble or MLP), RMSE and R² reported on the held-out period with a justified choice between them, and coefficient interpretation.\\
+\textbf{Further.} Gradient descent implemented by hand and compared with the closed-form solution (Unit III); separate \texttt{casual} vs \texttt{registered} models; a peak-hour classifier with ROC/AUC.\\
+\textbf{Units.} III, IV, V (+ VI optional). \textbf{COs.} CO2, CO3, CO4.
+
+\hypertarget{p02-next-day-air-quality-for-an-indian-city}{%
+\subsubsection{P02 · Next-day air quality for an Indian city}\label{p02-next-day-air-quality-for-an-indian-city}}
+
+\textbf{Question.} Can yesterday's pollutant readings and the calendar predict tomorrow's PM2.5 (regression) and the AQI bucket (classification) well enough to issue a public warning?\\
+\textbf{Data.} CPCB \emph{Air Quality Data in India (2015--2020)}, use \texttt{city\_day.csv} (\textasciitilde30 000 rows). \url{https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india} --- Kaggle login + browser download. Pick one or two cities.\\
+\textbf{Done.} Missing-data handling documented (this set has many gaps), lag/rolling features built without look-ahead, a \textbf{time-ordered} split, regression (linear → regularised) for PM2.5, a classifier for the AQI bucket with confusion matrix and ROC/AUC, and an honest comparison against the naïve ``tomorrow = today'' baseline.\\
+\textbf{Further.} Multi-city model with city as a feature vs one model per city; season/festival effects; imbalance handling for the rare ``Severe'' class.\\
+\textbf{Units.} IV, V, VI. \textbf{COs.} CO2, CO3, CO4.
+
+\hypertarget{p03-hotel-booking-cancellations-and-the-overbooking-decision}{%
+\subsubsection{P03 · Hotel-booking cancellations and the overbooking decision}\label{p03-hotel-booking-cancellations-and-the-overbooking-decision}}
+
+\textbf{Question.} At booking time, which reservations will be cancelled --- and at what probability threshold should the hotel overbook?\\
+\textbf{Data.} Hotel Booking Demand (Antonio, de Almeida \& Nunes), 119 390 rows. \url{https://www.kaggle.com/datasets/jessemostipak/hotel-booking-demand} --- Kaggle login + browser download.\\
+\textbf{Done.} A leakage audit (columns such as \texttt{reservation\_status} must be dropped --- say why), encoding of the mixed categorical features, stratified split, logistic regression, KNN, decision tree, random forest and one boosting model compared on ROC/AUC and precision--recall, then a threshold chosen for a stated cost of an empty room vs a walked guest.\\
+\textbf{Further.} Resampling vs class weights for the imbalance; calibration curve; a per-hotel (city vs resort) comparison.\\
+\textbf{Units.} IV, V (logistic), VI. \textbf{COs.} CO2, CO3, CO4.
+
+\hypertarget{p04-early-warning-of-student-dropout}{%
+\subsubsection{P04 · Early warning of student dropout}\label{p04-early-warning-of-student-dropout}}
+
+\textbf{Question.} From data known at enrolment and after semester 1, which students are at risk of dropping out, and what would a fair early-warning rule look like?\\
+\textbf{Data.} UCI \emph{Predict Students' Dropout and Academic Success}, 4 424 students × 36 features, three classes (dropout / enrolled / graduate), strongly imbalanced. \url{https://archive.ics.uci.edu/dataset/697/predict+students+dropout+and+academic+success} --- browser download. CC BY 4.0.\\
+\textbf{Done.} Multiclass classification with at least three model families (naïve Bayes, tree/ensemble, SVM or MLP), stratified cross-validation, macro-F1 and per-class recall reported and defended over plain accuracy, an ``enrolment-only'' model vs a ``plus semester-1'' model, and a feature-importance discussion that flags any demographic feature a university should \emph{not} act on.\\
+\textbf{Further.} Cost-sensitive thresholds; one-vs-rest ROC; a 2-class (dropout vs not) reformulation and whether it changes the ranking of models.\\
+\textbf{Units.} IV, VI (+ V logistic). \textbf{COs.} CO1, CO2, CO3, CO4.
+
+\hypertarget{p05-what-makes-a-review-negative-text}{%
+\subsubsection{P05 · What makes a review negative? (text)}\label{p05-what-makes-a-review-negative-text}}
+
+\textbf{Question.} Can a linear model on bag-of-words beat non-linear models on 50 000 movie reviews, and which words actually drive the prediction?\\
+\textbf{Data.} IMDB 50K Movie Reviews, 50 000 labelled reviews, balanced. \url{https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews} --- Kaggle login + browser download (\textasciitilde66 MB).\\
+\textbf{Done.} A text-cleaning pipeline (HTML stripping, tokenisation, stop-words --- with an ablation showing whether each step helped), TF-IDF features, logistic regression and multinomial naïve Bayes and a linear SVM compared with accuracy and ROC/AUC, the top ±20 weighted words shown and sanity-checked, and a learning curve (accuracy vs training size).\\
+\textbf{Further.} Bigrams and \texttt{min\_df} sweeps; error analysis of 30 misclassified reviews; hierarchical or k-means clustering of reviews using the TF-IDF vectors to find sub-genres.\\
+\textbf{Units.} II, IV, V, VI (+ VII optional). \textbf{COs.} CO2, CO3, CO4.
+
+\hypertarget{p06-clothing-item-recognition-with-classical-ml}{%
+\subsubsection{P06 · Clothing-item recognition with classical ML}\label{p06-clothing-item-recognition-with-classical-ml}}
+
+\textbf{Question.} How far can non-deep methods (PCA + KNN / SVM / random forest / a small MLP) get on 28×28 clothing images, and which classes are confused with which?\\
+\textbf{Data.} Fashion-MNIST (Zalando), 70 000 images, 10 classes. \url{https://github.com/zalandoresearch/fashion-mnist} --- browser download of the four gzip files, or the CSV version on Kaggle. MIT licence.\\
+\textbf{Done.} A loader for the raw IDX files, pixel scaling, PCA with an explained-variance curve and a chosen number of components, at least four classifiers compared under one protocol on the official test split, per-class precision/recall and a confusion matrix with a written explanation of the shirt / T-shirt / pullover confusion, and a timing table (fit and predict seconds per model).\\
+\textbf{Further.} Backpropagation MLP written with NumPy vs scikit-learn's; k-means on PCA embeddings vs the true labels (adjusted Rand index); data augmentation by shifts.\\
+\textbf{Units.} IV (dimensionality reduction), VI, VII optional. \textbf{COs.} CO1, CO2, CO3, CO4.
+
+\hypertarget{p07-customer-segmentation-for-an-online-retailer}{%
+\subsubsection{P07 · Customer segmentation for an online retailer}\label{p07-customer-segmentation-for-an-online-retailer}}
+
+\textbf{Question.} Which distinct customer groups exist in two years of transactions, and can a classifier assign a \emph{new} customer to a segment after their first few purchases?\\
+\textbf{Data.} UCI Online Retail II, 1.07 M transactions, Dec 2009--Dec 2011 (43.5 MB xlsx). \url{https://archive.ics.uci.edu/dataset/502/online+retail+ii} --- browser download. CC BY 4.0.\\
+\textbf{Done.} Cleaning documented (cancellations, negative quantities, missing \texttt{CustomerID}), RFM features per customer (Recency, Frequency, Monetary), scaling justified, k-means with the elbow/silhouette choice of \emph{k}, hierarchical agglomerative clustering with a dendrogram and a linkage comparison, DBSCAN with a discussion of what it calls noise, the segments named and described in business terms, then a classifier trained to predict the segment from early-purchase features with cross-validated accuracy.\\
+\textbf{Further.} Year-1 clusters vs year-2 clusters --- do customers migrate?; product-level clustering from the description text.\\
+\textbf{Units.} IV, VI, VII. \textbf{COs.} CO1, CO2, CO3, CO4.
+
+\hypertarget{p08-household-electricity-forecasting-and-daily-profile-clustering}{%
+\subsubsection{P08 · Household electricity: forecasting and daily-profile clustering}\label{p08-household-electricity-forecasting-and-daily-profile-clustering}}
+
+\textbf{Question.} Can the next hour's household power draw be forecast from recent history, and what typical ``kinds of day'' does the household have?\\
+\textbf{Data.} UCI Individual Household Electric Power Consumption, 2.07 M one-minute readings over 47 months (127 MB text, 20 MB zip). \url{https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption} --- browser download. CC BY 4.0.\\
+\textbf{Done.} Resampling from minutes to hours with the \textasciitilde1.25 \% missing rows handled and documented, lag/rolling and calendar features without look-ahead, a chronological split, linear/ridge regression vs a tree ensemble vs the persistence baseline on MAE and RMSE, then each day reshaped into a 24-value profile and clustered (k-means and HAC) with the cluster centroids plotted and interpreted (weekday/weekend, holiday, summer).\\
+\textbf{Further.} Sub-metering (kitchen / laundry / heater) as targets; DBSCAN to find anomalous days; an MLP forecaster.\\
+\textbf{Units.} IV, V, VII (+ VI ensembles). \textbf{COs.} CO2, CO3, CO4.
+
+
+
+\hypertarget{coverage-check}{%
+\subsection{Coverage check}\label{coverage-check}}
+
+{\footnotesize
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule
+\begin{minipage}[b]{0.08\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[b]{0.08\columnwidth}\raggedright
+P01\strut
+\end{minipage} & \begin{minipage}[b]{0.08\columnwidth}\raggedright
+P02\strut
+\end{minipage} & \begin{minipage}[b]{0.08\columnwidth}\raggedright
+P03\strut
+\end{minipage} & \begin{minipage}[b]{0.08\columnwidth}\raggedright
+P04\strut
+\end{minipage} & \begin{minipage}[b]{0.08\columnwidth}\raggedright
+P05\strut
+\end{minipage} & \begin{minipage}[b]{0.08\columnwidth}\raggedright
+P06\strut
+\end{minipage} & \begin{minipage}[b]{0.08\columnwidth}\raggedright
+P07\strut
+\end{minipage} & \begin{minipage}[b]{0.08\columnwidth}\raggedright
+P08\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+Task family\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+regression\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+time-series reg. + clf\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+imbalanced binary\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+imbalanced multiclass\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+text\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+images\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+clustering → clf\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+time series + clustering\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+Unit IV preprocessing\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+Unit V regression\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+logistic\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+logistic\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+logistic\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+Unit VI classification\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+opt.\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+opt.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+Unit VII clustering\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+opt.\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+opt.\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+CO1\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+CO2\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+CO3\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+CO4\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright
+Data size\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+1 MB\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\textasciitilde3 MB\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+16 MB\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+0.5 MB\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+66 MB\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+30 MB\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+44 MB\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+20 MB zip\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+}
+
+All eight need Unit IV plus at least one of V/VI/VII; none can be finished before Unit V is taught. None reuses a lab anchor dataset (housing, churn, stock, digits, Iris, spam, German credit, HAR, breast cancer, PlantVillage), so the project cannot be a re-submitted lab.
+
+\textbf{Effort band.} P01 and P04 are the most contained (small, clean data); P07 and P08 carry the most data-wrangling. The ``done'' definitions are sized so that the wrangling-heavy themes ask for fewer model families.
+
+\hypertarget{data-routes}{%
+\subsection{Data routes}\label{data-routes}}
+
+All eight links were checked on 2026-09-04 and resolve. UCI zips download directly; the Kaggle sets need a free account and the ``Download'' button; Fashion-MNIST is four gzip files linked from the GitHub README. Mirrors are placed on the LMS where licensing permits --- check there first.
+
+\end{document}
