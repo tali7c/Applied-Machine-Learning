@@ -45,6 +45,11 @@ assignment.
   - `Mid-Sem-Question-Bank.pdf` — practice questions for the mid-semester paper (A1 only)
   - `A1-Bank-Answers.pdf` — answers to all 314 bank questions, with full working for the numericals
   - `latex/` — sources
+- `projects/`
+  - `Project-Handbook.md` — the rules for every theme: groups, the repository and commit history, milestones, the 5-mark rubric and how the quiz works. **Read this before choosing.**
+  - `AML-Project-Catalogue.md` — the eight themes at a glance
+  - `Pxx-<theme>/README.md` — the full brief for one theme
+  - `AML-Project-Handbook.pdf`, `AML-Project-Catalogue.pdf` — printable copies; the Markdown is the source of truth
 - `Course-Handbook/Course-Handbook.pdf` — the student handbook (syllabus, marks, calendar, resources); source in `Course-Handbook/latex/`
 - `_shared/` — common LaTeX preambles and the UPES beamer theme
 
@@ -101,6 +106,7 @@ Material is published as it is delivered, not all at once. Currently released:
 | **Theory Quiz 1 (T01)** | Paper and worked solutions, sets A–H — prerequisites, L1, L2 |
 | **Theory Quiz 2 (T02)** | Paper, sets A–H — L3 principally. Solutions to follow |
 | **Theory Assignment 1 (A1)** | The brief, the 314-question Mid-Semester Question Bank, and the bank answers |
+| **Projects P01–P08** | Handbook, catalogue and all eight theme briefs — 15 marks, 10 of them individual |
 
 Each theory quiz paper and its worked solutions are published here **after every
 group has sat it** — so you can check your own answers against a full solution

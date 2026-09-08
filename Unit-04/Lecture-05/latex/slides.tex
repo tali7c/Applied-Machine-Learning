@@ -216,6 +216,10 @@ baseline with no missingness at all       0.9807  +/- 0.0065
       \small On \texttt{load\_diabetes} at $30\%$ missing, listwise deletion
       leaves \textbf{9 training rows} for $10$ features and the fitted model
       scores $R^2 = -4.70$.
+      \vspace{0.15em}
+
+      {\footnotesize $R^2 = 1 - \mathrm{SS}_{\mathrm{res}}/\mathrm{SS}_{\mathrm{tot}}$,
+      so $R^2 < 0$ means \emph{worse than always predicting $\bar y$}.}
     \end{alertblock}
   \end{column}
 \end{columns}
@@ -360,6 +364,11 @@ hole with the mean of what is left.
 \begin{frame}[shrink=6]{MCAR, MAR, MNAR: the taxonomy that matters}
   Write $R$ for the indicator ``this value is missing'', $X_{\text{obs}}$ for
   what you can see and $X_{\text{mis}}$ for what you cannot.
+  \begin{center}\footnotesize
+    \textbf{MCAR} missing completely at random \quad
+    \textbf{MAR} missing at random \quad
+    \textbf{MNAR} missing not at random
+  \end{center}
   \begin{center}\small
   \begin{tabular}{@{}llp{5.2cm}@{}}
     \toprule
