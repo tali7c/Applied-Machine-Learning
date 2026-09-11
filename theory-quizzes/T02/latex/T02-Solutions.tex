@@ -1,0 +1,992 @@
+% AML (CSAI2017P) --- Theory Quiz 2 --- SOLUTIONS issued to students.
+% 8 sets, A--H, four pages each; 32 pages, matching the question paper.
+% Generated. Explains the subject only: carries nothing about how the paper was
+% built or how it is marked. Release after the quiz has been conducted.
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=16mm,top=12mm,bottom=14mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage{fancyvrb}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2.5pt}
+\setlength{\emergencystretch}{3em}
+
+\pagestyle{fancy}\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\newcommand{\SetLetter}{}
+\fancyhead[L]{\footnotesize CSAI2017P --- Applied Machine Learning (Theory) --- Theory Quiz 2 solutions}
+\fancyhead[R]{\footnotesize\bfseries Set \SetLetter}
+\fancyfoot[R]{\footnotesize Set \SetLetter\ --- page \thepage\ of 4}
+
+\DefineVerbatimEnvironment{code}{Verbatim}%
+  {fontsize=\small,xleftmargin=5mm,baselinestretch=0.98}
+
+\newlist{sA}{enumerate}{1}
+\setlist[sA]{label=\textbf{A\arabic*.},leftmargin=8mm,topsep=3pt,itemsep=6pt,parsep=1pt}
+\newlist{sB}{enumerate}{1}
+\setlist[sB]{label=\textbf{B\arabic*.},leftmargin=8mm,topsep=3pt,itemsep=6pt,parsep=1pt}
+\newlist{sC}{enumerate}{1}
+\setlist[sC]{label=\textbf{C\arabic*.},leftmargin=8mm,topsep=3pt,itemsep=9pt,parsep=1pt}
+
+\newcommand{\parthead}[2]{\vspace{2pt}\noindent\rule{\linewidth}{0.4pt}\par\vspace{2pt}%
+  \noindent{\bfseries Part #1}\hfill{\small #2}\par\vspace{1pt}}
+\newcommand{\sol}[1]{\textbf{#1}}
+
+\begin{document}
+
+
+
+\renewcommand{\SetLetter}{A}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 2 --- Solutions \quad\textbullet\quad Set A}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set A}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(a)\ $1/2$}\\ Three of the six faces are even, so the probability is $3/6$.
+
+  \item \sol{(b)\ 4}\\ \texttt{range(10)} runs $0$ to $9$, and $0$, $3$, $6$ and $9$ divide exactly by three.
+
+  \item \sol{(c)\ $2(w-3)$}\\ Differentiating $(w-3)^2$ by the chain rule brings the exponent down and reduces it by one: $2(w-3)^1$. Note the derivative is a \emph{function} of $w$, not a number.
+
+  \item \sol{(d)\ mean of the $y_i$}\\ Squared error is minimised by the mean; it is absolute error that is minimised by the median. Setting the derivative of $\sum_i (y_i - c)^2$ to zero gives $c = \bar y$ directly.
+
+  \item \sol{(a)\ $\eta < 1$}\\ The threshold is $\eta < 2/L$ with $L$ the largest curvature. Here $f'' = 2$, so $2/L = 1$.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{zero}\\ A smooth function stops falling and has not yet begun to rise at its lowest point, so the tangent there is horizontal. This is exactly why gradient descent stops moving when it arrives: the update $w \leftarrow w - \eta f'(w)$ changes nothing once $f'(w) = 0$.
+
+  \item \sol{median}\\ Squared error is minimised by the mean, absolute error by the median. Shift the constant a little and the absolute total changes by the \emph{count} of points on each side, so it stops falling exactly when the two sides balance --- which is what the median is.
+
+  \item \sol{$2/L$}\\ On a quadratic the error is multiplied by $1 - \eta f''$ every step. Convergence needs $\lvert 1 - \eta f'' \rvert < 1$, and solving that gives $0 < \eta < 2/L$ with $L$ the largest curvature. Below the threshold everything works; above it nothing does, and the transition is sharp rather than gradual --- which is why a loss that blows up is almost always a learning-rate problem before it is anything else.
+
+  \item \sol{$1-\beta$}\\ Unrolling $v \leftarrow \beta v + g$ gives $v_t = g_t + \beta g_{t-1} + \beta^2 g_{t-2} + \cdots$, and those weights sum to $1/(1-\beta)$. So where the gradient points the same way for many steps, the velocity settles near $g/(1-\beta)$ and the effective step is $\eta/(1-\beta)$: ten times $\eta$ at $\beta = 0.9$, a hundred times at $\beta = 0.99$.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{A single train/test split on a small dataset gives a reliable estimate of how a model will perform on new data.}\\[2pt] \textbf{False.} One split is one draw. Which rows happen to land in the test half decides the number you get, and on a small dataset that varies a lot --- so a single figure hides a spread you have not measured. Cross-validate and quote the spread as well as the mean.
+
+  \item \emph{Doubling the learning rate always halves the number of iterations needed to converge.}\\[2pt] \textbf{False.} Two separate reasons. Past the threshold $2/L$ the run does not converge at all, so a larger $\eta$ can take the iteration count from finite to infinite. And even below the threshold the relationship is not proportional: on $f(w) = (w-3)^2$, $\eta = 0.1$ and $\eta = 0.9$ both give $\lvert 1 - 2\eta \rvert = 0.8$ and converge at exactly the same rate --- a ninefold increase that bought nothing. What governs the speed is the multiplier, not $\eta$ itself.
+
+  \item \emph{On a well-conditioned problem, momentum can need \emph{more} iterations than plain gradient descent.}\\[2pt] \textbf{True.} Momentum earns its keep in a \emph{ravine}, where the step size is capped by a steep direction you do not want to travel in while the progress you need is along a shallow one. On a well-conditioned surface there is no such mismatch to fix, and the accumulated velocity simply carries the iterate past the minimum so it has to come back. Measured on a one-dimensional quadratic: $36$ iterations at $\beta = 0$ against $92$ at $\beta = 0.9$.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ Minimise $f(w) = (w-4)^2$ by gradient descent from $w_0 = 0$ with $\eta = 0.25$, using $w \leftarrow w - \eta f'(w)$.
+
+\vspace{2pt}
+
+$f(w) = (w-4)^2$, so $f'(w) = 2(w-4)$ and each step is $w \leftarrow w - \eta \cdot 2(w-4)$.
+
+\[ f'(0) = -8 \;\Rightarrow\; w_1 = 0 - 0.25 \times -8 = \sol{2} \qquad f'(w_1) = -4 \;\Rightarrow\; w_2 = 2 - 0.25 \times -4 = \sol{3} \]
+
+The error multiplier is $\lvert 1 - \eta f'' \rvert = \lvert 1 - 2(0.25) \rvert = \sol{0.5}$, so the run \sol{converges monotonically, from one side}.
+
+\vspace{2pt}
+
+The \emph{sign} of $1 - \eta f''$ is what decides which. Positive and the error keeps its sign, so the iterate creeps towards the minimum from one side. Negative and the error flips sign every step, so the iterate lands alternately either side of the minimum while still closing in. The \emph{size} decides how fast, and only a size above $1$ would mean the run diverges --- which is the threshold $\eta < 2/L$ from Part B, seen in action.
+
+\vspace{6pt}
+
+\textbf{D2.}\ A model's training loss falls smoothly towards zero while its held-out error, measured at the same iterations, rises steadily. \textbf{(a)} Name what is happening. \textbf{(b)} State what you would change first, and why.
+
+\vspace{2pt}
+
+This is \textbf{overfitting}. The model has enough freedom to fit the particular training rows --- their noise included --- rather than the pattern behind them, so it keeps improving on what it can see while getting worse on what it cannot. The gap between the two curves is the diagnostic, not the level of either one.\par\vspace{1mm}Reasonable first moves, each with a reason: stop at the point where the held-out curve turns, since everything after it is being bought at the expense of new data; reduce the model's capacity, since it currently has enough to memorise; regularise, which penalises the flexibility being misused; or get more training data, which makes memorising harder. Confirming that the held-out set is a fair sample before changing anything is also a defensible first step.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ A team fits a linear model by gradient descent on \textbf{standardised} features with $\eta = 0.05$;
+it converges in a few hundred iterations. They then rebuild the same pipeline on the \textbf{raw} features
+--- one of which is an amount in rupees running into the millions --- keep $\eta = 0.05$ unchanged, and the
+loss becomes \texttt{nan} within three iterations.
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} A good learning rate is a property of \emph{the data}, not of the algorithm. Convergence requires $\eta < 2/L$, where $L$ is the largest curvature of the loss --- and $L$ depends on how the features are scaled. Standardising had made $L$ modest, so $\eta = 0.05$ sat comfortably below the threshold. A column running into the millions makes $L$ enormous, the threshold $2/L$ collapses, and the unchanged $\eta$ is now far above it. Past that point every step overshoots by more than the last, the error grows geometrically, and the numbers overflow to \texttt{nan} within a few iterations. Measured on the diabetes data in the lecture: standardising cut the condition number from $1.2 \times 10^{8}$ to $470$ and raised the usable learning rate by a factor of $560$.\par\vspace{1mm}\textbf{(ii) How to check.} Put the scaling back and re-run at the same $\eta$; if it converges again, the scaling is what changed. Or keep the raw features and divide $\eta$ by a large factor --- if it now converges, the step size was the problem. Estimating $L$ directly and comparing $\eta$ against $2/L$ settles it without guessing.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the raw-feature run still reaches \texttt{nan} even at a drastically smaller $\eta$, the step size is not the explanation and something else is wrong --- an overflow in the squared term at that magnitude, or a bug. Equally, a loss that falls for many iterations and only then explodes is not the signature of a step size past threshold, which fails from the very first step. Naming what you would expect to see is the part that turns a guess into a diagnosis.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+
+\renewcommand{\SetLetter}{B}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 2 --- Solutions \quad\textbullet\quad Set B}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set B}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(b)\ $1/3$}\\ Four of the twelve balls are red, so the probability is $4/12$.
+
+  \item \sol{(c)\ 3}\\ \texttt{ws[1:4]} takes positions $1$, $2$ and $3$, stopping before $4$: the three elements $3$, $6$ and $9$.
+
+  \item \sol{(d)\ $2(w-3)$}\\ The table only shows that $f$ is symmetric about $3$. Differentiating gives $2(w-3)$, which is negative left of $3$, zero at $3$ and positive right of it --- consistent with the values $1,\,0,\,1$.
+
+  \item \sol{(a)\ their mean, $22$}\\ Squared error is minimised by the mean, which here is $22$. The median, $4$, is what minimises \emph{absolute} error.
+
+  \item \sol{(c)\ $\eta = 1.05$}\\ The multiplier is $\lvert 1 - 2\eta \rvert$, and the run diverges once it exceeds $1$. Only $1.10$ does. Note that $0.80$ appears twice, at $\eta = 0.10$ and $\eta = 0.90$: those two converge at identical rates.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{zero}\\ A smooth function stops falling and has not yet begun to rise at its lowest point, so the tangent there is horizontal. This is exactly why gradient descent stops moving when it arrives: the update $w \leftarrow w - \eta f'(w)$ changes nothing once $f'(w) = 0$.
+
+  \item \sol{median}\\ Squared error is minimised by the mean, absolute error by the median. Shift the constant a little and the absolute total changes by the \emph{count} of points on each side, so it stops falling exactly when the two sides balance --- which is what the median is.
+
+  \item \sol{$2/L$}\\ On a quadratic the error is multiplied by $1 - \eta f''$ every step. Convergence needs $\lvert 1 - \eta f'' \rvert < 1$, and solving that gives $0 < \eta < 2/L$ with $L$ the largest curvature. Below the threshold everything works; above it nothing does, and the transition is sharp rather than gradual --- which is why a loss that blows up is almost always a learning-rate problem before it is anything else.
+
+  \item \sol{$1-\beta$}\\ Unrolling $v \leftarrow \beta v + g$ gives $v_t = g_t + \beta g_{t-1} + \beta^2 g_{t-2} + \cdots$, and those weights sum to $1/(1-\beta)$. So where the gradient points the same way for many steps, the velocity settles near $g/(1-\beta)$ and the effective step is $\eta/(1-\beta)$: ten times $\eta$ at $\beta = 0.9$, a hundred times at $\beta = 0.99$.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{A table showing one train/test split's score on a small dataset is a reliable estimate of performance on new data.}\\[2pt] \textbf{False.} One split is one draw. Which rows happen to land in the test half decides the number you get, and on a small dataset that varies a lot --- so a single figure hides a spread you have not measured. Cross-validate and quote the spread as well as the mean.
+
+  \item \emph{A table of iteration counts must halve every time the learning rate doubles.}\\[2pt] \textbf{False.} Two separate reasons. Past the threshold $2/L$ the run does not converge at all, so a larger $\eta$ can take the iteration count from finite to infinite. And even below the threshold the relationship is not proportional: on $f(w) = (w-3)^2$, $\eta = 0.1$ and $\eta = 0.9$ both give $\lvert 1 - 2\eta \rvert = 0.8$ and converge at exactly the same rate --- a ninefold increase that bought nothing. What governs the speed is the multiplier, not $\eta$ itself.
+
+  \item \emph{A table comparing $36$ iterations at $\beta = 0$ with $92$ at $\beta = 0.9$ on a well-conditioned problem is possible: momentum can need more iterations than plain gradient descent.}\\[2pt] \textbf{True.} Momentum earns its keep in a \emph{ravine}, where the step size is capped by a steep direction you do not want to travel in while the progress you need is along a shallow one. On a well-conditioned surface there is no such mismatch to fix, and the accumulated velocity simply carries the iterate past the minimum so it has to come back. Measured on a one-dimensional quadratic: $36$ iterations at $\beta = 0$ against $92$ at $\beta = 0.9$.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ The table below is to be filled in for $f(w) = (w-5)^2$, from $w_0 = 0$, with $\eta = 0.6$ and $w \leftarrow w - \eta f'(w)$. \par\vspace{1mm}\hspace*{6mm}\begin{tabular}{@{}lll@{}}\hline\rule{0pt}{10pt}$k$ & $f'(w_{k-1})$ & $w_k$\\[1pt]\hline\rule{0pt}{10pt}$1$ & & \\ $2$ & & \\[1pt]\hline\end{tabular}
+
+\vspace{2pt}
+
+$f(w) = (w-5)^2$, so $f'(w) = 2(w-5)$ and each step is $w \leftarrow w - \eta \cdot 2(w-5)$.
+
+\[ f'(0) = -10 \;\Rightarrow\; w_1 = 0 - 0.6 \times -10 = \sol{6} \qquad f'(w_1) = 2 \;\Rightarrow\; w_2 = 6 - 0.6 \times 2 = \sol{4.8} \]
+
+The error multiplier is $\lvert 1 - \eta f'' \rvert = \lvert 1 - 2(0.6) \rvert = \sol{0.2}$, so the run \sol{converges while oscillating about the minimum}.
+
+\vspace{2pt}
+
+The \emph{sign} of $1 - \eta f''$ is what decides which. Positive and the error keeps its sign, so the iterate creeps towards the minimum from one side. Negative and the error flips sign every step, so the iterate lands alternately either side of the minimum while still closing in. The \emph{size} decides how fast, and only a size above $1$ would mean the run diverges --- which is the threshold $\eta < 2/L$ from Part B, seen in action.
+
+\vspace{6pt}
+
+\textbf{D2.}\ A results table records the training loss falling smoothly towards zero across the epochs while the held-out error, measured at the same epochs, rises steadily. \textbf{(a)} Name what is happening. \textbf{(b)} State what you would change first, and why.
+
+\vspace{2pt}
+
+This is \textbf{overfitting}. The model has enough freedom to fit the particular training rows --- their noise included --- rather than the pattern behind them, so it keeps improving on what it can see while getting worse on what it cannot. The gap between the two curves is the diagnostic, not the level of either one.\par\vspace{1mm}Reasonable first moves, each with a reason: stop at the point where the held-out curve turns, since everything after it is being bought at the expense of new data; reduce the model's capacity, since it currently has enough to memorise; regularise, which penalises the flexibility being misused; or get more training data, which makes memorising harder. Confirming that the held-out set is a fair sample before changing anything is also a defensible first step.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ A team's results table records two runs of the same linear model, fitted by gradient descent with
+$\eta = 0.05$ in both.
+
+\vspace{2mm}
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}
+\hline
+\rule{0pt}{11pt}\textbf{Run} & \textbf{Features} & \textbf{Outcome}\\[1pt]
+\hline
+\rule{0pt}{11pt}1 & standardised & converged, a few hundred iterations\\
+2 & raw (one column is an amount in rupees, in the millions) & loss \texttt{nan} after 3 iterations\\[1pt]
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} A good learning rate is a property of \emph{the data}, not of the algorithm. Convergence requires $\eta < 2/L$, where $L$ is the largest curvature of the loss --- and $L$ depends on how the features are scaled. Standardising had made $L$ modest, so $\eta = 0.05$ sat comfortably below the threshold. A column running into the millions makes $L$ enormous, the threshold $2/L$ collapses, and the unchanged $\eta$ is now far above it. Past that point every step overshoots by more than the last, the error grows geometrically, and the numbers overflow to \texttt{nan} within a few iterations. Measured on the diabetes data in the lecture: standardising cut the condition number from $1.2 \times 10^{8}$ to $470$ and raised the usable learning rate by a factor of $560$.\par\vspace{1mm}\textbf{(ii) How to check.} Put the scaling back and re-run at the same $\eta$; if it converges again, the scaling is what changed. Or keep the raw features and divide $\eta$ by a large factor --- if it now converges, the step size was the problem. Estimating $L$ directly and comparing $\eta$ against $2/L$ settles it without guessing.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the raw-feature run still reaches \texttt{nan} even at a drastically smaller $\eta$, the step size is not the explanation and something else is wrong --- an overflow in the squared term at that magnitude, or a bug. Equally, a loss that falls for many iterations and only then explodes is not the signature of a step size past threshold, which fails from the very first step. Naming what you would expect to see is the part that turns a guess into a diagnosis.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+
+\renewcommand{\SetLetter}{C}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 2 --- Solutions \quad\textbullet\quad Set C}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set C}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(c)\ $1/2$}\\ Three of the six equal sectors carry an even number, so the probability is $3/6$.
+
+  \item \sol{(d)\ 4}\\ A \texttt{set} discards duplicates, so \texttt{[0, 3, 3, 6, 9]} becomes $\{0, 3, 6, 9\}$.
+
+  \item \sol{(a)\ $2(w-3)$}\\ The slope of the tangent \emph{is} the derivative. For $(w-3)^2$ that is $2(w-3)$: negative on the left arm, zero at the vertex, positive on the right.
+
+  \item \sol{(b)\ mean of the points}\\ Squared vertical distance is squared error, and that is minimised by the mean. Minimising the \emph{unsquared} distance would have put the line at the median.
+
+  \item \sol{(d)\ $\eta$ is past the stability threshold}\\ On a log scale, geometric convergence is a straight line: downward when the multiplier is below $1$, flat when it equals $1$, and upward when it exceeds $1$ --- which is what happens once $\eta$ passes $2/L$.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{zero}\\ A smooth function stops falling and has not yet begun to rise at its lowest point, so the tangent there is horizontal. This is exactly why gradient descent stops moving when it arrives: the update $w \leftarrow w - \eta f'(w)$ changes nothing once $f'(w) = 0$.
+
+  \item \sol{median}\\ Squared error is minimised by the mean, absolute error by the median. Shift the constant a little and the absolute total changes by the \emph{count} of points on each side, so it stops falling exactly when the two sides balance --- which is what the median is.
+
+  \item \sol{$2/L$}\\ On a quadratic the error is multiplied by $1 - \eta f''$ every step. Convergence needs $\lvert 1 - \eta f'' \rvert < 1$, and solving that gives $0 < \eta < 2/L$ with $L$ the largest curvature. Below the threshold everything works; above it nothing does, and the transition is sharp rather than gradual --- which is why a loss that blows up is almost always a learning-rate problem before it is anything else.
+
+  \item \sol{$1-\beta$}\\ Unrolling $v \leftarrow \beta v + g$ gives $v_t = g_t + \beta g_{t-1} + \beta^2 g_{t-2} + \cdots$, and those weights sum to $1/(1-\beta)$. So where the gradient points the same way for many steps, the velocity settles near $g/(1-\beta)$ and the effective step is $\eta/(1-\beta)$: ten times $\eta$ at $\beta = 0.9$, a hundred times at $\beta = 0.99$.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{A single point on a performance chart, from one train/test split of a small dataset, is a reliable estimate of performance on new data.}\\[2pt] \textbf{False.} One split is one draw. Which rows happen to land in the test half decides the number you get, and on a small dataset that varies a lot --- so a single figure hides a spread you have not measured. Cross-validate and quote the spread as well as the mean.
+
+  \item \emph{If one loss curve is drawn for $\eta$ and another for $2\eta$, the second must always reach the floor in half as many iterations.}\\[2pt] \textbf{False.} Two separate reasons. Past the threshold $2/L$ the run does not converge at all, so a larger $\eta$ can take the iteration count from finite to infinite. And even below the threshold the relationship is not proportional: on $f(w) = (w-3)^2$, $\eta = 0.1$ and $\eta = 0.9$ both give $\lvert 1 - 2\eta \rvert = 0.8$ and converge at exactly the same rate --- a ninefold increase that bought nothing. What governs the speed is the multiplier, not $\eta$ itself.
+
+  \item \emph{A plot showing momentum's trajectory taking a longer path than plain gradient descent on a circular bowl is possible: on a well-conditioned problem momentum can need more iterations.}\\[2pt] \textbf{True.} Momentum earns its keep in a \emph{ravine}, where the step size is capped by a steep direction you do not want to travel in while the progress you need is along a shallow one. On a well-conditioned surface there is no such mismatch to fix, and the accumulated velocity simply carries the iterate past the minimum so it has to come back. Measured on a one-dimensional quadratic: $36$ iterations at $\beta = 0$ against $92$ at $\beta = 0.9$.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ A parabola $f(w) = (w-6)^2$ is sketched with its vertex at $w = 6$. A gradient-descent run starts at $w_0 = 0$ on the left-hand wall, with $\eta = 0.4$ and $w \leftarrow w - \eta f'(w)$.
+
+\vspace{2pt}
+
+$f(w) = (w-6)^2$, so $f'(w) = 2(w-6)$ and each step is $w \leftarrow w - \eta \cdot 2(w-6)$.
+
+\[ f'(0) = -12 \;\Rightarrow\; w_1 = 0 - 0.4 \times -12 = \sol{4.8} \qquad f'(w_1) = -2.4 \;\Rightarrow\; w_2 = 4.8 - 0.4 \times -2.4 = \sol{5.76} \]
+
+The error multiplier is $\lvert 1 - \eta f'' \rvert = \lvert 1 - 2(0.4) \rvert = \sol{0.2}$, so the run \sol{converges monotonically, from one side}.
+
+\vspace{2pt}
+
+The \emph{sign} of $1 - \eta f''$ is what decides which. Positive and the error keeps its sign, so the iterate creeps towards the minimum from one side. Negative and the error flips sign every step, so the iterate lands alternately either side of the minimum while still closing in. The \emph{size} decides how fast, and only a size above $1$ would mean the run diverges --- which is the threshold $\eta < 2/L$ from Part B, seen in action.
+
+\vspace{6pt}
+
+\textbf{D2.}\ Two curves are plotted against the epoch number: the training loss falls smoothly towards zero, while the held-out error falls at first and then turns upward and keeps rising. \textbf{(a)} Name what is happening from the turning point onward. \textbf{(b)} State what you would change first, and why.
+
+\vspace{2pt}
+
+This is \textbf{overfitting}. The model has enough freedom to fit the particular training rows --- their noise included --- rather than the pattern behind them, so it keeps improving on what it can see while getting worse on what it cannot. The gap between the two curves is the diagnostic, not the level of either one.\par\vspace{1mm}Reasonable first moves, each with a reason: stop at the point where the held-out curve turns, since everything after it is being bought at the expense of new data; reduce the model's capacity, since it currently has enough to memorise; regularise, which penalises the flexibility being misused; or get more training data, which makes memorising harder. Confirming that the held-out set is a fair sample before changing anything is also a defensible first step.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ A team plots the loss against the iteration for a linear model fitted by gradient descent. On
+\textbf{standardised} features with $\eta = 0.05$ the curve falls smoothly and flattens within a few hundred
+iterations. They rebuild the same pipeline on the \textbf{raw} features --- one of which is an amount in
+rupees running into the millions --- keep $\eta = 0.05$, and the new curve rises off the top of the axis and
+becomes \texttt{nan} by the third iteration.
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} A good learning rate is a property of \emph{the data}, not of the algorithm. Convergence requires $\eta < 2/L$, where $L$ is the largest curvature of the loss --- and $L$ depends on how the features are scaled. Standardising had made $L$ modest, so $\eta = 0.05$ sat comfortably below the threshold. A column running into the millions makes $L$ enormous, the threshold $2/L$ collapses, and the unchanged $\eta$ is now far above it. Past that point every step overshoots by more than the last, the error grows geometrically, and the numbers overflow to \texttt{nan} within a few iterations. Measured on the diabetes data in the lecture: standardising cut the condition number from $1.2 \times 10^{8}$ to $470$ and raised the usable learning rate by a factor of $560$.\par\vspace{1mm}\textbf{(ii) How to check.} Put the scaling back and re-run at the same $\eta$; if it converges again, the scaling is what changed. Or keep the raw features and divide $\eta$ by a large factor --- if it now converges, the step size was the problem. Estimating $L$ directly and comparing $\eta$ against $2/L$ settles it without guessing.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the raw-feature run still reaches \texttt{nan} even at a drastically smaller $\eta$, the step size is not the explanation and something else is wrong --- an overflow in the squared term at that magnitude, or a bug. Equally, a loss that falls for many iterations and only then explodes is not the signature of a step size past threshold, which fails from the very first step. Naming what you would expect to see is the part that turns a guess into a diagnosis.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+
+\renewcommand{\SetLetter}{D}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 2 --- Solutions \quad\textbullet\quad Set D}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set D}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(d)\ $1/3$}\\ Four of the twelve components are marked, so the probability is $4/12$.
+
+  \item \sol{(a)\ 2}\\ A dictionary cannot hold the same key twice. The second \texttt{'mon'} overwrites the first, leaving two entries.
+
+  \item \sol{(b)\ $2(w-3)$}\\ ``The rate at which the cost changes with $w$'' is the derivative, and for $(w-3)^2$ that is $2(w-3)$.
+
+  \item \sol{(c)\ the mean, $22$ days}\\ Squared error is minimised by the mean, $22$ days. The median of $4$ days is what minimises absolute error --- and is the more sensible summary here, but it is not what was asked.
+
+  \item \sol{(b)\ $\eta$ is past the stability threshold}\\ A loss that explodes within a few iterations is the signature of $\eta$ past $2/L$: past the threshold each step overshoots by more than the last, so the error grows geometrically from the start. Check the learning rate before anything else.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{zero}\\ A smooth function stops falling and has not yet begun to rise at its lowest point, so the tangent there is horizontal. This is exactly why gradient descent stops moving when it arrives: the update $w \leftarrow w - \eta f'(w)$ changes nothing once $f'(w) = 0$.
+
+  \item \sol{median}\\ Squared error is minimised by the mean, absolute error by the median. Shift the constant a little and the absolute total changes by the \emph{count} of points on each side, so it stops falling exactly when the two sides balance --- which is what the median is.
+
+  \item \sol{$2/L$}\\ On a quadratic the error is multiplied by $1 - \eta f''$ every step. Convergence needs $\lvert 1 - \eta f'' \rvert < 1$, and solving that gives $0 < \eta < 2/L$ with $L$ the largest curvature. Below the threshold everything works; above it nothing does, and the transition is sharp rather than gradual --- which is why a loss that blows up is almost always a learning-rate problem before it is anything else.
+
+  \item \sol{$1-\beta$}\\ Unrolling $v \leftarrow \beta v + g$ gives $v_t = g_t + \beta g_{t-1} + \beta^2 g_{t-2} + \cdots$, and those weights sum to $1/(1-\beta)$. So where the gradient points the same way for many steps, the velocity settles near $g/(1-\beta)$ and the effective step is $\eta/(1-\beta)$: ten times $\eta$ at $\beta = 0.9$, a hundred times at $\beta = 0.99$.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{A consultant who reports one train/test split's score on a small dataset has given a reliable estimate of how the model will do in production.}\\[2pt] \textbf{False.} One split is one draw. Which rows happen to land in the test half decides the number you get, and on a small dataset that varies a lot --- so a single figure hides a spread you have not measured. Cross-validate and quote the spread as well as the mean.
+
+  \item \emph{An engineer whose run takes $200$ iterations can be sure that doubling the learning rate will bring it down to $100$.}\\[2pt] \textbf{False.} Two separate reasons. Past the threshold $2/L$ the run does not converge at all, so a larger $\eta$ can take the iteration count from finite to infinite. And even below the threshold the relationship is not proportional: on $f(w) = (w-3)^2$, $\eta = 0.1$ and $\eta = 0.9$ both give $\lvert 1 - 2\eta \rvert = 0.8$ and converge at exactly the same rate --- a ninefold increase that bought nothing. What governs the speed is the multiplier, not $\eta$ itself.
+
+  \item \emph{An engineer who adds momentum to a well-conditioned problem may find the run needs \emph{more} iterations than before.}\\[2pt] \textbf{True.} Momentum earns its keep in a \emph{ravine}, where the step size is capped by a steep direction you do not want to travel in while the progress you need is along a shallow one. On a well-conditioned surface there is no such mismatch to fix, and the accumulated velocity simply carries the iterate past the minimum so it has to come back. Measured on a one-dimensional quadratic: $36$ iterations at $\beta = 0$ against $92$ at $\beta = 0.9$.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ A machine's cost is $f(w) = (w-4)^2$, where $w$ is a dial setting and the ideal setting is $4$. An engineer tunes the dial by gradient descent from $w_0 = 0$, using $w \leftarrow w - \eta f'(w)$ with $\eta = 0.75$.
+
+\vspace{2pt}
+
+$f(w) = (w-4)^2$, so $f'(w) = 2(w-4)$ and each step is $w \leftarrow w - \eta \cdot 2(w-4)$.
+
+\[ f'(0) = -8 \;\Rightarrow\; w_1 = 0 - 0.75 \times -8 = \sol{6} \qquad f'(w_1) = 4 \;\Rightarrow\; w_2 = 6 - 0.75 \times 4 = \sol{3} \]
+
+The error multiplier is $\lvert 1 - \eta f'' \rvert = \lvert 1 - 2(0.75) \rvert = \sol{0.5}$, so the run \sol{converges while oscillating about the minimum}.
+
+\vspace{2pt}
+
+The \emph{sign} of $1 - \eta f''$ is what decides which. Positive and the error keeps its sign, so the iterate creeps towards the minimum from one side. Negative and the error flips sign every step, so the iterate lands alternately either side of the minimum while still closing in. The \emph{size} decides how fast, and only a size above $1$ would mean the run diverges --- which is the threshold $\eta < 2/L$ from Part B, seen in action.
+
+\vspace{6pt}
+
+\textbf{D2.}\ An analyst reports that her churn model's training loss has fallen smoothly towards zero over the epochs, while the error on the customers held back for testing has risen steadily over the same epochs. \textbf{(a)} Name what is happening. \textbf{(b)} State what you would change first, and why.
+
+\vspace{2pt}
+
+This is \textbf{overfitting}. The model has enough freedom to fit the particular training rows --- their noise included --- rather than the pattern behind them, so it keeps improving on what it can see while getting worse on what it cannot. The gap between the two curves is the diagnostic, not the level of either one.\par\vspace{1mm}Reasonable first moves, each with a reason: stop at the point where the held-out curve turns, since everything after it is being bought at the expense of new data; reduce the model's capacity, since it currently has enough to memorise; regularise, which penalises the flexibility being misused; or get more training data, which makes memorising harder. Confirming that the held-out set is a fair sample before changing anything is also a defensible first step.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ An engineer fits a linear model by gradient descent on \textbf{standardised} features with
+$\eta = 0.05$, and it converges in a few hundred iterations. A colleague then rebuilds the pipeline from the
+\textbf{raw} customer table --- where one column is a lifetime spend in rupees, running into the millions ---
+keeps $\eta = 0.05$ because ``it worked last time'', and the loss becomes \texttt{nan} within three
+iterations.
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} A good learning rate is a property of \emph{the data}, not of the algorithm. Convergence requires $\eta < 2/L$, where $L$ is the largest curvature of the loss --- and $L$ depends on how the features are scaled. Standardising had made $L$ modest, so $\eta = 0.05$ sat comfortably below the threshold. A column running into the millions makes $L$ enormous, the threshold $2/L$ collapses, and the unchanged $\eta$ is now far above it. Past that point every step overshoots by more than the last, the error grows geometrically, and the numbers overflow to \texttt{nan} within a few iterations. Measured on the diabetes data in the lecture: standardising cut the condition number from $1.2 \times 10^{8}$ to $470$ and raised the usable learning rate by a factor of $560$.\par\vspace{1mm}\textbf{(ii) How to check.} Put the scaling back and re-run at the same $\eta$; if it converges again, the scaling is what changed. Or keep the raw features and divide $\eta$ by a large factor --- if it now converges, the step size was the problem. Estimating $L$ directly and comparing $\eta$ against $2/L$ settles it without guessing.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the raw-feature run still reaches \texttt{nan} even at a drastically smaller $\eta$, the step size is not the explanation and something else is wrong --- an overflow in the squared term at that magnitude, or a bug. Equally, a loss that falls for many iterations and only then explodes is not the signature of a step size past threshold, which fails from the very first step. Naming what you would expect to see is the part that turns a guess into a diagnosis.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+
+\renewcommand{\SetLetter}{E}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 2 --- Solutions \quad\textbullet\quad Set E}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set E}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(a)\ 0.5}\\ Three of the six values of \texttt{d} are even, so the sum is $3$ and the expression is $3/6$.
+
+  \item \sol{(c)\ 4}\\ \texttt{range(10)} runs $0$ to $9$, and \texttt{w \% 3 == 0} keeps $0$, $3$, $6$ and $9$.
+
+  \item \sol{(b)\ \texttt{lambda w: 2*(w - 3)}}\\ Differentiating $(w-3)^2$ gives $2(w-3)$. The other options are $f$ itself, and two expressions that drop the brackets --- \texttt{2*w - 3} is not the same thing as \texttt{2*(w - 3)}.
+
+  \item \sol{(d)\ \texttt{np.mean((y - c)**2)}}\\ \texttt{np.mean((y - c)**2)} is squared error, and the mean is what minimises it. \texttt{np.mean(np.abs(y - c))} is minimised by the median instead.
+
+  \item \sol{(c)\ \texttt{1.0}}\\ The threshold is $\eta < 2/L$. With curvature \texttt{2.0} that is \texttt{eta < 1.0}, so \texttt{1.0} is the first value at which the loop stops converging.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{zero}\\ A smooth function stops falling and has not yet begun to rise at its lowest point, so the tangent there is horizontal. This is exactly why gradient descent stops moving when it arrives: the update $w \leftarrow w - \eta f'(w)$ changes nothing once $f'(w) = 0$.
+
+  \item \sol{median}\\ Squared error is minimised by the mean, absolute error by the median. Shift the constant a little and the absolute total changes by the \emph{count} of points on each side, so it stops falling exactly when the two sides balance --- which is what the median is.
+
+  \item \sol{$2/L$}\\ On a quadratic the error is multiplied by $1 - \eta f''$ every step. Convergence needs $\lvert 1 - \eta f'' \rvert < 1$, and solving that gives $0 < \eta < 2/L$ with $L$ the largest curvature. Below the threshold everything works; above it nothing does, and the transition is sharp rather than gradual --- which is why a loss that blows up is almost always a learning-rate problem before it is anything else.
+
+  \item \sol{$1-\beta$}\\ Unrolling $v \leftarrow \beta v + g$ gives $v_t = g_t + \beta g_{t-1} + \beta^2 g_{t-2} + \cdots$, and those weights sum to $1/(1-\beta)$. So where the gradient points the same way for many steps, the velocity settles near $g/(1-\beta)$ and the effective step is $\eta/(1-\beta)$: ten times $\eta$ at $\beta = 0.9$, a hundred times at $\beta = 0.99$.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{A single call to \texttt{train\_test\_split} on a small dataset gives a reliable estimate of performance on new data.}\\[2pt] \textbf{False.} One split is one draw. Which rows happen to land in the test half decides the number you get, and on a small dataset that varies a lot --- so a single figure hides a spread you have not measured. Cross-validate and quote the spread as well as the mean.
+
+  \item \emph{Replacing \texttt{eta = 0.1} with \texttt{eta = 0.2} must always halve the number of loop iterations needed.}\\[2pt] \textbf{False.} Two separate reasons. Past the threshold $2/L$ the run does not converge at all, so a larger $\eta$ can take the iteration count from finite to infinite. And even below the threshold the relationship is not proportional: on $f(w) = (w-3)^2$, $\eta = 0.1$ and $\eta = 0.9$ both give $\lvert 1 - 2\eta \rvert = 0.8$ and converge at exactly the same rate --- a ninefold increase that bought nothing. What governs the speed is the multiplier, not $\eta$ itself.
+
+  \item \emph{Setting \texttt{beta = 0.9} instead of \texttt{beta = 0.0} can make a well-conditioned problem take \emph{more} iterations, not fewer.}\\[2pt] \textbf{True.} Momentum earns its keep in a \emph{ravine}, where the step size is capped by a steep direction you do not want to travel in while the progress you need is along a shallow one. On a well-conditioned surface there is no such mismatch to fix, and the accumulated velocity simply carries the iterate past the minimum so it has to come back. Measured on a one-dimensional quadratic: $36$ iterations at $\beta = 0$ against $92$ at $\beta = 0.9$.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ The loop below is run with \texttt{m = 5}, \texttt{eta = 0.3}.
+\begin{code}
+w = 0.0
+for k in range(2):
+    g = 2.0 * (w - m)
+    w = w - eta * g
+    print(k + 1, w)
+\end{code}
+
+\vspace{2pt}
+
+$f(w) = (w-5)^2$, so $f'(w) = 2(w-5)$ and each step is $w \leftarrow w - \eta \cdot 2(w-5)$.
+
+\[ f'(0) = -10 \;\Rightarrow\; w_1 = 0 - 0.3 \times -10 = \sol{3} \qquad f'(w_1) = -4 \;\Rightarrow\; w_2 = 3 - 0.3 \times -4 = \sol{4.2} \]
+
+The error multiplier is $\lvert 1 - \eta f'' \rvert = \lvert 1 - 2(0.3) \rvert = \sol{0.4}$, so the run \sol{converges monotonically, from one side}.
+
+\vspace{2pt}
+
+The \emph{sign} of $1 - \eta f''$ is what decides which. Positive and the error keeps its sign, so the iterate creeps towards the minimum from one side. Negative and the error flips sign every step, so the iterate lands alternately either side of the minimum while still closing in. The \emph{size} decides how fast, and only a size above $1$ would mean the run diverges --- which is the threshold $\eta < 2/L$ from Part B, seen in action.
+
+\vspace{6pt}
+
+\textbf{D2.}\ \texttt{model.score} on the training rows improves at every epoch while \texttt{model.score} on the held-out rows falls at every epoch after the third. \textbf{(a)} Name what is happening. \textbf{(b)} State what you would change first, and why.
+
+\vspace{2pt}
+
+This is \textbf{overfitting}. The model has enough freedom to fit the particular training rows --- their noise included --- rather than the pattern behind them, so it keeps improving on what it can see while getting worse on what it cannot. The gap between the two curves is the diagnostic, not the level of either one.\par\vspace{1mm}Reasonable first moves, each with a reason: stop at the point where the held-out curve turns, since everything after it is being bought at the expense of new data; reduce the model's capacity, since it currently has enough to memorise; regularise, which penalises the flexibility being misused; or get more training data, which makes memorising harder. Confirming that the held-out set is a fair sample before changing anything is also a defensible first step.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ The function below returns a fitted weight vector. Called with \texttt{StandardScaler().fit\_transform(X)}
+and \texttt{eta=0.05} it converges in a few hundred iterations. Called with the \emph{raw} \texttt{X} --- one
+column of which is an amount in rupees running into the millions --- and the same \texttt{eta=0.05}, it
+returns \texttt{nan} within three iterations.
+
+\begin{code}
+def fit(X, y, eta=0.05, iters=500):
+    w = np.zeros(X.shape[1])
+    for _ in range(iters):
+        g = 2.0 / len(y) * X.T @ (X @ w - y)
+        w = w - eta * g
+    return w
+\end{code}
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} A good learning rate is a property of \emph{the data}, not of the algorithm. Convergence requires $\eta < 2/L$, where $L$ is the largest curvature of the loss --- and $L$ depends on how the features are scaled. Standardising had made $L$ modest, so $\eta = 0.05$ sat comfortably below the threshold. A column running into the millions makes $L$ enormous, the threshold $2/L$ collapses, and the unchanged $\eta$ is now far above it. Past that point every step overshoots by more than the last, the error grows geometrically, and the numbers overflow to \texttt{nan} within a few iterations. Measured on the diabetes data in the lecture: standardising cut the condition number from $1.2 \times 10^{8}$ to $470$ and raised the usable learning rate by a factor of $560$.\par\vspace{1mm}\textbf{(ii) How to check.} Put the scaling back and re-run at the same $\eta$; if it converges again, the scaling is what changed. Or keep the raw features and divide $\eta$ by a large factor --- if it now converges, the step size was the problem. Estimating $L$ directly and comparing $\eta$ against $2/L$ settles it without guessing.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the raw-feature run still reaches \texttt{nan} even at a drastically smaller $\eta$, the step size is not the explanation and something else is wrong --- an overflow in the squared term at that magnitude, or a bug. Equally, a loss that falls for many iterations and only then explodes is not the signature of a step size past threshold, which fails from the very first step. Naming what you would expect to see is the part that turns a guess into a diagnosis.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+
+\renewcommand{\SetLetter}{F}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 2 --- Solutions \quad\textbullet\quad Set F}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set F}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(b)\ one in two}\\ Three of the six faces are even, so the chance is three in six.
+
+  \item \sol{(d)\ 4}\\ Between zero and nine the numbers dividing exactly by three are $0$, $3$, $6$ and $9$ --- remember to count zero.
+
+  \item \sol{(c)\ twice the distance from three}\\ The rate of change of the square of a distance is twice that distance. In symbols, the derivative of $(w-3)^2$ is $2(w-3)$.
+
+  \item \sol{(a)\ mean}\\ Squaring the differences before totalling them makes the mean the best single value. Totalling their sizes instead would have made it the median.
+
+  \item \sol{(d)\ twice the reciprocal of the largest curvature}\\ Convergence needs the step size below $2/L$, where $L$ is the largest curvature. Below that boundary everything works and above it nothing does --- there is no gradual degradation, which is what makes it a cliff rather than a slope.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{zero}\\ A smooth function stops falling and has not yet begun to rise at its lowest point, so the tangent there is horizontal. This is exactly why gradient descent stops moving when it arrives: the update $w \leftarrow w - \eta f'(w)$ changes nothing once $f'(w) = 0$.
+
+  \item \sol{median}\\ Squared error is minimised by the mean, absolute error by the median. Shift the constant a little and the absolute total changes by the \emph{count} of points on each side, so it stops falling exactly when the two sides balance --- which is what the median is.
+
+  \item \sol{$2/L$}\\ On a quadratic the error is multiplied by $1 - \eta f''$ every step. Convergence needs $\lvert 1 - \eta f'' \rvert < 1$, and solving that gives $0 < \eta < 2/L$ with $L$ the largest curvature. Below the threshold everything works; above it nothing does, and the transition is sharp rather than gradual --- which is why a loss that blows up is almost always a learning-rate problem before it is anything else.
+
+  \item \sol{$1-\beta$}\\ Unrolling $v \leftarrow \beta v + g$ gives $v_t = g_t + \beta g_{t-1} + \beta^2 g_{t-2} + \cdots$, and those weights sum to $1/(1-\beta)$. So where the gradient points the same way for many steps, the velocity settles near $g/(1-\beta)$ and the effective step is $\eta/(1-\beta)$: ten times $\eta$ at $\beta = 0.9$, a hundred times at $\beta = 0.99$.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{Splitting a small dataset in two once, and quoting the score on the second half, gives a reliable estimate of performance on new data.}\\[2pt] \textbf{False.} One split is one draw. Which rows happen to land in the test half decides the number you get, and on a small dataset that varies a lot --- so a single figure hides a spread you have not measured. Cross-validate and quote the spread as well as the mean.
+
+  \item \emph{Taking steps twice as large always halves the number of steps needed to arrive.}\\[2pt] \textbf{False.} Two separate reasons. Past the threshold $2/L$ the run does not converge at all, so a larger $\eta$ can take the iteration count from finite to infinite. And even below the threshold the relationship is not proportional: on $f(w) = (w-3)^2$, $\eta = 0.1$ and $\eta = 0.9$ both give $\lvert 1 - 2\eta \rvert = 0.8$ and converge at exactly the same rate --- a ninefold increase that bought nothing. What governs the speed is the multiplier, not $\eta$ itself.
+
+  \item \emph{Carrying momentum can make a run take longer than it would without it, when the surface is an even bowl rather than a narrow valley.}\\[2pt] \textbf{True.} Momentum earns its keep in a \emph{ravine}, where the step size is capped by a steep direction you do not want to travel in while the progress you need is along a shallow one. On a well-conditioned surface there is no such mismatch to fix, and the accumulated velocity simply carries the iterate past the minimum so it has to come back. Measured on a one-dimensional quadratic: $36$ iterations at $\beta = 0$ against $92$ at $\beta = 0.9$.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ A quantity is smallest when a setting equals ten, and grows as the square of the distance from ten. Starting the setting at zero and repeatedly subtracting the step size times the slope, with a step size of one tenth,
+
+\vspace{2pt}
+
+$f(w) = (w-10)^2$, so $f'(w) = 2(w-10)$ and each step is $w \leftarrow w - \eta \cdot 2(w-10)$.
+
+\[ f'(0) = -20 \;\Rightarrow\; w_1 = 0 - 0.1 \times -20 = \sol{2} \qquad f'(w_1) = -16 \;\Rightarrow\; w_2 = 2 - 0.1 \times -16 = \sol{3.6} \]
+
+The error multiplier is $\lvert 1 - \eta f'' \rvert = \lvert 1 - 2(0.1) \rvert = \sol{0.8}$, so the run \sol{converges monotonically, from one side}.
+
+\vspace{2pt}
+
+The \emph{sign} of $1 - \eta f''$ is what decides which. Positive and the error keeps its sign, so the iterate creeps towards the minimum from one side. Negative and the error flips sign every step, so the iterate lands alternately either side of the minimum while still closing in. The \emph{size} decides how fast, and only a size above $1$ would mean the run diverges --- which is the threshold $\eta < 2/L$ from Part B, seen in action.
+
+\vspace{6pt}
+
+\textbf{D2.}\ As training goes on, the model does steadily better on the examples it is being fitted to, and steadily worse on the examples held back from it. \textbf{(a)} Name what is happening. \textbf{(b)} State what you would change first, and why.
+
+\vspace{2pt}
+
+This is \textbf{overfitting}. The model has enough freedom to fit the particular training rows --- their noise included --- rather than the pattern behind them, so it keeps improving on what it can see while getting worse on what it cannot. The gap between the two curves is the diagnostic, not the level of either one.\par\vspace{1mm}Reasonable first moves, each with a reason: stop at the point where the held-out curve turns, since everything after it is being bought at the expense of new data; reduce the model's capacity, since it currently has enough to memorise; regularise, which penalises the flexibility being misused; or get more training data, which makes memorising harder. Confirming that the held-out set is a fair sample before changing anything is also a defensible first step.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ A team fits a model by repeatedly stepping downhill. On features that have each been centred and
+divided by their spread, with a step size of five hundredths, the fit settles after a few hundred steps. The
+team then rebuilds the same thing on the original untouched columns --- one of which is an amount of money
+running into the millions --- keeps the step size exactly as it was, and within three steps the loss is no
+longer a number at all.
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} A good learning rate is a property of \emph{the data}, not of the algorithm. Convergence requires $\eta < 2/L$, where $L$ is the largest curvature of the loss --- and $L$ depends on how the features are scaled. Standardising had made $L$ modest, so $\eta = 0.05$ sat comfortably below the threshold. A column running into the millions makes $L$ enormous, the threshold $2/L$ collapses, and the unchanged $\eta$ is now far above it. Past that point every step overshoots by more than the last, the error grows geometrically, and the numbers overflow to \texttt{nan} within a few iterations. Measured on the diabetes data in the lecture: standardising cut the condition number from $1.2 \times 10^{8}$ to $470$ and raised the usable learning rate by a factor of $560$.\par\vspace{1mm}\textbf{(ii) How to check.} Put the scaling back and re-run at the same $\eta$; if it converges again, the scaling is what changed. Or keep the raw features and divide $\eta$ by a large factor --- if it now converges, the step size was the problem. Estimating $L$ directly and comparing $\eta$ against $2/L$ settles it without guessing.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the raw-feature run still reaches \texttt{nan} even at a drastically smaller $\eta$, the step size is not the explanation and something else is wrong --- an overflow in the squared term at that magnitude, or a bug. Equally, a loss that falls for many iterations and only then explodes is not the signature of a step size past threshold, which fails from the very first step. Naming what you would expect to see is the part that turns a guess into a diagnosis.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+
+\renewcommand{\SetLetter}{G}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 2 --- Solutions \quad\textbullet\quad Set G}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set G}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(c)\ the first is three times the second}\\ Three of the six faces are even, giving $3/6$; one face is a six, giving $1/6$. The first is three times the second.
+
+  \item \sol{(a)\ the first is larger}\\ Between zero and nine, four numbers divide exactly by three: $0$, $3$, $6$ and $9$. \texttt{range(3)} has three elements, $0$, $1$ and $2$.
+
+  \item \sol{(d)\ $f = 4$ and $f' = 4$}\\ $f(5) = (5-3)^2 = 4$, and $f'(5) = 2(5-3) = 4$. The two agreeing here is a coincidence of $w = 5$, not a rule --- at $w = 4$ they are $1$ and $2$.
+
+  \item \sol{(b)\ the first is the mean, the second the median}\\ Squared error is minimised by the mean, absolute error by the median. The two coincide only when the values are symmetric; one large outlier is enough to separate them.
+
+  \item \sol{(a)\ they converge at the same rate, one oscillating}\\ Both give a multiplier of $0.80$, so both shrink the error by the same factor every step --- $\eta = 0.1$ creeping up from below, $\eta = 0.9$ flipping from side to side. After twenty steps both sit at $2.9654$. A learning rate nine times larger bought nothing at all.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{zero}\\ A smooth function stops falling and has not yet begun to rise at its lowest point, so the tangent there is horizontal. This is exactly why gradient descent stops moving when it arrives: the update $w \leftarrow w - \eta f'(w)$ changes nothing once $f'(w) = 0$.
+
+  \item \sol{median}\\ Squared error is minimised by the mean, absolute error by the median. Shift the constant a little and the absolute total changes by the \emph{count} of points on each side, so it stops falling exactly when the two sides balance --- which is what the median is.
+
+  \item \sol{$2/L$}\\ On a quadratic the error is multiplied by $1 - \eta f''$ every step. Convergence needs $\lvert 1 - \eta f'' \rvert < 1$, and solving that gives $0 < \eta < 2/L$ with $L$ the largest curvature. Below the threshold everything works; above it nothing does, and the transition is sharp rather than gradual --- which is why a loss that blows up is almost always a learning-rate problem before it is anything else.
+
+  \item \sol{$1-\beta$}\\ Unrolling $v \leftarrow \beta v + g$ gives $v_t = g_t + \beta g_{t-1} + \beta^2 g_{t-2} + \cdots$, and those weights sum to $1/(1-\beta)$. So where the gradient points the same way for many steps, the velocity settles near $g/(1-\beta)$ and the effective step is $\eta/(1-\beta)$: ten times $\eta$ at $\beta = 0.9$, a hundred times at $\beta = 0.99$.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{Between one train/test split and five-fold cross-validation on a small dataset, the first is just as reliable an estimate of performance on new data.}\\[2pt] \textbf{False.} One split is one draw. Which rows happen to land in the test half decides the number you get, and on a small dataset that varies a lot --- so a single figure hides a spread you have not measured. Cross-validate and quote the spread as well as the mean.
+
+  \item \emph{Between a run at $\eta$ and the same run at $2\eta$, the second must always take half as many iterations.}\\[2pt] \textbf{False.} Two separate reasons. Past the threshold $2/L$ the run does not converge at all, so a larger $\eta$ can take the iteration count from finite to infinite. And even below the threshold the relationship is not proportional: on $f(w) = (w-3)^2$, $\eta = 0.1$ and $\eta = 0.9$ both give $\lvert 1 - 2\eta \rvert = 0.8$ and converge at exactly the same rate --- a ninefold increase that bought nothing. What governs the speed is the multiplier, not $\eta$ itself.
+
+  \item \emph{Between plain gradient descent and momentum on a well-conditioned problem, the second can be the one that needs more iterations.}\\[2pt] \textbf{True.} Momentum earns its keep in a \emph{ravine}, where the step size is capped by a steep direction you do not want to travel in while the progress you need is along a shallow one. On a well-conditioned surface there is no such mismatch to fix, and the accumulated velocity simply carries the iterate past the minimum so it has to come back. Measured on a one-dimensional quadratic: $36$ iterations at $\beta = 0$ against $92$ at $\beta = 0.9$.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ Compare two runs on $f(w) = (w-10)^2$ from $w_0 = 0$, one with $\eta = 0.7$ and one with $\eta = 0.05$. Take the \textbf{first} of them, $\eta = 0.7$, with $w \leftarrow w - \eta f'(w)$.
+
+\vspace{2pt}
+
+$f(w) = (w-10)^2$, so $f'(w) = 2(w-10)$ and each step is $w \leftarrow w - \eta \cdot 2(w-10)$.
+
+\[ f'(0) = -20 \;\Rightarrow\; w_1 = 0 - 0.7 \times -20 = \sol{14} \qquad f'(w_1) = 8 \;\Rightarrow\; w_2 = 14 - 0.7 \times 8 = \sol{8.4} \]
+
+The error multiplier is $\lvert 1 - \eta f'' \rvert = \lvert 1 - 2(0.7) \rvert = \sol{0.4}$, so the run \sol{converges while oscillating about the minimum}.
+
+\vspace{2pt}
+
+The \emph{sign} of $1 - \eta f''$ is what decides which. Positive and the error keeps its sign, so the iterate creeps towards the minimum from one side. Negative and the error flips sign every step, so the iterate lands alternately either side of the minimum while still closing in. The \emph{size} decides how fast, and only a size above $1$ would mean the run diverges --- which is the threshold $\eta < 2/L$ from Part B, seen in action.
+
+\vspace{6pt}
+
+\textbf{D2.}\ Compare the two curves recorded for one training run: the error on the rows the model was fitted to falls steadily, while the error on the rows held back rises steadily. \textbf{(a)} Name what is happening. \textbf{(b)} State what you would change first, and why.
+
+\vspace{2pt}
+
+This is \textbf{overfitting}. The model has enough freedom to fit the particular training rows --- their noise included --- rather than the pattern behind them, so it keeps improving on what it can see while getting worse on what it cannot. The gap between the two curves is the diagnostic, not the level of either one.\par\vspace{1mm}Reasonable first moves, each with a reason: stop at the point where the held-out curve turns, since everything after it is being bought at the expense of new data; reduce the model's capacity, since it currently has enough to memorise; regularise, which penalises the flexibility being misused; or get more training data, which makes memorising harder. Confirming that the held-out set is a fair sample before changing anything is also a defensible first step.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ Compare two runs of the same linear model, fitted by gradient descent with $\eta = 0.05$ in both. The
+first uses \textbf{standardised} features and converges in a few hundred iterations. The second uses the
+\textbf{raw} features --- one of which is an amount in rupees running into the millions --- changes nothing
+else, and reaches a loss of \texttt{nan} within three iterations.
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} A good learning rate is a property of \emph{the data}, not of the algorithm. Convergence requires $\eta < 2/L$, where $L$ is the largest curvature of the loss --- and $L$ depends on how the features are scaled. Standardising had made $L$ modest, so $\eta = 0.05$ sat comfortably below the threshold. A column running into the millions makes $L$ enormous, the threshold $2/L$ collapses, and the unchanged $\eta$ is now far above it. Past that point every step overshoots by more than the last, the error grows geometrically, and the numbers overflow to \texttt{nan} within a few iterations. Measured on the diabetes data in the lecture: standardising cut the condition number from $1.2 \times 10^{8}$ to $470$ and raised the usable learning rate by a factor of $560$.\par\vspace{1mm}\textbf{(ii) How to check.} Put the scaling back and re-run at the same $\eta$; if it converges again, the scaling is what changed. Or keep the raw features and divide $\eta$ by a large factor --- if it now converges, the step size was the problem. Estimating $L$ directly and comparing $\eta$ against $2/L$ settles it without guessing.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the raw-feature run still reaches \texttt{nan} even at a drastically smaller $\eta$, the step size is not the explanation and something else is wrong --- an overflow in the squared term at that magnitude, or a bug. Equally, a loss that falls for many iterations and only then explodes is not the signature of a step size past threshold, which fails from the very first step. Naming what you would expect to see is the part that turns a guess into a diagnosis.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+
+\renewcommand{\SetLetter}{H}\setcounter{page}{1}
+
+\begin{center}
+{\large\bfseries CSAI2017P --- Applied Machine Learning (Theory)}\\[2pt]
+{\large\bfseries Theory Quiz 2 --- Solutions \quad\textbullet\quad Set H}\\[3pt]
+{\small Maximum marks \textbf{20} \quad\textbullet\quad 15 questions on four pages}
+\end{center}
+\vspace{2pt}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+These are the answers to \textbf{Set H}, with the reasoning behind each one. Find the set letter on
+your own paper and work from the matching four pages. Sets were handed out at random and every set
+covers the same material, so if you want the extra practice the other sets are worth reading too.
+
+Several of these questions have more than one good route to the answer, and a route different from the
+one printed here is not automatically a worse one. If you reached a different answer and can show your
+reasoning, bring your script and let us go through it.}}
+\vspace{3pt}
+
+
+\parthead{A --- Multiple choice}{5 $\times$ 1 = 5 marks}
+
+\begin{sA}
+
+  \item \sol{(d)\ $1/2$}\\ Three of the six faces are even, so the probability is $3/6$ --- the same counting argument as the coin, with six outcomes instead of two.
+
+  \item \sol{(b)\ 4}\\ The same rule as the worked line, with a different divisor: between $0$ and $9$ the multiples of three are $0$, $3$, $6$ and $9$.
+
+  \item \sol{(a)\ $2(w-3)$}\\ The pattern from the worked line carries straight over: bring the exponent down and reduce it by one, keeping the bracket intact.
+
+  \item \sol{(c)\ mean}\\ The two are a matched pair. Absolute error is minimised by the median, as the worked line says; squared error is minimised by the mean.
+
+  \item \sol{(b)\ $\eta < 1$}\\ The rule is $\eta < 2/L$ in both cases. With curvature $6$ that gives $\eta < 1/3$; with curvature $2$ it gives $\eta < 1$.
+
+\end{sA}
+
+\vspace{3pt}
+
+\parthead{B --- Fill in the blanks}{4 $\times$ 1 = 4 marks}
+
+\begin{sB}
+
+  \item \sol{zero}\\ A smooth function stops falling and has not yet begun to rise at its lowest point, so the tangent there is horizontal. This is exactly why gradient descent stops moving when it arrives: the update $w \leftarrow w - \eta f'(w)$ changes nothing once $f'(w) = 0$.
+
+  \item \sol{median}\\ Squared error is minimised by the mean, absolute error by the median. Shift the constant a little and the absolute total changes by the \emph{count} of points on each side, so it stops falling exactly when the two sides balance --- which is what the median is.
+
+  \item \sol{$2/L$}\\ On a quadratic the error is multiplied by $1 - \eta f''$ every step. Convergence needs $\lvert 1 - \eta f'' \rvert < 1$, and solving that gives $0 < \eta < 2/L$ with $L$ the largest curvature. Below the threshold everything works; above it nothing does, and the transition is sharp rather than gradual --- which is why a loss that blows up is almost always a learning-rate problem before it is anything else.
+
+  \item \sol{$1-\beta$}\\ Unrolling $v \leftarrow \beta v + g$ gives $v_t = g_t + \beta g_{t-1} + \beta^2 g_{t-2} + \cdots$, and those weights sum to $1/(1-\beta)$. So where the gradient points the same way for many steps, the velocity settles near $g/(1-\beta)$ and the effective step is $\eta/(1-\beta)$: ten times $\eta$ at $\beta = 0.9$, a hundred times at $\beta = 0.99$.
+
+\end{sB}
+
+\newpage
+
+\parthead{C --- True or false}{3 $\times$ 1 = 3 marks}
+
+{\small The statement is reproduced first, then the answer and why. A reason was optional on the paper, but writing one is how you find out whether you actually had the idea.}
+
+\begin{sC}
+
+  \item \emph{\emph{Five-fold cross-validation quotes a mean and a spread.} A single train/test split on a small dataset is therefore just as reliable an estimate.}\\[2pt] \textbf{False.} One split is one draw. Which rows happen to land in the test half decides the number you get, and on a small dataset that varies a lot --- so a single figure hides a spread you have not measured. Cross-validate and quote the spread as well as the mean.
+
+  \item \emph{\emph{Going from $\eta = 0.1$ to $\eta = 0.5$ on $f(w) = (w-3)^2$ takes the run from many steps to exactly one.} Therefore doubling any learning rate always halves the iterations needed.}\\[2pt] \textbf{False.} Two separate reasons. Past the threshold $2/L$ the run does not converge at all, so a larger $\eta$ can take the iteration count from finite to infinite. And even below the threshold the relationship is not proportional: on $f(w) = (w-3)^2$, $\eta = 0.1$ and $\eta = 0.9$ both give $\lvert 1 - 2\eta \rvert = 0.8$ and converge at exactly the same rate --- a ninefold increase that bought nothing. What governs the speed is the multiplier, not $\eta$ itself.
+
+  \item \emph{\emph{In a ravine, momentum cut $954$ iterations to $135$.} On a well-conditioned problem it can instead need more iterations than plain gradient descent.}\\[2pt] \textbf{True.} Momentum earns its keep in a \emph{ravine}, where the step size is capped by a steep direction you do not want to travel in while the progress you need is along a shallow one. On a well-conditioned surface there is no such mismatch to fix, and the accumulated velocity simply carries the iterate past the minimum so it has to come back. Measured on a one-dimensional quadratic: $36$ iterations at $\beta = 0$ against $92$ at $\beta = 0.9$.
+
+\end{sC}
+
+\newpage
+
+\parthead{D --- Short answer}{2 $\times$ 2 = 4 marks}
+
+\textbf{D1.}\ \emph{For $f(w) = (w-2)^2$ from $w_0 = 0$ with $\eta = 0.5$, the multiplier $\lvert 1 - 2\eta \rvert$ is $0$ and one step lands exactly on $w = 2$.} Now take $f(w) = (w-6)^2$ from $w_0 = 0$ with $\eta = 0.9$ and $w \leftarrow w - \eta f'(w)$.
+
+\vspace{2pt}
+
+$f(w) = (w-6)^2$, so $f'(w) = 2(w-6)$ and each step is $w \leftarrow w - \eta \cdot 2(w-6)$.
+
+\[ f'(0) = -12 \;\Rightarrow\; w_1 = 0 - 0.9 \times -12 = \sol{10.8} \qquad f'(w_1) = 9.6 \;\Rightarrow\; w_2 = 10.8 - 0.9 \times 9.6 = \sol{2.16} \]
+
+The error multiplier is $\lvert 1 - \eta f'' \rvert = \lvert 1 - 2(0.9) \rvert = \sol{0.8}$, so the run \sol{converges while oscillating about the minimum}.
+
+\vspace{2pt}
+
+The \emph{sign} of $1 - \eta f''$ is what decides which. Positive and the error keeps its sign, so the iterate creeps towards the minimum from one side. Negative and the error flips sign every step, so the iterate lands alternately either side of the minimum while still closing in. The \emph{size} decides how fast, and only a size above $1$ would mean the run diverges --- which is the threshold $\eta < 2/L$ from Part B, seen in action.
+
+\vspace{6pt}
+
+\textbf{D2.}\ \emph{A model whose training error and held-out error fall together is generalising.} A model whose training loss falls smoothly towards zero while its held-out error rises steadily is doing something else. \textbf{(a)} Name it. \textbf{(b)} State what you would change first, and why.
+
+\vspace{2pt}
+
+This is \textbf{overfitting}. The model has enough freedom to fit the particular training rows --- their noise included --- rather than the pattern behind them, so it keeps improving on what it can see while getting worse on what it cannot. The gap between the two curves is the diagnostic, not the level of either one.\par\vspace{1mm}Reasonable first moves, each with a reason: stop at the point where the held-out curve turns, since everything after it is being bought at the expense of new data; reduce the model's capacity, since it currently has enough to memorise; regularise, which penalises the flexibility being misused; or get more training data, which makes memorising harder. Confirming that the held-out set is a fair sample before changing anything is also a defensible first step.
+
+\newpage
+
+\parthead{E --- Reasoning}{4 marks}
+
+\textbf{E1.}\ \emph{Worked analogue. A run that was stable at $\eta = 0.01$ is switched to $\beta = 0.99$ with $\eta$
+unchanged, and diverges: the effective step became $100\eta$ rather than $10\eta$. The check is to divide
+$\eta$ by ten and re-run; if it is now stable, the diagnosis holds.}
+
+\vspace{2mm}
+Now consider this case. A team fits a linear model by gradient descent on \textbf{standardised} features with
+$\eta = 0.05$, and it converges in a few hundred iterations. They rebuild the same pipeline on the
+\textbf{raw} features --- one of which is an amount in rupees running into the millions --- keep
+$\eta = 0.05$, and the loss becomes \texttt{nan} within three iterations.
+
+\vspace{4pt}
+
+\textbf{(i) What is going on.} A good learning rate is a property of \emph{the data}, not of the algorithm. Convergence requires $\eta < 2/L$, where $L$ is the largest curvature of the loss --- and $L$ depends on how the features are scaled. Standardising had made $L$ modest, so $\eta = 0.05$ sat comfortably below the threshold. A column running into the millions makes $L$ enormous, the threshold $2/L$ collapses, and the unchanged $\eta$ is now far above it. Past that point every step overshoots by more than the last, the error grows geometrically, and the numbers overflow to \texttt{nan} within a few iterations. Measured on the diabetes data in the lecture: standardising cut the condition number from $1.2 \times 10^{8}$ to $470$ and raised the usable learning rate by a factor of $560$.\par\vspace{1mm}\textbf{(ii) How to check.} Put the scaling back and re-run at the same $\eta$; if it converges again, the scaling is what changed. Or keep the raw features and divide $\eta$ by a large factor --- if it now converges, the step size was the problem. Estimating $L$ directly and comparing $\eta$ against $2/L$ settles it without guessing.\par\vspace{1mm}\textbf{(iii) What would tell you otherwise.} If the raw-feature run still reaches \texttt{nan} even at a drastically smaller $\eta$, the step size is not the explanation and something else is wrong --- an overflow in the squared term at that magnitude, or a bug. Equally, a loss that falls for many iterations and only then explodes is not the signature of a step size past threshold, which fails from the very first step. Naming what you would expect to see is the part that turns a guess into a diagnosis.
+
+\vfill
+
+{\footnotesize\itshape Questions on any of this are welcome in the next class or in office hours.}
+
+\newpage
+
+\end{document}
