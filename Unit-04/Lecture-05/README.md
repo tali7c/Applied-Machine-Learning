@@ -12,9 +12,11 @@ contact periods; the expected schedule allocates 3.
 | Data preprocessing: the four tasks, and why cleaning comes first | 13 |
 | Data cleaning; what "dirty" means; the cost of listwise deletion | 13 |
 | Handling missing data: MCAR / MAR / MNAR, mean, median, mode, KNN, MICE | 14 |
+| Describing shape: skewness and kurtosis, both conventions, and their ceilings | 14 |
 | Handling outliers: z-score, IQR fence, modified z-score; masking | 14 |
 | Numerical methods: binning and smoothing, trimming, winsorising, capping, robust scaling | 14 |
-| Data transformation: log, square root, Box–Cox, Yeo–Johnson | 15 |
+| Data transformation: log, square root, the ladder of powers | 15 |
+| Box–Cox and Yeo–Johnson: both formulas, and the likelihood that picks λ | 15 |
 | The order of operations: cleaning, the train/test split, and `Pipeline` | 15 |
 
 Course outcomes: **CO1** — explain the concepts and steps of a machine
@@ -27,10 +29,47 @@ References: HKP §3.1–3.2 and §3.5; Müller and Guido Ch. 4.
 
 | File | What it is |
 |---|---|
-| `slides.pdf` | 50 frames, 85 overlay pages — for the room |
-| `notes.pdf` | 30 pages — written so you can learn this without attending |
+| `slides.pdf` | 62 frames, 101 overlay pages — for the room |
+| `notes.pdf` | 40 pages — written so you can learn this without attending |
 | `latex/` | sources |
-| `figures/` | ten vector figures, every one produced by running code rather than drawn |
+| `figures/` | twelve vector figures, every one produced by running code rather than drawn |
+
+## Shape statistics, and the power transforms
+
+Two sections carry the statistical machinery the rest of the lecture leans on.
+
+**Skewness and kurtosis** are defined from the central moments
+$m_k = \frac{1}{n}\sum (x_i - \bar{x})^k$, worked by hand on five numbers, and
+then pinned down where they usually go wrong:
+
+- Skewness is an *odd* power, so it reports which side the tail is on. Kurtosis
+  is an *even* power weighted by the fourth, so it reports how much lives in
+  the tails. The `-3` that makes "excess" kurtosis is a convention, and
+  `scipy` and most textbooks disagree about it.
+- **Kurtosis is not peakedness.** On a 95/5 mixture, 1.5% of the rows supply
+  **88%** of the fourth-power sum — measured, not asserted.
+- **The thresholds are folklore.** At $n=30$ the standard error of skewness is
+  0.45, and **one sample in five** drawn from a perfectly symmetric normal
+  reports $|g_1| > 0.5$.
+- **Both have ceilings set by $n$**: $|g_1| \le (n-2)/\sqrt{n-1}$ and
+  $b_2 \le (n^2-3n+3)/(n-1)$, both attained exactly by one point standing away
+  from the rest. At $n=5$ the largest excess kurtosis possible is **0.25** —
+  which is why the five-point example returns a negative value next to an
+  obvious outlier.
+
+**Box–Cox and Yeo–Johnson** are given in full, including the four-case
+Yeo–Johnson formula that is usually only described in words:
+
+- The family is worked on $(1, 4, 16, 64)$, where $\lambda = 0$ turns a
+  geometric sequence into an arithmetic one — what "the log is the right ruler
+  for multiplicative data" actually means.
+- The hand-typed Yeo–Johnson reproduces `PowerTransformer` **to the last bit**.
+- λ is chosen by maximum likelihood, and the **Jacobian term** everyone drops
+  is what stops it: without it the optimiser runs to the edge of the grid, at a
+  transformed variance four orders of magnitude too small.
+- `PowerTransformer` standardises by default, and λ is a **learned parameter** —
+  fitted on train it is −0.55, on all rows −0.48, on test −0.34. It belongs
+  inside the `Pipeline`.
 
 ## The one idea
 

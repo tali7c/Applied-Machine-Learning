@@ -691,6 +691,381 @@ distinct, so the mode is not unique: predict what scikit-learn does, then check
 \end{tryit}
 
 % =========================================================================
+\section{Describing the shape of a column}
+\label{sec:shape}
+
+Everything so far has used two numbers to describe a column: a centre and a
+spread. They are the first two moments, and between them they tell you nothing
+about \emph{shape}. Two columns can share a mean and a standard deviation to
+four decimals and still look nothing alike --- one symmetric and tame, the
+other with a tail running off to the right that will decide every choice you
+make in the next two sections.
+
+The next two numbers up the ladder fix that. \textbf{Skewness} asks which side
+the tail is on. \textbf{Kurtosis} asks how much of the data is out in the tails
+at all. You need both before you can choose between a mean and a median, before
+you can read an outlier rule honestly, and before you can tell whether a
+transformation has done anything.
+
+\subsection{The moments, and the two shape statistics}
+
+Write $d_i = x_i - \bar{x}$ for the deviation of each observation from the
+mean. The \emph{$k$th central moment} is the average $k$th power of those
+deviations:
+
+\begin{equation}
+  m_k \;=\; \frac{1}{n}\sum_{i=1}^{n} d_i^{\,k}
+  \;=\; \frac{1}{n}\sum_{i=1}^{n} (x_i - \bar{x})^k .
+  \label{eq:moment}
+\end{equation}
+
+$m_1$ is zero by construction. $m_2$ is the variance. The two shape statistics
+are the next two moments, each divided by the right power of the standard
+deviation so that the answer is a pure number:
+
+\begin{equation}
+  \underbrace{g_1 = \frac{m_3}{m_2^{3/2}}}_{\text{skewness}}
+  \qquad\qquad
+  \underbrace{b_2 = \frac{m_4}{m_2^{2}}}_{\text{kurtosis}}
+  \qquad\qquad
+  \underbrace{g_2 = b_2 - 3}_{\text{excess kurtosis}} .
+  \label{eq:shape}
+\end{equation}
+
+That division is what makes them useful. Measure a column in millimetres
+instead of metres and the mean, the variance and every moment change; $g_1$ and
+$b_2$ do not move at all. They describe shape and nothing else.
+
+\begin{keyidea}[What the two numbers ask]
+Skewness is an \textbf{odd} power, so the sign of a deviation survives and one
+long tail fails to cancel: $g_1 > 0$ means the tail runs right, $g_1 < 0$ means
+it runs left, $g_1 = 0$ means the two sides balance.
+
+Kurtosis is an \textbf{even} power, so sign is destroyed and only magnitude
+counts --- and the fourth power weights a deviation of $4$ standard deviations
+$256$ times as heavily as one of $1$. It is therefore a statement about the
+tails, not about the middle.
+\end{keyidea}
+
+The $-3$ in the excess kurtosis is a convention, not mathematics. A normal
+distribution has $b_2 = 3$ exactly, so subtracting $3$ puts the normal at zero
+and lets you read the sign as ``heavier tails than a normal'' or ``lighter''.
+Both conventions are in use and confusing them is the most common error in this
+material: \texttt{scipy.stats.kurtosis} returns the \emph{excess} form by
+default, while many textbooks and spreadsheet functions report $b_2$ itself.
+
+\begin{worked}[Both statistics on five numbers, by hand]
+Take $x = (1, 2, 2, 3, 7)$, chosen so the mean is a whole number. Then
+$\bar{x} = 3$ and the deviations are $(-2, -1, -1, 0, 4)$.
+
+\medskip
+\begin{tabular}{@{}lll@{}}
+\toprule
+moment & sum of powers & value\\
+\midrule
+$m_2$ & $(4 + 1 + 1 + 0 + 16)/5$   & $22/5 = 4.4$\\
+$m_3$ & $(-8 - 1 - 1 + 0 + 64)/5$  & $54/5 = 10.8$\\
+$m_4$ & $(16 + 1 + 1 + 0 + 256)/5$ & $274/5 = 54.8$\\
+\bottomrule
+\end{tabular}
+
+\medskip
+Notice where each total comes from. In $m_3$ the single value $7$ contributes
+$+64$ against $-10$ from everything else combined, so one point decides the
+sign. In $m_4$ it contributes $256$ of the $274$ --- \textbf{93\% of the
+total from one observation in five}.
+
+\[
+  g_1 = \frac{10.8}{4.4^{3/2}} = \frac{10.8}{9.2295} = +1.1702,
+  \qquad
+  b_2 = \frac{54.8}{4.4^{2}} = \frac{54.8}{19.36} = 2.8306,
+\]
+so the excess kurtosis is $2.8306 - 3 = -0.1694$.
+
+The skewness is clearly positive, as the picture demands. The excess kurtosis
+is \emph{negative} despite the obvious outlier, which looks wrong and is not
+--- see Section~\ref{sec:shapeceiling}.
+\end{worked}
+
+\begin{lstlisting}
+x = np.array([1.0, 2.0, 2.0, 3.0, 7.0])
+d = x - x.mean()
+m2, m3, m4 = (d**2).mean(), (d**3).mean(), (d**4).mean()
+print("g1 =", m3 / m2**1.5, "  b2 =", m4 / m2**2)
+print("scipy:", stats.skew(x), stats.kurtosis(x), stats.kurtosis(x, fisher=False))
+\end{lstlisting}
+\begin{codeout}
+x    = [1. 2. 2. 3. 7.]
+mean = 3.0000   deviations = [-2. -1. -1.  0.  4.]
+m2 = mean(d^2) = 4.4000
+m3 = mean(d^3) = 10.8000
+m4 = mean(d^4) = 54.8000
+
+skewness g1 = m3 / m2^1.5 = 10.8000 / 9.2295 = +1.1702
+kurtosis b2 = m4 / m2^2   = 54.8000 / 19.3600 = +2.8306
+excess      = b2 - 3      = -0.1694
+
+scipy:  skew +1.1702   kurtosis -0.1694 (excess)   +2.8306 (Pearson)
+\end{codeout}
+
+\subsection{Two corrections scipy applies, and when they matter}
+
+Equation~\eqref{eq:shape} divides by $n$. Those are the \emph{population}
+moments applied to a sample, and like the $1/n$ variance they are biased
+downwards. The bias-corrected versions, written $G_1$ and $G_2$, rescale them:
+
+\begin{equation}
+  G_1 \;=\; \frac{\sqrt{n(n-1)}}{n-2}\; g_1 .
+  \label{eq:G1}
+\end{equation}
+
+\begin{lstlisting}
+print(stats.skew(x), stats.skew(x, bias=False))
+print(stats.kurtosis(x), stats.kurtosis(x, bias=False))
+\end{lstlisting}
+\begin{codeout}
+scipy reports the biased estimator unless you ask otherwise.
+                biased     bias-corrected
+skewness        +1.1702        +1.7444
+excess kurt     -0.1694        +3.3223
+G1 = sqrt(n(n-1))/(n-2) * g1 = 1.4907 * +1.1702 = +1.7444
+the factor is 1.4907 at n=5, 1.0534 at n=30, 1.0030 at n=500 -- it matters
+only on small samples, which is where the estimate is worthless anyway
+\end{codeout}
+
+At $n = 5$ the correction inflates the skewness by half again and flips the
+excess kurtosis from $-0.17$ to $+3.32$. At $n = 500$ it changes the third
+decimal. That last line is the honest summary: the correction is largest
+exactly where the estimate is too noisy to act on, so it rarely rescues a
+decision. What it does do is guarantee that two people analysing the same
+column disagree unless they say which convention they used.
+
+\begin{caution}[Always say which convention you are quoting]
+``Kurtosis $3.3$'' is ambiguous three ways: Pearson or excess, biased or
+corrected, and --- in a spreadsheet --- possibly a fourth definition again.
+Quote the library call, not the number alone. In this course, every kurtosis is
+\texttt{scipy.stats.kurtosis} with its defaults: \textbf{excess, biased}.
+\end{caution}
+
+\subsection{What the values look like for familiar distributions}
+
+\begin{lstlisting}
+for name, v in families:              # 200,000 draws each, seed 0
+    print(name, stats.skew(v), stats.kurtosis(v))
+\end{lstlisting}
+\begin{codeout}
+distribution     skewness  excess kurt
+normal            -0.0036      +0.0079
+uniform           +0.0029      -1.2002
+Student t, 5      -0.0090      +4.6239
+left-skewed       -1.9953      +5.9772
+exponential       +2.0025      +6.0578
+lognormal         +6.0346     +86.4337
+
+theory: normal 0, 0   uniform 0, -1.2   exponential +2, +6
+\end{codeout}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{../figures/shape.pdf}
+  \caption{Six distributions, each standardised, with its two shape numbers.
+  The dotted line is the mean and the orange line the median; the gap between
+  them opens as the skewness grows. The normal and the uniform are both
+  perfectly symmetric and differ only in kurtosis: the uniform has no tails at
+  all, which is what a negative excess kurtosis means.}
+  \label{fig:shape}
+\end{figure}
+
+Three of those are exact theoretical values and the sample estimates land on
+them, which is the check that the code is doing what the algebra says. The
+uniform is the useful case to remember: perfectly symmetric, so $g_1 = 0$, but
+$g_2 = -1.2$ because it stops dead at its limits and has no tails to speak of.
+Negative excess kurtosis is not a defect, it is a bounded variable.
+
+\subsection{Kurtosis measures the tails, not the peak}
+\label{sec:tailshare}
+
+Many textbooks describe kurtosis as ``peakedness''. That is at best misleading,
+and it is worth one experiment to see why. Compare a standard normal with a
+\emph{scale mixture}: 95\% of the values drawn with standard deviation $0.8$
+and 5\% with standard deviation $3.0$, then standardised so both columns have
+standard deviation exactly $1$.
+
+\begin{lstlisting}
+d4 = (v - v.mean())**4
+tail = np.abs(v) > 3
+print(tail.mean(), d4[tail].sum() / d4.sum(), stats.kurtosis(v))
+\end{lstlisting}
+\begin{codeout}
+                density at 0     % |z|>3    excess kurt   share of sum d^4
+normal                0.4002      0.2830         0.0079             0.1134
+95/5 mixture          0.4941      1.5005         9.0433             0.8761
+
+The mixture is taller at the centre AND heavier in the tails; both are
+true.  The decomposition settles which one the statistic is counting:
+1.50% of its rows supply 88% of the fourth-power sum.
+\end{codeout}
+
+The mixture \emph{is} about a quarter taller at the centre, so the ``peakedness''
+story is not simply false --- the two features usually travel together, because
+standardising a column with heavy tails inflates its standard deviation and
+squeezes the middle upwards. But the decomposition settles which one the
+statistic is actually counting. Split $\sum d_i^4$ into the part contributed by
+rows beyond $\pm 3$ and the rest: in the mixture, \textbf{1.5\% of the rows
+supply 88\% of the sum}. The peak contributes almost nothing, because small
+deviations raised to the fourth power are negligible.
+
+\begin{keyidea}[Read kurtosis as an outlier-frequency statistic]
+High kurtosis says: this column produces extreme values more often than a
+normal distribution would. That is a statement about how often your outlier
+rule will fire, which is why this section sits immediately before the one on
+outliers.
+\end{keyidea}
+
+\subsection{Both estimates are noisy, and the thresholds are folklore}
+
+You will find rules of thumb --- $|g_1| < 0.5$ is ``fairly symmetric'',
+$|g_1| > 1$ is ``highly skewed'', $|g_2| > 3$ is ``heavy-tailed''. Before
+using any of them, look at how much these statistics move on data that has no
+skew at all.
+
+\begin{lstlisting}
+for n in (20, 30, 100, 1000):         # 1000 samples of a standard normal
+    sk = [stats.skew(rng(i).standard_normal(n)) for i in range(1000)]
+    print(n, np.mean(sk), np.std(sk), np.sqrt(6 / n))
+\end{lstlisting}
+\begin{codeout}
+1000 samples from a standard normal, where both true values are 0:
+     n    mean skew    sd skew      sqrt(6/n)   sd exc k
+    20      -0.0387     0.4567         0.5477     0.7289
+    30      -0.0223     0.3932         0.4472     0.6891
+   100      -0.0037     0.2394         0.2449     0.4468
+  1000      +0.0032     0.0787         0.0775     0.1531
+
+at n=30, 20.4% of samples from a perfectly symmetric distribution
+report |skewness| > 0.5, the threshold often quoted as 'skewed'
+\end{codeout}
+
+The standard errors are approximately $\sqrt{6/n}$ for skewness and
+$\sqrt{24/n}$ for excess kurtosis, and the measured spreads sit right on those
+values. The consequence is stark: at $n = 30$, \textbf{one sample in five}
+drawn from a perfectly symmetric distribution crosses the threshold that would
+have you declare the column skewed and reach for a transformation.
+
+\begin{caution}[A shape statistic on a small column is not evidence]
+At $n = 30$ the standard error of the skewness is $0.45$. A reported value of
+$0.6$ is less than one and a half standard errors from zero --- it is
+indistinguishable from symmetry. Use these numbers on columns of a few hundred
+rows and up, use the figures at every size, and never transform a column
+because a statistic computed on thirty values crossed a threshold somebody
+wrote in a textbook.
+\end{caution}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{../figures/tailshare.pdf}
+  \caption{Left: the two columns on a log density scale, with the share of
+  $\sum d^4$ contributed from beyond $\pm 3$ marked --- the mixture's tail is
+  a rounding error in the row count and almost all of the statistic. Right: the
+  sampling distribution of skewness at $n = 30$ under perfect symmetry, against
+  the $\pm 0.5$ threshold quoted as if it described the data.}
+  \label{fig:tailshare}
+\end{figure}
+
+\subsection{Both statistics have a ceiling that depends only on \texorpdfstring{$n$}{n}}
+\label{sec:shapeceiling}
+
+This is why the five-point example returned a negative excess kurtosis while
+staring at an obvious outlier. Exactly as the $z$-score has an algebraic
+ceiling of $(n-1)/\sqrt{n}$ (Section~\ref{sec:ceiling}), so do both shape
+statistics:
+
+\begin{equation}
+  |g_1| \;\le\; \frac{n-2}{\sqrt{n-1}},
+  \qquad\qquad
+  b_2 \;\le\; \frac{n^2 - 3n + 3}{n - 1}.
+  \label{eq:shapebound}
+\end{equation}
+
+\begin{codeout}
+     n    one outlier   best 2-point split   (n^2-3n+3)/(n-1) - 3
+     5         0.2500               0.2500                 0.2500
+    10         5.1111               5.1111                 5.1111
+    30        25.0345              25.0345                25.0345
+   100        95.0101              95.0101                95.0101
+   569       564.0018             564.0018               564.0018
+
+All three agree to every digit.  The tight bound is
+    b2 <= (n^2 - 3n + 3)/(n - 1),   attained by one point standing
+away from n-1 equal ones -- exactly what a single gross outlier does.
+Skewness is bounded the same way by |g1| <= (n-2)/sqrt(n-1):
+    n=  5  measured   1.5000  bound   1.5000
+    n= 30  measured   5.1995  bound   5.1995
+    n=569  measured  23.7908  bound  23.7908
+\end{codeout}
+
+At $n = 5$ the largest excess kurtosis any five numbers can produce is
+$\mathbf{0.25}$. Our example returned $-0.17$, which is most of the way to the
+maximum --- it was not saying ``light tails'', it was saying ``as heavy as five
+points are allowed to be''. The bound is tight and is attained by precisely the
+configuration a single gross outlier creates: one point standing away from
+$n-1$ equal ones. The looser $n-3$ you will sometimes see quoted is never
+reached.
+
+\begin{caution}[A small kurtosis on a short column means nothing]
+Below about fifty rows, both statistics are squeezed between a hard ceiling and
+a standard error of their own size. Plot the column. The histogram has no such
+limitation and you will see in one second what the statistic cannot tell you.
+\end{caution}
+
+\subsection{Why this decides the choices in the next two sections}
+
+The point of this section is not the formulas, it is that the two numbers
+change what you do.
+
+\begin{lstlisting}
+for name in ("mean radius", "mean texture", "area error", "worst area"):
+    v = bc.data[:, list(bc.feature_names).index(name)]
+    print(name, stats.skew(v), stats.kurtosis(v), v.mean(), np.median(v))
+\end{lstlisting}
+\begin{codeout}
+column            skew     exc k       mean     median     gap %
+mean radius     +0.940     +0.83     14.127     13.370      5.7%
+mean texture    +0.649     +0.74     19.290     18.840      2.4%
+area error      +5.433    +48.77     40.337     24.530      64.4%
+worst area      +1.854     +4.35    880.583    686.500      28.3%
+
+the more skewed the column, the further the mean sits from the median,
+and the worse an imputed mean represents a typical row
+\end{codeout}
+
+\begin{itemize}
+  \item \textbf{Which imputer.} The skewness tells you how far apart the mean
+    and the median are, and therefore how much damage mean imputation does. On
+    \texttt{mean texture}, at $g_1 = 0.65$, they differ by 2.4\% and the choice
+    hardly matters. On \texttt{area error}, at $g_1 = 5.43$, the mean sits
+    \textbf{64\% above the median} and only 28.6\% of rows are above it ---
+    filling holes with the mean inserts a value more extreme than seven rows in
+    ten.
+  \item \textbf{How to read an outlier rule.} The kurtosis predicts how often
+    a $z$-score or IQR rule will fire. On \texttt{area error}, $g_2 = 48.8$
+    guarantees a lot of flagged rows, and Section~\ref{sec:skewrules} shows
+    they are not contamination --- the rule is detecting the shape you have
+    just measured.
+  \item \textbf{Whether a transformation worked.} Both numbers give you a
+    target to check against, which is exactly how Section~\ref{sec:boxcox}
+    reports its results.
+\end{itemize}
+
+\begin{tryit}
+Compute both statistics for every column of \texttt{load\_breast\_cancer}, then
+sort by skewness. Look at the histogram of the most skewed column and the least
+skewed one. Then check the claim in the paragraph above: is the share of rows
+above the mean close to $0.5$ for the symmetric column, and well below it for
+the skewed one?
+\end{tryit}
+
+% =========================================================================
 \section{Handling outliers}
 \label{sec:outliers}
 
@@ -1217,10 +1592,221 @@ gives $(x^\lambda - 1)/\lambda \to \log x$. Numerically:
 \end{codeout}
 
 \textbf{Why $x > 0$.} $x^\lambda$ is not real for negative $x$ and fractional
-$\lambda$. Yeo and Johnson (2000) patched this by applying the Box--Cox form to
-$x + 1$ on the positive side and a mirrored version to $-x + 1$ on the negative
-side, giving a family that is defined on the whole real line and still smooth
-at zero. That is what scikit-learn's \texttt{PowerTransformer} uses by default.
+$\lambda$ --- $(-8)^{1/2}$ does not exist in the reals --- and $\log x$ is
+undefined at and below zero. A single zero or negative value in the column is
+fatal, not merely awkward.
+
+\begin{worked}[The family, on four numbers you can check in your head]
+Take $x = (1, 4, 16, 64)$, a geometric sequence: each value is four times the
+one before.
+
+\begin{lstlisting}
+for lam in (1.0, 0.5, 0.0, -0.5, -1.0):
+    t = np.log(x) if lam == 0 else (x**lam - 1) / lam
+\end{lstlisting}
+\begin{codeout}
+x = [ 1.  4. 16. 64.]   (deliberately a geometric sequence)
+  lambda +1.00  ->  [ 0.  3. 15. 63.]
+  lambda +0.50  ->  [ 0.  2.  6. 14.]
+  lambda +0.00  ->  [0.     1.3863 2.7726 4.1589]
+  lambda -0.50  ->  [-0.    1.    1.5   1.75]
+  lambda -1.00  ->  [-0.      0.75    0.9375  0.9844]
+\end{codeout}
+
+Check one entry with a pen. At $\lambda = -0.5$ and $x = 16$:
+$16^{-0.5} = 1/\sqrt{16} = 1/4 = 0.25$, so
+$(0.25 - 1)/(-0.5) = (-0.75)/(-0.5) = 1.5$, which is the third entry.
+
+Now read the $\lambda = 0$ row: $0,\ 1.3863,\ 2.7726,\ 4.1589$ --- the gaps are
+all $\log 4 = 1.3863$. The log has turned a \emph{geometric} sequence into an
+\emph{arithmetic} one. That is precisely what ``the log is the right ruler for
+multiplicative data'' means, and it is why prices, populations and areas
+usually want it.
+
+Read down the columns instead and you can see the whole family working: as
+$\lambda$ falls, the top of the range is pulled in harder and harder --- $63$,
+then $14$, then $4.16$, then $1.75$. Below $\lambda = 0$ the transformation
+even becomes bounded above.
+\end{worked}
+
+\subsection{Yeo--Johnson: the same idea on the whole real line}
+\label{sec:yj}
+
+Yeo and Johnson (2000) removed the positivity requirement. Their family applies
+a shifted Box--Cox to the non-negative side and a mirrored copy to the negative
+side, choosing the exponents so that the two halves meet smoothly at zero:
+
+\begin{equation}
+  \label{eq:yj}
+  y^{(\lambda)} =
+  \begin{cases}
+    \dfrac{(y+1)^{\lambda} - 1}{\lambda}, & \lambda \neq 0,\ y \ge 0,\\[9pt]
+    \log(y+1), & \lambda = 0,\ y \ge 0,\\[9pt]
+    -\,\dfrac{(-y+1)^{2-\lambda} - 1}{2-\lambda}, & \lambda \neq 2,\ y < 0,\\[9pt]
+    -\log(-y+1), & \lambda = 2,\ y < 0 .
+  \end{cases}
+\end{equation}
+
+Four cases looks like a lot until you see the symmetry. The upper pair is
+Box--Cox applied to $y + 1$, which is why the $\lambda = 0$ branch is
+$\log(y+1)$ rather than $\log y$ --- and why it is safe at $y = 0$. The lower
+pair is the same expression run backwards: negate the input, use the exponent
+$2 - \lambda$ instead of $\lambda$, and negate the result. That reflection is
+what makes $\lambda$ do the same job on both sides: values of $\lambda$ below
+$1$ compress a right tail, and by the mirror, values above $1$ compress a left
+one.
+
+\begin{lstlisting}
+probe = np.array([-3.0, -1.0, -0.5, 0.0, 0.5, 1.0, 3.0])
+for lam in (0.0, 0.5, 1.0, 2.0):
+    print(lam, yeo_johnson(probe, lam))
+\end{lstlisting}
+\begin{codeout}
+x = [-3.  -1.  -0.5  0.   0.5  1.   3. ]
+  lambda 0.0 -> [-7.5    -1.5    -0.625   0.      0.4055  0.6931  1.3863]
+  lambda 0.5 -> [-4.6667 -1.219  -0.5581  0.      0.4495  0.8284  2.    ]
+  lambda 1.0 -> [-3.  -1.  -0.5  0.   0.5  1.   3. ]
+  lambda 2.0 -> [-1.3863 -0.6931 -0.4055  0.      0.625   1.5     7.5   ]
+
+lambda = 1 is the identity on the positive side; check y(x)-x:
+  [0. 0. 0. 0. 0. 0. 0.]
+
+continuity at x = 0 for every lambda (y(0) must be 0):
+  ['-0.0e+00', '0.0e+00', '0.0e+00', '0.0e+00', '0.0e+00', '0.0e+00']
+
+our implementation vs sklearn on 'area error', lambda = -0.483636
+  max |difference| = 0.000e+00
+\end{codeout}
+
+Three things in that output are worth noticing. $\lambda = 1$ leaves every
+value exactly unchanged, so ``no transformation'' is a member of the family
+rather than an alternative to it. Every $\lambda$ maps $0$ to $0$, so the two
+halves genuinely join. And the $\lambda = 0$ and $\lambda = 2$ rows are mirror
+images of one another, which is the reflection made visible.
+
+The last line is the check that matters: Equation~\eqref{eq:yj} typed out by
+hand reproduces \texttt{PowerTransformer} on all 569 values to the last bit.
+
+\begin{caution}[Yeo--Johnson is not Box--Cox with a shift]
+A common shortcut is to add a constant to make a column positive and then run
+Box--Cox. That is a different transformation with a different answer, and the
+shift is an extra parameter you have invented and must justify. Yeo--Johnson
+needs no shift, so prefer it whenever a column can be zero or negative --- and
+note that \texttt{PowerTransformer} defaults to it for exactly this reason.
+\end{caution}
+
+\subsection{How \texorpdfstring{$\lambda$}{lambda} is chosen}
+\label{sec:lambda}
+
+Both families leave one number free, and the standard answer is maximum
+likelihood: assume the \emph{transformed} column is Normal, and pick the
+$\lambda$ that makes it as Normal as possible. Writing $x^{(\lambda)}$ for the
+transformed values and $\hat\sigma^2_\lambda$ for their variance,
+
+\begin{equation}
+  \ell(\lambda) \;=\;
+  -\frac{n}{2}\log \hat\sigma^2_{\lambda}
+  \;+\;
+  \underbrace{(\lambda - 1)\sum_{i=1}^{n} \log x_i}_{\text{Jacobian}} .
+  \label{eq:bclik}
+\end{equation}
+
+The second term is the one every summary drops, and without it the method does
+not work at all. The reason is worth a sentence: the first term rewards a small
+variance, and you can always make the variance smaller by choosing a $\lambda$
+that squashes everything towards a point. Nothing stops it. The Jacobian term
+is the change-of-variables factor from writing a density in the new units, and
+it charges you for that squashing at exactly the right rate.
+
+\begin{lstlisting}
+def boxcox_loglik(x, lam):
+    t = np.log(x) if lam == 0 else (x**lam - 1) / lam
+    return -x.size / 2 * np.log(t.var()) + (lam - 1) * np.log(x).sum()
+\end{lstlisting}
+\begin{codeout}
+with the Jacobian term    : lambda* = -0.4360
+scipy.stats.boxcox        : lambda* = -0.4357
+without the Jacobian term : lambda* = -2.0000  <-- runs to the edge
+
+Why: dropping the Jacobian rewards any lambda that shrinks the spread,
+so the 'best' transform is the one that crushes the data to a point.
+The (lambda-1) * sum(log x) term is what prices that in.
+
+variance of the transformed column at three lambdas:
+   lambda -2.000   var 2.089073e-06
+   lambda -0.436   var 2.458963e-02
+   lambda +1.000   var 2.065795e+03
+\end{codeout}
+
+The grid search with the Jacobian lands on scipy's answer to three decimals
+(the small gap is the grid spacing, not a disagreement). Delete the Jacobian
+and the optimiser runs straight to the edge of the search range, because at
+$\lambda = -2$ the transformed variance is $2.1\times10^{-6}$ --- four orders
+of magnitude smaller than at the sensible answer, and utterly useless.
+
+\begin{keyidea}
+$\lambda$ is estimated by maximum likelihood, not chosen by you, and not chosen
+to zero the skewness. It is a \textbf{learned parameter}, exactly like a mean
+used for imputation --- with all the consequences for train/test discipline
+that implies.
+\end{keyidea}
+
+\subsection{Two practical details that confuse everybody}
+
+\textbf{\texttt{PowerTransformer} standardises by default.} The output has mean
+$0$ and standard deviation $1$, which surprises people who expected transformed
+data on something like the original scale.
+
+\begin{codeout}
+standardize=False  lambda -0.4836   mean    +1.6509   sd   0.1258   skew +0.0691
+standardize=True   lambda -0.4836   mean    -0.0000   sd   1.0000   skew +0.0691
+
+The default is True: PowerTransformer transforms AND z-scores, so the
+output is centred at 0 whatever the input units were.  The skewness is
+identical either way -- standardising is linear and cannot change shape.
+
+inverse_transform round trip: max |x - back| = 1.251e-12
+\end{codeout}
+
+The skewness is identical under both settings, which it must be: standardising
+is a linear rescaling and Equation~\eqref{eq:shape} is immune to those. So
+\texttt{standardize=True} saves you a separate \texttt{StandardScaler} and
+changes nothing about shape. And \texttt{inverse\_transform} recovers the
+original values to $10^{-12}$, which is how you report a prediction back in
+the units your reader cares about.
+
+\textbf{$\lambda$ is fitted, so it belongs inside the pipeline.}
+
+\begin{codeout}
+lambda fitted on train only : -0.5527
+lambda fitted on all rows   : -0.4836   (this one has seen the test set)
+lambda fitted on test only  : -0.3386
+
+The gap between the first two is small here (0.0691), but it is a
+parameter learned from data, so it goes inside the Pipeline with
+every other learned quantity.  Section on the order of operations.
+
+train skew after transform +0.0981;  test skew using the TRAIN lambda -0.3051
+\end{codeout}
+
+Three splits of the same column give three different $\lambda$. Fitting on all
+the rows before splitting leaks, in the same way and for the same reason as
+fitting a scaler or an imputer on all the rows --- see
+Section~\ref{sec:leak}. Note the last line too: applied to the test set, the
+\emph{train} $\lambda$ leaves a residual skew of $-0.31$ rather than the
+$+0.10$ it achieves on the data it was fitted to. That is not a bug. It is the
+honest generalisation gap of a learned parameter, and hiding it by refitting on
+the test set is exactly the mistake.
+
+\begin{codeout}
+diabetes 'bp': min -0.1124  max +0.1320  skew +0.2897
+  stats.boxcox(bp) -> ValueError: Data must be positive.
+  Yeo-Johnson handles it: skew +0.2897 -> +0.0226
+
+a single zero is also fatal to Box-Cox: Data must be positive.
+shifting by a constant is the usual workaround, and the shift is then
+another parameter you have chosen and must justify.
+\end{codeout}
 
 Every named rung is a value of $\lambda$:
 
@@ -1243,13 +1829,6 @@ answers to different questions, and on a heavy-tailed column they can differ a
 lot. If what you need is symmetry, check the skewness afterwards rather than
 assuming.
 \end{caution}
-
-\begin{codeout}
-a column that goes negative cannot use Box-Cox
-  diabetes 'bp': min -0.1124  max 0.1320  skewness +0.2897
-  stats.boxcox(bp) -> ValueError: Data must be positive.
-  Yeo-Johnson handles it: skewness +0.2897 -> +0.0226
-\end{codeout}
 
 \begin{figure}[tb]
   \centering

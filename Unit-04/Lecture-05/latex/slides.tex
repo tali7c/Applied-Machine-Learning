@@ -530,6 +530,161 @@ SimpleImputer(strategy="mean", add_indicator=True)
 \end{frame}
 
 % =====================================================================
+\section[Shape]{Describing the shape of a column}
+\label{sec:shape}
+
+\begin{frame}[shrink=4]{Two numbers are not enough}
+A mean and a standard deviation are the first two moments. They say nothing
+about \textbf{shape} --- two columns can match on both and look nothing alike.
+\vspace{0.4em}
+\[
+  m_k = \frac{1}{n}\sum_i (x_i - \bar{x})^k
+  \qquad\Longrightarrow\qquad
+  \underbrace{g_1 = \frac{m_3}{m_2^{3/2}}}_{\text{skewness}}
+  \qquad
+  \underbrace{b_2 = \frac{m_4}{m_2^{2}}}_{\text{kurtosis}}
+\]
+\vspace{0.2em}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \begin{exampleblock}{Skewness --- an \emph{odd} power}
+      \small Sign survives, so one long tail fails to cancel.\\
+      $g_1>0$ tail to the right, $g_1<0$ to the left, $0$ balanced.
+    \end{exampleblock}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \begin{exampleblock}{Kurtosis --- an \emph{even} power}
+      \small Sign destroyed, magnitude counts. A deviation of $4$ weighs
+      $256\times$ one of $1$: a statement about \textbf{tails}.
+    \end{exampleblock}
+  \end{column}
+\end{columns}
+\vspace{0.3em}
+\begin{alertblock}{Excess kurtosis $= b_2 - 3$}
+  \footnotesize A normal has $b_2 = 3$ exactly, so subtracting puts the normal
+  at zero. \texttt{scipy} returns the \textbf{excess} form by default; many
+  textbooks report $b_2$. Say which you mean.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile,shrink=4]{By hand: five numbers}
+$x = (1, 2, 2, 3, 7)$, so $\bar{x}=3$ and the deviations are $(-2,-1,-1,0,4)$.
+\vspace{0.3em}
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+$m_2$ & $(4+1+1+0+16)/5$   & $4.4$\\
+$m_3$ & $(-8-1-1+0+64)/5$  & $10.8$\\
+$m_4$ & $(16+1+1+0+256)/5$ & $54.8$\\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{0.2em}
+In $m_4$ the single value $7$ contributes $256$ of the $274$ ---
+\textbf{93\% from one point in five}.
+\begin{outblk}
+skewness g1 = m3 / m2^1.5 = 10.8000 / 9.2295 = +1.1702
+kurtosis b2 = m4 / m2^2   = 54.8000 / 19.3600 = +2.8306
+excess      = b2 - 3      = -0.1694
+\end{outblk}
+\begin{center}\small
+  Positive skew, as the picture demands --- but the excess kurtosis is
+  \textbf{negative}, next to an obvious outlier. Hold that thought.
+\end{center}
+\end{frame}
+
+\begin{frame}[shrink=8]{Drawn: six shapes, two numbers each}
+\begin{center}
+  \includegraphics[width=0.92\textwidth]{shape.pdf}
+\end{center}
+\begin{center}\small
+  The uniform is the one to remember: perfectly symmetric, $g_1 = 0$, yet
+  excess $g_2 = -1.2$ because it stops dead and has no tails at all.
+  Negative is not a defect --- it is a bounded variable.
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile,shrink=6]{Predict first: what does kurtosis measure?}
+A normal, and a mixture: $95\%$ drawn with sd $0.8$, $5\%$ with sd $3.0$.
+Both standardised to sd $1$. Textbooks say kurtosis is ``peakedness''.
+\vspace{0.3em}
+\begin{center}
+  \textbf{Is the mixture's high kurtosis coming from its peak or its tails?}
+\end{center}
+\onslide<2->
+\begin{outblk}
+                density at 0     % |z|>3    excess kurt   share of sum d^4
+normal                0.4002      0.2830         0.0079             0.1134
+95/5 mixture          0.4941      1.5005         9.0433             0.8761
+\end{outblk}
+\onslide<3->
+\begin{alertblock}{Both are true --- and the decomposition settles it}
+  \footnotesize The mixture \emph{is} $24\%$ taller at the centre. But split
+  $\sum d^4$ by where it comes from: \textbf{$1.5\%$ of the rows supply $88\%$
+  of the sum}. Small deviations to the fourth power are nothing. Kurtosis is
+  an outlier-frequency statistic.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile,shrink=6]{Both estimates are noisy, and the thresholds are folklore}
+``$|g_1| > 0.5$ means skewed.'' Draw $1000$ samples from a \emph{perfectly
+symmetric} normal and look at what they report:
+\begin{outblk}
+     n    mean skew    sd skew      sqrt(6/n)   sd exc k
+    20      -0.0387     0.4567         0.5477     0.7289
+    30      -0.0223     0.3932         0.4472     0.6891
+   100      -0.0037     0.2394         0.2449     0.4468
+  1000      +0.0032     0.0787         0.0775     0.1531
+
+at n=30, 20.4% of samples from a perfectly symmetric distribution
+report |skewness| > 0.5, the threshold often quoted as 'skewed'
+\end{outblk}
+\begin{center}\small
+  SE $\approx\sqrt{6/n}$ for skewness, $\sqrt{24/n}$ for excess kurtosis.
+  At $n=30$, \textbf{one sample in five} clears a threshold it should never
+  reach.
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile,shrink=6]{And both have a ceiling, exactly like the $z$-score}
+\[
+  |g_1| \le \frac{n-2}{\sqrt{n-1}},
+  \qquad\qquad
+  b_2 \le \frac{n^2 - 3n + 3}{n-1}
+\]
+\begin{outblk}
+     n    one outlier   best 2-point split   (n^2-3n+3)/(n-1) - 3
+     5         0.2500               0.2500                 0.2500
+    30        25.0345              25.0345                25.0345
+   569       564.0018             564.0018               564.0018
+\end{outblk}
+\begin{alertblock}{That is why five points gave $-0.17$}
+  \footnotesize At $n=5$ the largest excess kurtosis \emph{any} five numbers
+  can produce is $\mathbf{0.25}$. Our example was most of the way to the
+  maximum. It never said ``light tails''; it said ``as heavy as five points are
+  permitted to be''. Below about fifty rows, plot the column instead.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile,shrink=6]{Why it decides the next two sections}
+\begin{outblk}
+column            skew     exc k       mean     median     gap %
+mean texture    +0.649     +0.74     19.290     18.840      2.4%
+worst area      +1.854     +4.35    880.583    686.500     28.3%
+area error      +5.433    +48.77     40.337     24.530     64.4%
+\end{outblk}
+\vspace{0.2em}
+\begin{itemize}\small
+  \item \textbf{Which imputer.} At $g_1=0.65$ mean and median differ by
+    $2.4\%$ and the choice hardly matters. At $g_1=5.43$ the mean sits
+    $64\%$ above the median and above $71\%$ of the rows.
+  \item \textbf{How to read an outlier rule.} $g_2 = 48.8$ guarantees a lot of
+    flagged rows --- and they are the shape, not contamination.
+  \item \textbf{Whether a transform worked.} Both numbers give you a target.
+\end{itemize}
+\end{frame}
+
+% =====================================================================
 \section[Outliers]{Handling outliers}
 \label{sec:outliers}
 
@@ -914,6 +1069,106 @@ RobustScaler().fit_transform(sensor.reshape(-1, 1))     # (x - median) / IQR
     $\lambda$ is chosen by \textbf{maximum likelihood} under a Normal model,
     not by minimising skewness --- which is why the two answers differ slightly.
   \end{center}
+\end{frame}
+
+\begin{frame}[fragile,shrink=4]{By hand: the family on four numbers}
+$x = (1, 4, 16, 64)$ --- a \emph{geometric} sequence, each value $4\times$ the last.
+\begin{outblk}
+  lambda +1.00  ->  [ 0.  3. 15. 63.]
+  lambda +0.50  ->  [ 0.  2.  6. 14.]
+  lambda +0.00  ->  [0.     1.3863 2.7726 4.1589]
+  lambda -0.50  ->  [-0.    1.    1.5   1.75]
+  lambda -1.00  ->  [-0.      0.75    0.9375  0.9844]
+\end{outblk}
+\vspace{0.2em}
+Check one with a pen: $\lambda=-0.5$, $x=16$. $16^{-0.5} = 1/4 = 0.25$, so
+$(0.25-1)/(-0.5) = \mathbf{1.5}$ --- the third entry.
+\begin{alertblock}{Read the $\lambda=0$ row}
+  \footnotesize $0,\ 1.3863,\ 2.7726,\ 4.1589$ --- the gaps are all
+  $\log 4$. The log turned a \textbf{geometric} sequence into an
+  \textbf{arithmetic} one. That is what ``the log is the right ruler for
+  multiplicative data'' actually means.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile,shrink=6]{Yeo--Johnson: the same idea on the whole real line}
+\[
+  y^{(\lambda)} =
+  \begin{cases}
+    \dfrac{(y+1)^{\lambda}-1}{\lambda}, & \lambda \neq 0,\ y \ge 0\\[7pt]
+    \log(y+1), & \lambda = 0,\ y \ge 0\\[7pt]
+    -\dfrac{(-y+1)^{2-\lambda}-1}{2-\lambda}, & \lambda \neq 2,\ y < 0\\[7pt]
+    -\log(-y+1), & \lambda = 2,\ y < 0
+  \end{cases}
+\]
+\vspace{0.1em}
+Four cases, one idea: the lower pair is the upper pair \textbf{reflected} ---
+negate the input, swap $\lambda$ for $2-\lambda$, negate the result.
+\begin{outblk}
+  lambda 0.0 -> [-7.5    -1.5    -0.625   0.      0.4055  0.6931  1.3863]
+  lambda 1.0 -> [-3.  -1.  -0.5  0.   0.5  1.   3. ]
+  lambda 2.0 -> [-1.3863 -0.6931 -0.4055  0.      0.625   1.5     7.5   ]
+
+our implementation vs sklearn on 'area error', lambda = -0.483636
+  max |difference| = 0.000e+00
+\end{outblk}
+\begin{center}\small
+  $\lambda=1$ is the identity, every $\lambda$ maps $0\to0$, and the
+  $\lambda=0$ and $\lambda=2$ rows are mirror images.
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile,shrink=6]{Predict first: what picks $\lambda$?}
+Maximise the Normal log-likelihood of the \emph{transformed} column:
+\[
+  \ell(\lambda) = -\frac{n}{2}\log\hat\sigma^2_\lambda
+  \;+\; \underbrace{(\lambda-1)\sum_i \log x_i}_{\text{Jacobian}}
+\]
+\begin{center}
+  \textbf{Every summary drops the second term. What happens if you do?}
+\end{center}
+\onslide<2->
+\begin{outblk}
+with the Jacobian term    : lambda* = -0.4360
+scipy.stats.boxcox        : lambda* = -0.4357
+without the Jacobian term : lambda* = -2.0000  <-- runs to the edge
+
+   lambda -2.000   var 2.089073e-06
+   lambda -0.436   var 2.458963e-02
+\end{outblk}
+\onslide<3->
+\begin{alertblock}{The first term alone rewards crushing the data to a point}
+  \footnotesize Smaller variance always scores better, so the optimiser runs to
+  the edge of the grid. The Jacobian is the change-of-variables factor, and it
+  charges for that squashing at exactly the right rate.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile,shrink=6]{Two details that confuse everybody}
+\begin{outblk}
+standardize=False  lambda -0.4836   mean    +1.6509   sd   0.1258   skew +0.0691
+standardize=True   lambda -0.4836   mean    -0.0000   sd   1.0000   skew +0.0691
+
+lambda fitted on train only : -0.5527
+lambda fitted on all rows   : -0.4836   (this one has seen the test set)
+lambda fitted on test only  : -0.3386
+\end{outblk}
+\vspace{0.2em}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \begin{block}{\texttt{standardize=True} is the default}
+      \small It transforms \emph{and} z-scores. Skewness is identical either
+      way --- standardising is linear and cannot change shape.
+    \end{block}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \begin{alertblock}{$\lambda$ is a \emph{learned parameter}}
+      \small Three splits, three values. Fit it on all the rows and you have
+      leaked, exactly as with a scaler or an imputer. It goes in the
+      \texttt{Pipeline}.
+    \end{alertblock}
+  \end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame}[fragile,shrink=6]{$\lambda$ chooses a rung of the ladder}
