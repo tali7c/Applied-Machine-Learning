@@ -172,6 +172,51 @@
   \end{exampleblock}
 \end{frame}
 
+\begin{frame}[shrink=6]{Two numbers this lecture keeps reading}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \begin{block}{Correlation $r$ --- do two columns move on a line?}
+        \small
+        \[
+          r = \frac{S_{xy}}{\sqrt{S_{xx}\,S_{yy}}}, \qquad
+          S_{xy} = \sum_i (x_i-\bar x)(y_i-\bar y)
+        \]
+        and $S_{xx}$, $S_{yy}$ likewise. Always in $[-1, 1]$.
+        \begin{itemize}
+          \item $\pm 1$: the points lie exactly on a rising/falling line
+          \item $0$: no \emph{linear} relation --- a curve can still be there
+        \end{itemize}
+        \texttt{np.corrcoef(x, y)[0, 1]}
+      \end{block}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{block}{$R^2$ --- how much of $y$ does a model explain?}
+        \small
+        \[
+          R^2 = 1 - \frac{\mathrm{SS}_{\mathrm{res}}}{\mathrm{SS}_{\mathrm{tot}}}
+          = 1 - \frac{\sum (y_i-\hat y_i)^2}{\sum (y_i-\bar y)^2}
+        \]
+        \begin{itemize}
+          \item $R^2 = 0$: no better than always predicting the mean
+            ($\mathrm{SS}_{\mathrm{res}} = \mathrm{SS}_{\mathrm{tot}}$)
+          \item $R^2 = 1$: the model makes no errors
+            ($\mathrm{SS}_{\mathrm{res}} = 0$)
+          \item $R^2 < 0$: worse than predicting the mean
+            ($\mathrm{SS}_{\mathrm{res}} > \mathrm{SS}_{\mathrm{tot}}$; Lecture~5)
+          \item one input, straight line: $R^2 = r^2$
+        \end{itemize}
+        \texttt{model.score(X, y)}, \texttt{r2\_score(y, y\_pred)}
+      \end{block}
+    \end{column}
+  \end{columns}
+  \begin{exampleblock}{Check it on the next slide's length column}
+    \small $\bar\ell = 25$, $\overline{\text{price}} = 2225$,
+    $S_{xy} = 13500$, $S_{xx} = 500$, $S_{yy} = 1\,207\,500$, so
+    $r = 13500/\sqrt{500 \times 1\,207\,500} = 0.5494$ --- and a line on
+    length alone explains $0.5494^2 = 30\%$ of the price.
+  \end{exampleblock}
+\end{frame}
+
 \begin{frame}[shrink=6]{By hand: four plots of land}
   Price is $5$ per square metre, in rupees. Nobody recorded the area.
   \begin{center}\small
@@ -196,7 +241,8 @@
   \end{tabular}
   \end{center}
   \begin{alertblock}{Neither input is much use; their product is the answer}
-    \small A linear model on $(\ell, w)$ reaches $R^2 = 0.6558$. Add the one
+    \small A linear model on $(\ell, w)$ reaches
+    $R^2 = 1 - 415\,604/1\,207\,500 = 0.6558$. Add the one
     column $\ell w$ and it reaches $1.0000$. \textbf{The information was
     always there. The representation was hiding it.}
   \end{alertblock}

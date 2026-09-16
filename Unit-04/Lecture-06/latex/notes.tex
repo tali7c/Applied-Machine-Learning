@@ -209,6 +209,55 @@ product, a ratio or a threshold, no amount of optimisation will find it --- but
 one new column will.
 \end{keyidea}
 
+\subsection{Two measures used throughout: correlation and $R^2$}
+\label{sec:r2corr}
+
+Almost every experiment in this lecture is read through one of two numbers.
+Both are defined here once, so that the rest of the notes can simply quote
+them.
+
+\paragraph{Correlation.} The (Pearson) correlation of two columns $x$ and $y$
+over $n$ rows is
+\begin{equation}
+  r = \frac{S_{xy}}{\sqrt{S_{xx}\,S_{yy}}}, \qquad
+  S_{xy} = \sum_{i=1}^{n} (x_i - \bar x)(y_i - \bar y), \quad
+  S_{xx} = \sum_{i=1}^{n} (x_i - \bar x)^2, \quad
+  S_{yy} = \sum_{i=1}^{n} (y_i - \bar y)^2 .
+  \label{eq:corr}
+\end{equation}
+It always lies in $[-1, 1]$. It is $+1$ when the points lie exactly on a
+rising straight line, $-1$ on a falling one, and near $0$ when there is no
+\emph{straight-line} tendency. It does not change if you rescale or shift
+either column, which is why it is written without units. In NumPy it is
+\texttt{np.corrcoef(x, y)[0, 1]}; in pandas, \texttt{df.corr()}.
+
+\paragraph{The coefficient of determination, $R^2$.} For a model that
+predicts $\hat y_i$,
+\begin{equation}
+  R^2 = 1 - \frac{\mathrm{SS}_{\mathrm{res}}}{\mathrm{SS}_{\mathrm{tot}}}, \qquad
+  \mathrm{SS}_{\mathrm{res}} = \sum_{i=1}^{n} (y_i - \hat y_i)^2, \quad
+  \mathrm{SS}_{\mathrm{tot}} = \sum_{i=1}^{n} (y_i - \bar y)^2 .
+  \label{eq:r2}
+\end{equation}
+$\mathrm{SS}_{\mathrm{tot}}$ is the error of the laziest possible model, one
+that always predicts the mean. So $R^2 = 1$ is a perfect fit, $R^2 = 0$ is no
+better than the mean, and $R^2 < 0$ --- which Lecture~5 met with listwise
+deletion --- is \emph{worse} than the mean. On held-out data it can be as
+negative as the model is bad; there is no lower limit. Every scikit-learn
+regressor's \texttt{.score(X, y)} returns it, as do
+\texttt{sklearn.metrics.r2\_score(y, y\_pred)} and
+\texttt{cross\_val\_score(..., scoring="r2")}.
+
+\paragraph{How the two are related.} For a straight line fitted by least
+squares on a \emph{single} input, $R^2 = r^2$. With several inputs there is no
+single $r$, and $R^2$ is the number to use.
+
+\begin{caution}[Correlation only sees straight lines]
+$r \approx 0$ does not mean ``unrelated''. For $y = x^2$ on $x$ symmetric
+about zero, $r = 0$ exactly while $y$ is a perfect function of $x$. The next
+example is the same trap in a milder form.
+\end{caution}
+
 \subsection{Worked: four plots of land}
 \label{sec:land}
 
@@ -233,15 +282,32 @@ it is not a \emph{linear} one, and the correlations show it:
   \mathrm{corr}(\text{price}, w) = -0.0948, \qquad
   \mathrm{corr}(\text{price}, \ell w) = +1.0000 .
 \]
+For the length column, Equation~\eqref{eq:corr} by hand: $\bar\ell = 25$ and
+$\overline{\text{price}} = 2225$, so the deviations are $(-15, -5, 5, 15)$ and
+$(-225, -725, 775, 175)$, giving
+\[
+  S_{xy} = 13\,500, \quad S_{xx} = 500, \quad S_{yy} = 1\,207\,500, \qquad
+  r = \frac{13\,500}{\sqrt{500 \times 1\,207\,500}} = 0.5494 .
+\]
+A straight line on length alone would therefore have
+$R^2 = 0.5494^2 = 0.3019$.
+
 The width even appears \emph{negatively} associated with price, which is an
 artefact of the four plots we happen to have. A linear model on $(\ell, w)$
-reaches $R^2 = 0.6558$; add the column $\ell w$ and it reaches $1.0000$.
+leaves $\mathrm{SS}_{\mathrm{res}} = 415\,604$ of the
+$\mathrm{SS}_{\mathrm{tot}} = 1\,207\,500$, so by Equation~\eqref{eq:r2}
+\[
+  R^2 = 1 - \frac{415\,604}{1\,207\,500} = 0.6558 ;
+\]
+add the column $\ell w$ and $\mathrm{SS}_{\mathrm{res}}$ falls to zero, so
+$R^2 = 1.0000$.
 \end{worked}
 
 \begin{lstlisting}
 length = np.array([10., 20., 30., 40.])
 width  = np.array([40., 15., 20., 12.])
 price  = 5.0 * length * width
+np.corrcoef(price, length)[0, 1]             # likewise width, length * width
 LinearRegression().fit(np.c_[length, width], price).score(...)
 LinearRegression().fit(np.c_[length, width, length * width], price).score(...)
 \end{lstlisting}
@@ -1924,7 +1990,8 @@ feature selection.
 % =========================================================================
 \section{References and further reading}
 
-All links were checked on 22 August 2026. Free resources are marked
+All links were checked on 22 August 2026; the scikit-learn metrics and NumPy
+\texttt{corrcoef} pages were added and checked on 16 September 2026. Free resources are marked
 \textbf{[free]}.
 
 \subsection*{Textbooks}
@@ -1947,7 +2014,10 @@ All links were checked on 22 August 2026. Free resources are marked
     \textbf{[free]}:
     \url{https://github.com/amueller/introduction_to_ml_with_python}
   \item James, Witten, Hastie, Tibshirani and Taylor, \emph{An Introduction to
-    Statistical Learning with Python}. \textbf{[free]} \S6.3 dimension
+    Statistical Learning with Python}. \textbf{[free]}
+    \S3.1.3 assessing the accuracy of a fitted line --- the $R^2$ statistic
+    and why it equals the squared correlation for a single input (the two
+    measures used from Section~\ref{sec:r2corr} on); \S6.3 dimension
     reduction methods (principal components regression and partial least
     squares --- what to do when PCA's unsupervised nature is a problem);
     \S12.2 on PCA, the variance-explained curve and the scree plot.
@@ -2043,6 +2113,12 @@ All links were checked on 22 August 2026. Free resources are marked
     \url{https://scikit-learn.org/stable/modules/feature_selection.html} \\
     \url{https://scikit-learn.org/stable/modules/unsupervised_reduction.html} \\
     \url{https://scikit-learn.org/stable/modules/compose.html}
+  \item scikit-learn user guide, \emph{Metrics and scoring} (\S3.4) --- the
+    $R^2$ score section gives Equation~\eqref{eq:r2} and its edge cases; and
+    the NumPy reference for \texttt{numpy.corrcoef}, which computes
+    Equation~\eqref{eq:corr}. \textbf{[free]}
+    \url{https://scikit-learn.org/stable/modules/model_evaluation.html#r2-score} \\
+    \url{https://numpy.org/doc/stable/reference/generated/numpy.corrcoef.html}
   \item scikit-learn, \emph{Common pitfalls and recommended practices} ---
     read the sections on inconsistent preprocessing and on data leakage before
     you next report a score. \textbf{[free]}
