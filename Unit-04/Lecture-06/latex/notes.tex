@@ -1015,75 +1015,224 @@ There is a second, equivalent characterisation that is often more useful:
 total squared reconstruction error.} Maximising retained variance and
 minimising discarded variance are the same problem.
 
-\subsection{Worked: five points in the plane}
+\subsection{Worked: five points, three features}
 \label{sec:pcahand}
 
 \begin{worked}[PCA with no library at all]
-Take $(1,2),\ (2,3),\ (3,5),\ (4,4),\ (5,6)$. The mean is $(3,4)$, so the
-centred points are
+Take the five rows
 \[
-  (-2,-2),\quad (-1,-1),\quad (0,1),\quad (1,0),\quad (2,2).
+  (1,2,5),\quad (2,3,4),\quad (3,5,6),\quad (4,4,6),\quad (5,6,4),
 \]
-The sums of products are $\sum x_c^2 = 4+1+0+1+4 = 10$,
-$\sum y_c^2 = 4+1+1+0+4 = 10$ and $\sum x_c y_c = 4+1+0+0+4 = 9$. Dividing by
-$n - 1 = 4$:
+so each observation now has three features rather than two. The mean is
+$(3,4,5)$ and the centred rows are
+\[
+  (-2,-2,0),\quad (-1,-1,-1),\quad (0,1,1),\quad (1,0,1),\quad (2,2,-1).
+\]
+The six sums we need are
+\[
+  \textstyle\sum x_1^2 = 10,\quad \sum x_2^2 = 10,\quad \sum x_3^2 = 4,
+  \qquad
+  \sum x_1x_2 = 9,\quad \sum x_1x_3 = 0,\quad \sum x_2x_3 = 0 .
+\]
+Check the two zeros by hand, because everything below depends on them:
+$\sum x_1x_3 = (-2)(0) + (-1)(-1) + (0)(1) + (1)(1) + (2)(-1)
+= 0 + 1 + 0 + 1 - 2 = 0$. Dividing each sum by $n - 1 = 4$:
 \begin{equation}
   \label{eq:cov}
-  S = \begin{pmatrix} 2.5 & 2.25 \\ 2.25 & 2.5 \end{pmatrix}.
+  S = \begin{pmatrix}
+    2.5 & 2.25 & 0 \\ 2.25 & 2.5 & 0 \\ 0 & 0 & 1
+  \end{pmatrix}.
 \end{equation}
-For a symmetric $2\times2$ matrix with \emph{equal} diagonal entries, the
-eigenvectors are always $\frac{1}{\sqrt2}(1,1)$ and
-$\frac{1}{\sqrt2}(1,-1)$: check by multiplying out,
-$S\binom{1}{1} = \binom{4.75}{4.75}$. The eigenvalues are therefore
-$2.5 + 2.25 = 4.75$ and $2.5 - 2.25 = 0.25$, so
-\[
-  \frac{\lambda_1}{\lambda_1 + \lambda_2} = \frac{4.75}{5.00} = 0.95,
-  \qquad
-  \frac{\lambda_2}{\lambda_1 + \lambda_2} = 0.05 .
-\]
-The trace checks: $2.5 + 2.5 = 5.0 = 4.75 + 0.25$.
 
-The scores are the centred points dotted with $u_1$:
-$-4/\sqrt2 = -2.8284$, $-1.4142$, $0.7071$, $0.7071$, $2.8284$. Their sample
-variance is $(8 + 2 + 0.5 + 0.5 + 8)/4 = 4.75$, which is $\lambda_1$ ---
-exactly as promised.
+\medskip
+\textbf{Step 1: the characteristic equation.} The eigenvalues of $S$ are the
+$\lambda$ for which $S - \lambda I$ is singular, that is
+$\det(S - \lambda I) = 0$:
+\[
+  \det\!\begin{pmatrix}
+    2.5-\lambda & 2.25 & 0\\
+    2.25 & 2.5-\lambda & 0\\
+    0 & 0 & 1-\lambda
+  \end{pmatrix} = 0 .
+\]
+Expand along the third row. Its only non-zero entry is $1-\lambda$ in position
+$(3,3)$, whose cofactor is the top-left $2\times2$ minor, so the determinant
+factorises immediately:
+\begin{equation}
+  \label{eq:chareq}
+  (1-\lambda)\Bigl[(2.5-\lambda)^2 - (2.25)^2\Bigr] = 0 .
+\end{equation}
+\textbf{That factorisation is the block structure showing up in the algebra.}
+A general $3\times3$ would leave an irreducible cubic; here the zeros in the
+third row and column hand us one root for free.
+
+\medskip
+\textbf{Step 2: the three roots.} The first factor gives $\lambda = 1$
+directly. For the second, expand the bracket:
+\[
+  (2.5-\lambda)^2 - 5.0625 = \lambda^2 - 5\lambda + 6.25 - 5.0625
+                           = \lambda^2 - 5\lambda + 1.1875 ,
+\]
+and apply the quadratic formula:
+\[
+  \lambda = \frac{5 \pm \sqrt{25 - 4(1.1875)}}{2}
+          = \frac{5 \pm \sqrt{20.25}}{2}
+          = \frac{5 \pm 4.5}{2}
+          \;\Longrightarrow\; \lambda = 4.75 \ \text{ or } \ 0.25 .
+\]
+The discriminant is a perfect square, $\sqrt{20.25} = 4.5$ exactly, which is
+why this example works with a pen. Multiplying \eqref{eq:chareq} out gives the
+cubic in full:
+\begin{equation}
+  \label{eq:cubic}
+  \lambda^3 - 6\lambda^2 + 6.1875\lambda - 1.1875 = 0 .
+\end{equation}
+
+\medskip
+\textbf{Step 3: check the roots against the invariants.} Do not skip this ---
+it catches arithmetic slips before they propagate. For any $3\times3$ matrix
+the coefficients of \eqref{eq:cubic} are the three invariants:
+\[
+  \begin{array}{lll}
+    \sum\lambda_j = \operatorname{tr}(S) : & 4.75 + 1 + 0.25 = 6.0, &
+      \operatorname{tr}(S) = 2.5+2.5+1 = 6.0 \ \checkmark\\[2pt]
+    \sum_{i<j}\lambda_i\lambda_j : & 4.75(1) + 4.75(0.25) + 1(0.25) = 6.1875,
+      & \text{coefficient } 6.1875 \ \checkmark\\[2pt]
+    \prod\lambda_j = \det(S) : & 4.75 \times 1 \times 0.25 = 1.1875, &
+      \det(S) = 1.1875 \ \checkmark
+  \end{array}
+\]
+
+\medskip
+\textbf{Step 4: an eigenvector for each root}, by solving
+$(S - \lambda I)v = 0$.
+
+For $\lambda_1 = 4.75$:
+\[
+  S - 4.75I = \begin{pmatrix}
+    -2.25 & 2.25 & 0\\ 2.25 & -2.25 & 0\\ 0 & 0 & -3.75
+  \end{pmatrix}.
+\]
+Row 3 reads $-3.75\,v_3 = 0$, so $v_3 = 0$. Row 1 reads
+$-2.25\,v_1 + 2.25\,v_2 = 0$, so $v_1 = v_2$. Row 2 is row 1 times $-1$ and
+adds nothing --- the matrix has rank 2, so the solution space is a single
+line, as it must be for a simple root. Taking $v_1 = 1$ gives $v = (1,1,0)$,
+and dividing by $\lVert v\rVert = \sqrt2$:
+$u_1 = \frac{1}{\sqrt2}(1,1,0)$.
+
+For $\lambda_2 = 1$:
+\[
+  S - I = \begin{pmatrix}
+    1.5 & 2.25 & 0\\ 2.25 & 1.5 & 0\\ 0 & 0 & 0
+  \end{pmatrix}.
+\]
+The top-left $2\times2$ has determinant $1.5^2 - 2.25^2 = -2.8125 \neq 0$, so
+rows 1 and 2 force $v_1 = v_2 = 0$. Row 3 is entirely zero, leaving $v_3$
+free. Hence $u_2 = (0,0,1)$, already of unit length.
+
+For $\lambda_3 = 0.25$:
+\[
+  S - 0.25I = \begin{pmatrix}
+    2.25 & 2.25 & 0\\ 2.25 & 2.25 & 0\\ 0 & 0 & 0.75
+  \end{pmatrix}.
+\]
+Row 3 gives $v_3 = 0$; row 1 gives $v_1 + v_2 = 0$, so $v_2 = -v_1$. Taking
+$v_1 = 1$: $u_3 = \frac{1}{\sqrt2}(1,-1,0)$.
+
+\medskip
+\textbf{Step 5: verify.} Multiply each one back through $S$:
+\[
+  S\begin{pmatrix}1\\1\\0\end{pmatrix}
+    = \begin{pmatrix}2.5+2.25\\2.25+2.5\\0\end{pmatrix}
+    = \begin{pmatrix}4.75\\4.75\\0\end{pmatrix}
+    = 4.75\begin{pmatrix}1\\1\\0\end{pmatrix},
+  \qquad
+  S\begin{pmatrix}1\\-1\\0\end{pmatrix}
+    = \begin{pmatrix}0.25\\-0.25\\0\end{pmatrix}
+    = 0.25\begin{pmatrix}1\\-1\\0\end{pmatrix},
+\]
+and $S(0,0,1)^{\!\top} = (0,0,1)^{\!\top}$. The three are mutually
+orthogonal --- $u_1 \cdot u_3 = \frac{1}{2}(1 - 1 + 0) = 0$, and $u_2$ has a
+zero in both of the positions where $u_1$ and $u_3$ are non-zero --- which is
+guaranteed, because a symmetric matrix always has an orthogonal eigenbasis.
+
+Sorting by eigenvalue:
+\[
+  \begin{array}{lll}
+    \lambda_1 = 4.75, & u_1 = \tfrac{1}{\sqrt2}(1,1,0), & 4.75/6 = 0.7917\\[2pt]
+    \lambda_2 = 1.00, & u_2 = (0,0,1),                  & 1.00/6 = 0.1667\\[2pt]
+    \lambda_3 = 0.25, & u_3 = \tfrac{1}{\sqrt2}(1,-1,0),& 0.25/6 = 0.0417
+  \end{array}
+\]
+
+\medskip
+\textbf{Step 6: the scores.} These are the centred rows dotted with each
+$u_j$. On PC1, $u_1$ makes the score $(x_1 + x_2)/\sqrt2$:
+$-2.8284,\ -1.4142,\ 0.7071,\ 0.7071,\ 2.8284$. Their sample variance is
+$(8 + 2 + 0.5 + 0.5 + 8)/4 = 4.75 = \lambda_1$, as promised. On PC2 the score
+is just the centred third feature, $(0,-1,1,1,-1)$, with variance
+$4/4 = 1 = \lambda_2$.
 \end{worked}
+
+\begin{caution}[The shortcut, and why it is worth knowing you are using one]
+A symmetric $2\times2$ with \emph{equal} diagonal entries always has
+eigenvectors $\frac{1}{\sqrt2}(1,\pm1)$ and eigenvalues $a \pm b$, which reads
+off $4.75$ and $0.25$ from $2.5 \pm 2.25$ in one line. That is a genuine
+shortcut and you may use it --- but only once you can produce
+Steps 1--4 without it, because the moment the diagonal entries differ, or the
+matrix is not $2\times2$ after a block split, the shortcut is silent about the
+answer and the characteristic equation is not.
+\end{caution}
+
+\begin{keyidea}[An uncorrelated feature is already a component]
+$u_2 = (0,0,1)$ is not a mixture of anything --- it \emph{is} the third
+feature. PCA only has work to do where columns are correlated; where they are
+not, it leaves them alone. That is the honest answer to ``what does PCA
+actually do'': it rotates within the correlated part of the data and ignores
+the rest.
+\end{keyidea}
 
 \begin{figure}[tb]
   \centering
-  \includegraphics[width=0.64\textwidth]{pcahand.pdf}
-  \caption{The five points, their mean, and the two eigenvectors drawn at
-  length $\sqrt{\lambda_j}$. Right: each point projected onto PC1 alone. Only
-  the two off-axis points move, by $\pm(0.5,-0.5)$, so the total squared
-  reconstruction error is $1.0$.}
+  \includegraphics[width=\textwidth]{pcahand.pdf}
+  \caption{The five points in three dimensions; the vertical axis is $x_3$
+  and the orange marker is the mean. Left: the three eigenvectors drawn at
+  length $\sqrt{\lambda_j}$ --- PC2 stands vertically, because $x_3$ is
+  uncorrelated with the other two features. Middle and right: reconstructions
+  from one and from two components, with red lines showing the error on each
+  point.}
   \label{fig:pcahand}
 \end{figure}
 
 \begin{lstlisting}
-S = np.cov(P - P.mean(axis=0), rowvar=False)
-w, V = np.linalg.eigh(S)                     # by hand
-p = PCA(n_components=2).fit(P)               # by library
-p1 = PCA(n_components=1).fit(P)
-R = p1.inverse_transform(p1.transform(P))
+S = np.cov(P - P.mean(axis=0), rowvar=False)   # P is 5 x 3
+w, V = np.linalg.eigh(S)                       # by hand
+p = PCA(n_components=3).fit(P)                 # by library
+for k in (1, 2):
+    pk = PCA(n_components=k).fit(P)
+    R = pk.inverse_transform(pk.transform(P))
 \end{lstlisting}
 \begin{codeout}
 covariance matrix
- [[2.5  2.25]
-  [2.25 2.5 ]]
-eigenvalues  [4.75 0.25]
-sklearn explained_variance_ratio_ [0.95 0.05]
+ [[2.5  2.25 0.  ]
+  [2.25 2.5  0.  ]
+  [0.   0.   1.  ]]
+eigenvalues [4.75 1.   0.25]   ratios [0.791667 0.166667 0.041667]
 sklearn components_ (rows)
- [[ 0.707107  0.707107]
-  [ 0.707107 -0.707107]]
-reconstruction from 1 component [[1.0, 2.0], [2.0, 3.0], [3.5, 4.5], [3.5, 4.5], [5.0, 6.0]]
-total squared reconstruction error 1.000000
-check: (n-1) * lambda2 = 4 * 0.2500 = 1.000000
+ [[ 0.707107  0.707107  0.      ]
+  [ 0.        0.        1.      ]
+  [ 0.707107 -0.707107 -0.      ]]
+k=1 error 5.000000 = (n-1)*sum(lambda_{j>k}) = 5.000000  (4 distinct points of 5)
+k=2 error 1.000000 = (n-1)*sum(lambda_{j>k}) = 1.000000  (4 distinct points of 5)
 \end{codeout}
 
-Two things to notice. The points $(3,5)$ and $(4,4)$ both reconstruct to
-$(3.5, 4.5)$: dropping a component \textbf{merges points that differed only
-along it}, which is what ``lossy'' means. And the reconstruction error is
-exactly $(n-1)\lambda_2$, which is the general identity of the next section.
+Three things to notice. The library's second component is exactly $(0,0,1)$,
+the same answer the block structure gave us by hand. Both reconstructions
+collapse five points onto four distinct ones, because $(3,5,6)$ and $(4,4,6)$
+differ only along $u_3$: dropping a component \textbf{merges points that
+differed only along it}, which is what ``lossy'' means. And both errors match
+$(n-1)\sum_{j>k}\lambda_j$ exactly --- $4(1.00+0.25) = 5.00$ and
+$4(0.25) = 1.00$ --- which is the general identity of the next section.
 
 \subsection{The reconstruction identity, and choosing $k$}
 \label{sec:recon}

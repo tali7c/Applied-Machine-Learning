@@ -57,8 +57,8 @@
       \begin{block}{Every idea appears twice}
         \begin{enumerate}
           \item \textbf{By hand} --- four plots of land, three customers,
-            three colours, five points in the plane. Small enough to check
-            on paper.
+            three colours, five points with three features. Small enough to
+            check on paper.
           \item \textbf{In code} --- the same arithmetic on real data, so you
             see that \texttt{StandardScaler} and \texttt{PCA} do exactly that
             and nothing more.
@@ -885,62 +885,160 @@ digits, a    5% sample (  89 rows)  accuracy 0.8506  loss -0.1188
   \end{center}
 \end{frame}
 
-\begin{frame}[shrink=8]{By hand: five points in the plane}
-  $(1,2),\ (2,3),\ (3,5),\ (4,4),\ (5,6)$. Mean $(3,4)$. Centred:
-  $(-2,-2),\ (-1,-1),\ (0,1),\ (1,0),\ (2,2)$.
+\begin{frame}[shrink=8]{By hand: five points, three features}
+  $(1,2,5),\ (2,3,4),\ (3,5,6),\ (4,4,6),\ (5,6,4)$. Mean $(3,4,5)$. Centred:
   \[
-    S = \frac{1}{4}
-    \begin{pmatrix} 10 & 9\\ 9 & 10 \end{pmatrix}
-    = \begin{pmatrix} 2.5 & 2.25\\ 2.25 & 2.5 \end{pmatrix} .
+    (-2,-2,0),\ (-1,-1,-1),\ (0,1,1),\ (1,0,1),\ (2,2,-1).
   \]
-  For a symmetric matrix with equal diagonal entries the eigenvectors are
-  $\frac{1}{\sqrt2}(1,1)$ and $\frac{1}{\sqrt2}(1,-1)$, with eigenvalues
-  $2.5 \pm 2.25$:
+  Sums of squares and products:
+  $\sum x_1^2 = \sum x_2^2 = 10$, $\sum x_3^2 = 4$, $\sum x_1x_2 = 9$, and
+  \textbf{$\sum x_1x_3 = \sum x_2x_3 = 0$}. Dividing by $n-1=4$:
   \[
-    \lambda_1 = 4.75,\qquad \lambda_2 = 0.25,\qquad
-    \frac{\lambda_1}{\lambda_1+\lambda_2} = \frac{4.75}{5.00}
-    = \mathbf{0.95}.
+    S = \begin{pmatrix}
+      2.5 & 2.25 & 0\\ 2.25 & 2.5 & 0\\ 0 & 0 & 1
+    \end{pmatrix}.
   \]
-  \begin{block}{Check the trace}
-    \small $2.5 + 2.5 = 5.0 = 4.75 + 0.25$. The two original columns had
-    variance $2.5$ each; the two components have $4.75$ and $0.25$.
-    \textbf{Nothing was created; it was rearranged.}
+  \begin{block}{The zeros are the whole trick}
+    \small $S$ is \textbf{block diagonal}: a $2\times2$ block and a scalar.
+    A $3\times3$ eigenproblem would need a cubic --- this one splits into the
+    $2\times2$ you already know how to do, plus the number $1$.
   \end{block}
+\end{frame}
+
+\begin{frame}[shrink=10]{The eigenvalues: $\det(S - \lambda I) = 0$}
+  \[
+    \det\!\begin{pmatrix}
+      2.5-\lambda & 2.25 & 0\\ 2.25 & 2.5-\lambda & 0\\ 0 & 0 & 1-\lambda
+    \end{pmatrix} = 0
+  \]
+  Expand along the third row --- its only non-zero entry is $1-\lambda$, whose
+  cofactor is the top-left minor:
+  \[
+    (1-\lambda)\bigl[(2.5-\lambda)^2 - (2.25)^2\bigr] = 0 .
+  \]
+  \vspace{-0.3em}
+  \begin{columns}[T]
+    \begin{column}{0.47\textwidth}
+      \begin{block}{First factor}
+        \small $\lambda = 1$, free of charge. This is the block structure
+        appearing in the algebra.
+      \end{block}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \begin{block}{Second factor}
+        \small $\lambda^2 - 5\lambda + 1.1875 = 0$, so
+        \[
+          \lambda = \frac{5 \pm \sqrt{20.25}}{2} = \frac{5 \pm 4.5}{2}
+        \]
+        $\Rightarrow\ \lambda = 4.75$ or $0.25$.
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{alertblock}{In full: $\lambda^3 - 6\lambda^2 + 6.1875\lambda - 1.1875 = 0$}
+    \footnotesize The coefficients are the invariants, so they check the roots:
+    $\sum\lambda = 6 = \operatorname{tr}S$;
+    $\sum_{i<j}\lambda_i\lambda_j = 6.1875$;
+    $\prod\lambda = 1.1875 = \det S$.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[shrink=10]{The eigenvectors: solve $(S - \lambda I)v = 0$}
+  \begin{columns}[T]
+    \begin{column}{0.33\textwidth}
+      \begin{block}{$\lambda_1 = 4.75$}
+        \footnotesize
+        $\begin{pmatrix}-2.25&2.25&0\\2.25&-2.25&0\\0&0&-3.75\end{pmatrix}$
+        \smallskip
+
+        R3: $v_3 = 0$.\\
+        R1: $v_1 = v_2$.\\
+        R2 repeats R1.
+        \smallskip
+
+        $u_1 = \tfrac{1}{\sqrt2}(1,1,0)$
+      \end{block}
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \begin{block}{$\lambda_2 = 1.00$}
+        \footnotesize
+        $\begin{pmatrix}1.5&2.25&0\\2.25&1.5&0\\0&0&0\end{pmatrix}$
+        \smallskip
+
+        Top block has\\ $\det = -2.8125 \ne 0$,\\ so $v_1 = v_2 = 0$.\\
+        R3 is empty: $v_3$ free.
+        \smallskip
+
+        $u_2 = (0,0,1)$
+      \end{block}
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \begin{block}{$\lambda_3 = 0.25$}
+        \footnotesize
+        $\begin{pmatrix}2.25&2.25&0\\2.25&2.25&0\\0&0&0.75\end{pmatrix}$
+        \smallskip
+
+        R3: $v_3 = 0$.\\
+        R1: $v_2 = -v_1$.\\
+        R2 repeats R1.
+        \smallskip
+
+        $u_3 = \tfrac{1}{\sqrt2}(1,-1,0)$
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{0.3em}
+  \begin{alertblock}{Verify, then read off the ratios}
+    \footnotesize
+    $S(1,1,0)^{\!\top} = (4.75,4.75,0)^{\!\top} = 4.75\,(1,1,0)^{\!\top}$ and
+    $S(1,-1,0)^{\!\top} = 0.25\,(1,-1,0)^{\!\top}$. Mutually orthogonal, as a
+    symmetric matrix guarantees. Ratios
+    $4.75/6 = \mathbf{0.7917}$, $1/6 = 0.1667$, $0.25/6 = 0.0417$; and
+    $2.5+2.5+1 = 6 = 4.75+1+0.25$ --- \textbf{nothing created, only
+    rearranged}.
+  \end{alertblock}
 \end{frame}
 
 \begin{frame}[shrink=8]{Drawn: the same five points}
   \begin{center}
-    \includegraphics[width=0.78\textwidth]{pcahand.pdf}
+    \includegraphics[width=0.94\textwidth]{pcahand.pdf}
   \end{center}
   \begin{center}\small
-    Arrows are the eigenvectors, drawn at length $\sqrt{\lambda_j}$. Right:
-    each point projected onto PC1 alone. Only two points move, by
-    $\pm(0.5, -0.5)$, so the total squared error is $0.5 + 0.5 = 1.0$ ---
-    which is exactly $(n-1)\lambda_2 = 4 \times 0.25$.
+    Vertical axis is $x_3$. Left: the three eigenvectors at length
+    $\sqrt{\lambda_j}$ --- PC2 stands straight up, because $x_3$ is
+    uncorrelated with the other two and is \emph{already} a component. Middle
+    and right: red squares are the reconstructions, red lines the error.
+    $5.00 = 4(\lambda_2+\lambda_3)$ and $1.00 = 4\lambda_3$.
   \end{center}
 \end{frame}
 
 \begin{frame}[fragile,shrink=6]{The same thing in code}
 \begin{lstlisting}
-S = np.cov(P - P.mean(axis=0), rowvar=False)
+S = np.cov(P - P.mean(axis=0), rowvar=False)   # P is 5 x 3
 w, V = np.linalg.eigh(S)                       # by hand
-p = PCA(n_components=2).fit(P)                 # by library
+p = PCA(n_components=3).fit(P)                 # by library
 \end{lstlisting}
 \begin{outblk}
-sklearn explained_variance_       [4.75 0.25]
-sklearn explained_variance_ratio_ [0.95 0.05]
+covariance matrix
+ [[2.5  2.25 0.  ]
+  [2.25 2.5  0.  ]
+  [0.   0.   1.  ]]
+sklearn explained_variance_       [4.75 1.   0.25]
+sklearn explained_variance_ratio_ [0.791667 0.166667 0.041667]
 sklearn components_ (rows)
- [[ 0.707107  0.707107]
-  [ 0.707107 -0.707107]]
-reconstruction from 1 component [[1.0, 2.0], [2.0, 3.0], [3.5, 4.5], [3.5, 4.5], [5.0, 6.0]]
-total squared reconstruction error 1.000000
-check: (n-1) * lambda2 = 4 * 0.2500 = 1.000000
+ [[ 0.707107  0.707107  0.      ]
+  [ 0.        0.        1.      ]
+  [ 0.707107 -0.707107 -0.      ]]
+k=1 total squared error 5.000000   check 4*(lambda2+lambda3) = 5.000000
+k=2 total squared error 1.000000   check 4*lambda3          = 1.000000
 \end{outblk}
 \onslide<2->
 \begin{center}\small
-  Identical to the hand calculation. \textbf{Note that the two points $(3,5)$
-  and $(4,4)$ both reconstruct to $(3.5, 4.5)$} --- dropping a component
-  merges points that differed only along it. That is what ``lossy'' means.
+  Identical to the hand calculation, including the middle row
+  $(0,0,1)$ --- the library found the same thing you did: $x_3$ is its own
+  component. \textbf{And $(3,5,6)$ and $(4,4,6)$ both reconstruct to
+  $(3.5, 4.5, 6)$} --- dropping a component merges points that differed only
+  along it. That is what ``lossy'' means.
 \end{center}
 \end{frame}
 
@@ -1170,24 +1268,231 @@ logistic regression on all 64 pixels          accuracy 0.9694
 \end{center}
 \end{frame}
 
-\begin{frame}[fragile,shrink=8]{Filter, part 2: where the two filters disagree}
-Ten features. \texttt{a} enters the label linearly; \texttt{b} enters only
-through $|b|$; the other eight are noise.
+\begin{frame}[fragile,shrink=6]{Filter, part 2: a problem built to split them}
+We need a dataset where we \emph{know} the right answer. Ten features,
+one thousand rows, and a label we write ourselves:
+\begin{lstlisting}
+a     = rng.normal(0, 1, 1000)          # enters the label linearly
+b     = rng.normal(0, 1, 1000)          # enters ONLY through |b|
+noise = rng.normal(0, 1, (1000, 8))     # eight columns of nothing
+
+label = (a + 2*(abs(b) - 0.8) + rng.normal(0, 0.4, 1000)) > 0
+\end{lstlisting}
+\vspace{0.2em}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \begin{block}{Ground truth}
+      \small Exactly \textbf{two} of the ten features carry signal: $a$ and
+      $b$. The other eight are independent of the label by construction.
+    \end{block}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \begin{exampleblock}{The asymmetry}
+      \small Large $a$ makes class 1 more likely. For $b$ it is
+      \textbf{large $|b|$} --- so $b = +2$ and $b = -2$ push the label the
+      same way.
+    \end{exampleblock}
+  \end{column}
+\end{columns}
+\vspace{0.3em}
+\begin{center}\small
+  A good filter should rank $a$ and $b$ first and second, in some order.
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile,shrink=8]{Predict first \#5}
+\begin{center}
+  \textbf{The ANOVA $F$ test and mutual information both score all ten
+  features. Where does each of them rank $b$ --- the feature we built to
+  matter?}
+\end{center}
+\vspace{0.3em}
+\onslide<2->
 \begin{outblk}
 feature             ANOVA F     rank  mutual info     rank
-a (linear)          317.110        1       0.1342        2
-b (|b| only)          0.213        8       0.2263        1
+a                   317.110        1       0.1342        2
+b                     0.213        8       0.2263        1
 best noise            8.326        -       0.0123        -
-SelectKBest(f_classif, k=3)           picks ['a', 'noise 1', 'noise 2']
-SelectKBest(mutual_info_classif, k=3) picks ['a', 'b', 'noise 8']
+
+noise columns that beat b on F: 6 of 8
+\end{outblk}
+\onslide<3->
+\begin{alertblock}{$F$ puts the real feature \textbf{eighth of ten}}
+  \footnotesize Six of the eight pure-noise columns outrank it. Mutual
+  information puts it \textbf{first} --- ahead even of $a$. Two respectable
+  filters, the same data, opposite verdicts.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[shrink=6]{What the ANOVA $F$ statistic actually is}
+\textbf{AN}alysis \textbf{O}f \textbf{VA}riance splits the total spread of one
+feature into two parts: how far the \emph{group means} sit from the overall
+mean, and how far the \emph{points} sit from their own group mean. Here the
+groups are the classes, so $k=2$.
+\vspace{-0.2em}
+\[
+  \underbrace{\text{SSB} = \sum_{g} n_g (\bar{x}_g - \bar{x})^2}_{\text{between, } df = k-1}
+  \qquad
+  \underbrace{\text{SSW} = \sum_{g}\sum_{i \in g} (x_i - \bar{x}_g)^2}_{\text{within, } df = N-k}
+\]
+\[
+  F \;=\; \frac{\text{MSB}}{\text{MSW}}
+    \;=\; \frac{\text{SSB}/(k-1)}{\text{SSW}/(N-k)}
+\]
+\begin{block}{Read it as a signal-to-noise ratio}
+  \small The numerator is the signal --- how far apart the classes sit. The
+  denominator is the noise --- how much the data scatters anyway. Dividing
+  makes $F$ \textbf{scale-free}: change the units of the column and both
+  halves change by the same factor, so $F$ does not move.
+\end{block}
+\vspace{0.1em}
+\begin{center}\small
+  Under the null hypothesis that every group has the same mean,
+  $F \sim F(k-1,\, N-k)$ --- which is what turns a score into a $p$-value.
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile,shrink=6]{The same statistic, by hand}
+Our thousand rows split $n_0 = 543$, $n_1 = 457$, so $df = (1, 998)$.
+\begin{outblk}
+a    SSB   230.0474  SSW   723.9990  MSB  230.0474  MSW  0.7254  F =  317.1099
+b    SSB     0.2230  SSW  1045.7205  MSB    0.2230  MSW  1.0478  F =    0.2128
+
+sklearn f_classif:  a 317.1099   b 0.2128
+p-values         :  a 8.201e-62   b 0.6447
+\end{outblk}
+\vspace{0.2em}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \begin{exampleblock}{$a$: enormous}
+      \small The class means are far apart relative to the scatter, so
+      SSB is large. $p \approx 10^{-62}$.
+    \end{exampleblock}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \begin{alertblock}{$b$: indistinguishable from nothing}
+      \small SSB is $0.2230$ out of a total of nearly $1046$. $p = 0.6447$ ---
+      the test cannot reject ``no difference''.
+    \end{alertblock}
+  \end{column}
+\end{columns}
+\vspace{0.2em}
+\begin{center}\small
+  Four lines of arithmetic reproduce \texttt{f\_classif} exactly. Nothing is
+  hidden in the library --- which is why we can say precisely what it misses.
+\end{center}
+\end{frame}
+
+\begin{frame}[shrink=6]{Why $F$ is blind: it only ever compares means}
+Look again at the numerator. It contains $\bar{x}_g$ and nothing else ---
+\textbf{only the group means enter the signal term.} So look at where the
+groups sit.
+\vspace{0.2em}
+\begin{center}\small
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    feature & mean $\mid y{=}0$ & mean $\mid y{=}1$ & difference & $F$\\
+    \midrule
+    $a$   & $-0.4880$ & $0.4748$ & $\mathbf{0.9628}$ & $317.110$\\
+    $b$   & $0.0057$  & $-0.0243$ & $-0.0300$ & $0.213$\\
+    \bottomrule
+  \end{tabular}
+\end{center}
+\vspace{0.2em}
+\begin{alertblock}{The signal is in the \emph{spread}, and $F$ divides it away}
+  \footnotesize $b$'s two class means differ by $0.03$ --- nothing. But its
+  class standard deviations are $\mathbf{0.6199}$ and $\mathbf{1.3552}$, a
+  factor of $\mathbf{2.19}$. That difference is real and it is exactly what
+  the \emph{denominator} of $F$ averages away. The test is not broken; it is
+  answering the question it was built to answer.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[shrink=8]{Drawn: the same fact, three ways}
+\begin{center}
+  \includegraphics[width=0.96\textwidth]{filterdisagree.pdf}
+\end{center}
+\begin{center}\small
+  Middle: the two vertical lines are the class means of $b$ --- they sit on
+  top of each other, while the orange distribution is more than twice as
+  wide. That picture is what $F = 0.213$ is describing. Right: take
+  $|b|$ instead and the means separate at once.
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile,shrink=6]{What mutual information does instead}
+\[
+  I(X; Y) \;=\; \sum_{x}\sum_{y} p(x,y)\,
+  \log\frac{p(x,y)}{p(x)\,p(y)}
+\]
+It measures how far the joint distribution is from the product of the
+marginals --- that is, \textbf{how much knowing $X$ reduces your uncertainty
+about $Y$}. It never assumes a line, a mean shift, or a direction.
+\begin{outblk}
+k=2   F picks ['a', 'n2']                MI picks ['a', 'b']
+k=3   F picks ['a', 'n1', 'n2']          MI picks ['a', 'b', 'n8']
+k=4   F picks ['a', 'n1', 'n2', 'n7']    MI picks ['a', 'b', 'n7', 'n8']
+\end{outblk}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \begin{block}{The price}
+      \small MI is estimated from neighbour distances, so it is
+      \textbf{stochastic} --- pass \texttt{random\_state} or your ranking
+      changes between runs --- and needs more rows than $F$ does.
+    \end{block}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \begin{alertblock}{At every $k$}
+      \small $F$ spends its budget on noise and never buys $b$. MI buys both
+      real features first, then noise.
+    \end{alertblock}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile,shrink=8]{But which filter was actually right?}
+Before declaring $F$ the loser --- feed each selection to a model and measure.
+\begin{outblk}
+a alone,                logistic       0.7160
+a + b,                  logistic       0.7100
+a + 2 noise (F's k=3),  logistic       0.7130
+a + b,                  tree           0.8740
+a + |b|,                logistic       0.9120
 \end{outblk}
 \onslide<2->
-\begin{alertblock}{The $F$ test ranks the real feature eighth of ten}
-  \footnotesize $F$ compares \emph{class means}. The two classes have the
-  same mean $b$, so it sees nothing --- and picks two noise columns ahead of
-  it. Mutual information makes no linearity assumption and ranks $b$
-  \textbf{first}. \textbf{A filter measures the kind of dependence it was
-  built to measure, and nothing else.}
+\begin{alertblock}{Adding the ``real'' feature made logistic regression
+  \emph{worse}}
+  \footnotesize $0.7160 \rightarrow 0.7100$. A linear model cannot use $b$ ---
+  it can only fit a coefficient on $b$ itself, and the best such coefficient
+  is zero. So for logistic regression, \textbf{$F$'s verdict was correct}. Give
+  the same two columns to a tree, which can split twice, and accuracy jumps to
+  $0.8740$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile,shrink=6]{The resolution, and the lesson}
+\begin{outblk}
+feature             ANOVA F     rank  mutual info     rank
+a                   317.110        2       0.1342        2
+|b|                 529.299        1       0.2122        1
+\end{outblk}
+\vspace{0.1em}
+Engineer the feature the problem is actually about and $F$ finds it
+instantly: \textbf{$0.213 \rightarrow 529.299$, rank $8 \rightarrow$ rank 1}.
+And logistic regression on $(a, |b|)$ scores $\mathbf{0.9120}$, beating the
+tree.
+\vspace{0.3em}
+\begin{alertblock}{Three things to take away}
+  \footnotesize
+  \textbf{1.} A filter measures the kind of dependence it was built to
+  measure, and nothing else. $F$ sees mean shifts; MI sees any dependence.\\
+  \textbf{2.} ``Useful'' is not a property of a column alone --- it is a
+  property of \textbf{column and model together}. $b$ is useless to a linear
+  model and valuable to a tree.\\
+  \textbf{3.} A disagreement between two filters is not a nuisance to be
+  resolved by picking a favourite. It is \textbf{information}: it says the
+  dependence is there but not of the shape one of them assumes --- which is a
+  hint to go and engineer a better feature.
 \end{alertblock}
 \end{frame}
 
