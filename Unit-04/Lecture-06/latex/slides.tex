@@ -1518,6 +1518,65 @@ elimination order, first six      the last one standing: worst area
 \end{center}
 \end{frame}
 
+\begin{frame}[shrink=8]{Before the lasso: what an L1 or L2 penalty does}
+  \small A linear model predicts
+  $\hat y = w_0 + w_1 x_1 + \dots + w_d x_d$; each $w_j$ is a
+  \textbf{coefficient} (weight). \textbf{If $w_j = 0$, feature $j$ is not used
+  at all} --- so counting the non-zero coefficients counts the features kept.
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \begin{block}{Ridge --- the L2 penalty}
+        \small
+        \[ \min_w \; \sum_i (y_i - \hat y_i)^2 + \alpha \sum_j w_j^2 \]
+        Squares get tiny near zero, so the pull fades as $w_j$ shrinks:
+        weights get \emph{smaller}, almost never exactly $0$.
+      \end{block}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{block}{Lasso --- the L1 penalty}
+        \small
+        \[ \min_w \; \sum_i (y_i - \hat y_i)^2 + \alpha \sum_j |w_j| \]
+        $|w_j|$ charges the same per unit however small $w_j$ is, so weak
+        features are pushed \emph{all the way to $0$}.
+      \end{block}
+    \end{column}
+  \end{columns}
+  \begin{itemize}
+    \item \textbf{$\alpha$} is the penalty strength: $\alpha = 0$ is plain least
+      squares; larger $\alpha$ shrinks harder. A \textbf{path of $\alpha$} is
+      the same model refitted at several values.
+    \item \textbf{Embedded} selection: the features are chosen \emph{by the
+      fit itself}, not by a separate filter or wrapper step.
+    \item \textbf{Standardise first}: the penalty compares $|w_j|$ across
+      features, which is only fair when they share a scale.
+  \end{itemize}
+  \footnotesize Lecture~12 treats ridge and lasso in full; here we only use
+  the lasso as a selector.
+\end{frame}
+
+\begin{frame}[shrink=8]{The data on the next slide: \texttt{load\_diabetes}}
+  \small $442$ patients; the target is a measure of how far the disease has
+  progressed one year after these baseline readings.
+  \begin{center}\small
+  \begin{tabular}{@{}ll@{\qquad}ll@{}}
+    \toprule
+    \texttt{age} & age in years & \texttt{s1} & total serum cholesterol\\
+    \texttt{sex} & sex & \texttt{s2} & LDL (``bad'') cholesterol\\
+    \texttt{bmi} & body mass index & \texttt{s3} & HDL (``good'') cholesterol\\
+    \texttt{bp}  & average blood pressure & \texttt{s4} & total cholesterol / HDL\\
+    & & \texttt{s5} & log of serum triglycerides\\
+    & & \texttt{s6} & blood sugar level\\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \begin{block}{How to read each row of the output}
+    \small \textbf{nonzero} = coefficients the lasso left non-zero, i.e.\ the
+    features it kept (named when there are few).
+    \textbf{CV R2} = mean $R^2$ over $5$-fold cross-validation, scaler and
+    lasso refitted inside each fold. Higher is better; $1$ is perfect.
+  \end{block}
+\end{frame}
+
 \begin{frame}[fragile,shrink=6]{Embedded: L1 chooses by shrinking to zero}
 Lasso on \texttt{load\_diabetes}, standardised, over a path of $\alpha$:
 \begin{outblk}
@@ -1530,10 +1589,10 @@ Lasso on \texttt{load\_diabetes}, standardised, over a path of $\alpha$:
 \end{outblk}
 \onslide<2->
 \begin{center}\small
-  \textbf{Three of ten features and half the $R^2$; five of ten and $97\%$ of
-  it.} The lasso gives you the whole trade-off curve for free, and
-  \textbf{$\alpha$ is the dial}. Ridge with the same $\alpha$ keeps all ten
-  and scores the same --- L1 selects, L2 shrinks.
+  \textbf{Three of ten features keep $72\%$ of the $R^2$; five of ten keep
+  $97\%$.} The lasso gives you the whole trade-off curve for free, and
+  \textbf{$\alpha$ is the dial}. Ridge ($\alpha = 1$) keeps all ten and
+  scores the same --- L1 selects, L2 only shrinks.
 \end{center}
 \onslide<3->
 \begin{center}\small

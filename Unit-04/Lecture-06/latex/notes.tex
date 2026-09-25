@@ -1573,6 +1573,72 @@ is the first hint of Section~\ref{sec:doesithelp}.
 \subsection{Embedded: L1 shrinks coefficients to exactly zero}
 \label{sec:l1}
 
+Lecture~12 treats regularisation properly; this section needs only enough of
+it to use the lasso as a feature selector.
+
+\paragraph{Coefficients and what a zero means.} A linear model predicts
+$\hat y = w_0 + w_1 x_1 + \dots + w_d x_d$. Each $w_j$ is a
+\textbf{coefficient}: how much the prediction moves when feature $j$ rises by
+one unit. If $w_j = 0$ the feature is multiplied by zero and plays no part in
+any prediction. A model with some coefficients at exactly zero has therefore
+\emph{selected} the others, and counting the non-zero coefficients counts the
+features kept.
+
+\paragraph{Penalties.} Plain least squares minimises only the prediction
+error. A \textbf{penalised} model adds a charge for large coefficients, with
+a strength $\alpha \ge 0$ that you choose:
+\begin{align}
+  \text{ridge (L2 penalty):}\quad
+    & \min_w \; \sum_i (y_i - \hat y_i)^2 + \alpha \sum_j w_j^2 ,
+    \label{eq:ridge}\\
+  \text{lasso (L1 penalty):}\quad
+    & \min_w \; \sum_i (y_i - \hat y_i)^2 + \alpha \sum_j |w_j| .
+    \label{eq:lasso}
+\end{align}
+The names come from the two ways of measuring the size of $w$: the L2 norm
+uses squares, the L1 norm absolute values. At $\alpha = 0$ both are ordinary
+least squares; as $\alpha$ grows, the coefficients are pulled towards zero.
+Refitting the same model at a range of $\alpha$ values traces out a
+\textbf{path}, which is what the output below does.
+
+\paragraph{Why only L1 produces exact zeros.} Near zero, the square $w_j^2$
+becomes tiny, so the ridge penalty stops pushing a coefficient that is
+already small: ridge makes every coefficient smaller but almost never exactly
+zero. The absolute value $|w_j|$ charges the same $\alpha$ per unit of
+$w_j$ all the way down to zero, so a feature whose contribution to the fit is
+worth less than that charge is set to exactly $0$. That is why the lasso
+\emph{selects} and ridge only \emph{shrinks}. Because the selection happens
+as part of fitting, rather than in a separate step before (a filter) or around
+(a wrapper) the model, it is called \textbf{embedded} selection.
+
+\paragraph{Why standardise first.} The penalty adds up $|w_j|$ across
+features. A feature measured in large units needs only a small coefficient,
+so it is penalised less for the same real effect. Standardising puts every
+feature on the same scale, which makes the comparison fair
+(Section~\ref{sec:scale} made the same point for distances and
+gradients).
+
+\paragraph{The data.} \texttt{load\_diabetes} has $442$ patients and ten
+baseline measurements: \texttt{age}, \texttt{sex}, \texttt{bmi} (body mass
+index), \texttt{bp} (average blood pressure) and six blood-serum readings ---
+\texttt{s1} total cholesterol, \texttt{s2} LDL, \texttt{s3} HDL, \texttt{s4}
+total cholesterol over HDL, \texttt{s5} the log of serum triglycerides and
+\texttt{s6} blood sugar. The target is a quantitative measure of disease
+progression one year later. In the output, \emph{nonzero} is the number of
+coefficients the lasso kept (named when there are six or fewer) and
+\emph{CV R2} is the mean $R^2$ (Equation~\eqref{eq:r2}) over five-fold
+cross-validation, with the scaler and the lasso refitted inside each fold.
+
+\begin{caution}[scikit-learn scales the lasso's error term]
+\texttt{Lasso} actually minimises
+$\frac{1}{2n}\sum_i (y_i - \hat y_i)^2 + \alpha \sum_j |w_j|$, while
+\texttt{Ridge} uses Equation~\eqref{eq:ridge} as written. The same number
+$\alpha$ therefore means a much stronger penalty in \texttt{Lasso} than in
+\texttt{Ridge}; compare each model with itself across $\alpha$, not the two
+at one value.
+\end{caution}
+
+
 \begin{lstlisting}
 for alpha in (0.01, 0.1, 0.5, 1.0, 2.0, 5.0, 20.0):
     la = Lasso(alpha=alpha).fit(StandardScaler().fit_transform(Xd), yd)
@@ -1591,8 +1657,8 @@ for alpha in (0.01, 0.1, 0.5, 1.0, 2.0, 5.0, 20.0):
 
 Five features of ten retain $97\%$ of the $R^2$; three retain $72\%$. The
 lasso hands you the whole trade-off curve for free and $\alpha$ is the dial.
-Ridge with the same $\alpha$ keeps all ten and scores the same: \textbf{L1
-selects, L2 shrinks.} Because the selection depends on $\alpha$, the selection
+Ridge ($\alpha = 1$) keeps all ten and scores the same: \textbf{L1
+selects, L2 only shrinks.} Because the selection depends on $\alpha$, the selection
 is a hyper-parameter and belongs inside the cross-validation loop like any
 other.
 

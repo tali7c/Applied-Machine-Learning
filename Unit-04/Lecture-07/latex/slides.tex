@@ -375,8 +375,36 @@ KFold(5, shuffle=False) class counts, [negatives positives]:
   \end{center}
 \end{frame}
 
+\begin{frame}[fragile,shrink=8]{\texttt{GroupKFold}: each patient on one side only}
+  \small Often several rows come from \textbf{one real-world thing} --- a
+  patient, a customer, a document. Call that thing a \textbf{group}. Rows of
+  one group look alike and usually share the label.
+  \begin{itemize}
+    \item \texttt{KFold} deals out \emph{rows}, so one patient's rows land in
+      both train and test, and the model can simply recognise the patient.
+    \item \texttt{GroupKFold} deals out \emph{groups}. You give it one ID per
+      row; it splits the IDs into $k$ folds, so \textbf{all of a group's rows
+      go into the same fold} --- tested once, and never also trained on.
+  \end{itemize}
+  Twelve rows, four patients A--D with three rows each:
+\begin{outblk}
+   KFold(4, shuffle=True, random_state=0)
+      fold 1  test patients B C D   also in train: B, C, D
+      fold 4  test patients A B B   also in train: A, B
+   GroupKFold(4)
+      fold 1  test patients D D D   also in train: none
+      fold 2  test patients C C C   also in train: none      (and so on)
+\end{outblk}
+  \begin{block}{In code, and two rules}
+    \small \texttt{cross\_val\_score(model, X, y, groups=patient\_id,
+    cv=GroupKFold(5))}. You need at least $k$ groups, and your real sample
+    size is the \textbf{number of groups}, not the number of rows.
+  \end{block}
+\end{frame}
+
 \begin{frame}[fragile,shrink=8]{Predict first \#2: forty patients, fifteen windows each}
-$40$ patients, $15$ signal windows each, $600$ rows. Each patient's
+$40$ patients, $15$ signal windows each (short slices of one recording),
+$600$ rows. Each patient's
 \textbf{diagnosis is a coin flip}. Each patient has a random $10$-dimensional
 ``fingerprint'' that says nothing about the diagnosis; the features are that
 fingerprint plus noise.
@@ -853,6 +881,71 @@ majority; then a real logistic regression.
   \end{alertblock}
 \end{frame}
 
+\begin{frame}[shrink=6]{SMOTE: what the name says}
+  \begin{center}\Large
+    \textbf{S}ynthetic \textbf{M}inority \textbf{O}ver-sampling
+    \textbf{TE}chnique
+  \end{center}
+  \vspace{0.2em}
+  \begin{center}\small
+    Chawla, Bowyer, Hall and Kegelmeyer, \emph{Journal of Artificial
+    Intelligence Research} \textbf{16} (2002), 321--357.
+  \end{center}
+  \vspace{0.3em}
+  Read the name backwards and it tells you the whole method:
+  \vspace{0.2em}
+  \begin{center}\small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    \textbf{Over-sampling} & we will end up with more minority rows than we
+      started with\\[3pt]
+    \textbf{Minority} & only the rare class is touched; majority rows are
+      left alone\\[3pt]
+    \textbf{Synthetic} & the new rows are \emph{manufactured}, not collected
+      --- and not copies\\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \vspace{0.3em}
+  \begin{alertblock}{The idea in one sentence}
+    \small Random oversampling duplicates a rare patient. SMOTE instead
+    \textbf{invents a new patient somewhere between two real ones} --- on the
+    assumption that a point lying between two ill patients is probably also
+    ill.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[shrink=6]{The algorithm, in four steps}
+  For each synthetic row you want:
+  \vspace{0.2em}
+  \begin{enumerate}\small
+    \item Pick a minority point $x$ at random.
+    \item Find its \textbf{$k$ nearest neighbours among the minority class
+      only} (default $k = 5$). Majority rows are invisible to this search.
+    \item Choose one of those $k$ neighbours at random; call it $x'$.
+    \item Draw $u \sim \mathcal{U}(0,1)$ and return
+      \[
+        x_{\text{new}} \;=\; x \;+\; u\,(x' - x).
+      \]
+  \end{enumerate}
+  \vspace{0.3em}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Step 4 is a convex combination}
+        \small $x_{\text{new}} = (1-u)x + u\,x'$, so it lies \emph{on the
+        segment} joining the two. Never off it, never beyond either end.
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{Which bounds what SMOTE can do}
+        \small Every synthetic point lies inside the \textbf{convex hull} of
+        the minority rows you already had. SMOTE can interpolate. It can
+        never extrapolate.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
 \begin{frame}[fragile,shrink=8]{By hand: SMOTE is one line of arithmetic}
 Two minority patients, $A = (1, 1)$ and $B = (3, 5)$. SMOTE draws
 $u \sim \mathcal{U}(0,1)$ and returns $A + u(B - A)$:
@@ -895,6 +988,90 @@ new = Xmin[base] + u * (Xmin[nbr] - Xmin[base])  # a point on the segment
 \begin{center}\small
   And undersampling kept $70$ of $3500$ rows: \textbf{$99.0\%$ of the
   negatives were thrown away.}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile,shrink=8]{What $k$ controls, and when it bites}
+$k$ is how far SMOTE may reach for a partner. A point's own cluster supplies
+only $m-1$ candidates, so it can only reach \emph{across} a gap once
+$k \ge m$.
+\begin{outblk}
+     m        k cross-lump neighbours
+    20        5                 0.0%
+    20       19                 0.0%
+    20       25                24.0%
+     6        5                 0.0%
+     3        5                60.0%
+     3        2                 0.0%
+\end{outblk}
+\onslide<2->
+\begin{alertblock}{The danger is not $k$; it is $k$ relative to the cluster}
+  \footnotesize With twenty points a side, $k=5$ never leaves its lump ---
+  and neither does $k=19$. With \textbf{three} a side, $k=5$ has no choice but
+  to cross, and does so $60\%$ of the time. \textbf{A rare class is exactly
+  the case where clusters are small}, which is exactly when the default
+  $k=5$ starts bridging gaps it should not.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile,shrink=8]{The failure that follows}
+Minority in two lumps at $(0,0)$ and $(6,0)$; the \textbf{majority} class
+fills the gap at $(3,0)$. How many synthetic ``patients'' land in territory
+where every real row is a majority row?
+\begin{outblk}
+lump size          k synthetic pts in maj. region
+      25          5                       0.0%
+       6          5                       0.0%
+       3          5                      50.8%
+       3          2                       0.0%
+\end{outblk}
+\onslide<2->
+\begin{alertblock}{Reported as measured, not as folklore}
+  \footnotesize At three a side, \textbf{half} the synthetic minority rows sit
+  inside the majority cloud, and every classifier will be confused there.
+  But note rows one and two: with a larger minority this does not happen at
+  all. \textbf{SMOTE does not always do this} --- anyone who says so has not
+  checked. It does it when the minority is small and clustered, and dropping
+  $k$ to $2$ removes it entirely.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile,shrink=8]{Three more things SMOTE will not tell you}
+\begin{outblk}
+30 minority patients, features 'age' (sd 6.5) and 'income' (sd 11238).
+nearest minority neighbour changes for 28 of 30 points (93%)
+
+a minority class with only 3 rows, and the default k = 5:
+   ValueError: Expected n_neighbors <= n_samples_fit, but n_neighbors = 6, ...
+
+SMOTE at u = 0.37 on Delhi=[1,0,0] and Mumbai=[0,1,0] returns [0.63 0.37 0.]
+\end{outblk}
+\vspace{0.2em}
+\begin{columns}[T]
+  \begin{column}{0.32\textwidth}
+    \begin{block}{Scale first}
+      \footnotesize It is $k$-NN underneath, so unscaled features decide the
+      neighbours. $93\%$ of points change partner after standardising.
+    \end{block}
+  \end{column}
+  \begin{column}{0.32\textwidth}
+    \begin{block}{$k <$ minority size}
+      \footnotesize With $3$ rows and $k=5$ it simply raises. And if you
+      have $3$ rows, ask what interpolating between them could mean.
+    \end{block}
+  \end{column}
+  \begin{column}{0.32\textwidth}
+    \begin{alertblock}{Continuous only}
+      \footnotesize $0.63$ of a Delhi is not a city. Plain SMOTE cannot touch
+      categoricals; \texttt{SMOTE-NC} votes on them instead.
+    \end{alertblock}
+  \end{column}
+\end{columns}
+\vspace{0.2em}
+\begin{center}\small
+  Variants worth knowing by name: \textbf{Borderline-SMOTE} (only near the
+  boundary), \textbf{ADASYN} (more where the class is hardest),
+  \textbf{SMOTE-Tomek} (clean up afterwards).
 \end{center}
 \end{frame}
 

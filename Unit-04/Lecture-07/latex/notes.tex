@@ -615,6 +615,33 @@ distrust.
   \label{fig:groups}
 \end{figure}
 
+\paragraph{What \texttt{GroupKFold} actually does.} When several rows come from
+one real-world thing --- a patient, a customer, a document --- that thing is
+a \textbf{group}. \texttt{KFold} and \texttt{StratifiedKFold} deal out
+\emph{rows}, so nothing stops one patient's rows from landing on both sides
+of a split. \texttt{GroupKFold} deals out \emph{groups} instead. You pass one
+group ID per row through the \texttt{groups=} argument; it divides the
+distinct IDs into $k$ folds, trying to keep the number of rows per fold
+roughly equal, and every row carrying a given ID goes into the same fold.
+Each group is therefore tested exactly once, and never while it is also in
+the training set. On twelve rows from four patients A--D, three rows each:
+\begin{codeout}
+   KFold(4, shuffle=True, random_state=0)
+      fold 1  test patients B C D   also in train: B, C, D
+      fold 2  test patients A C D   also in train: A, C, D
+      fold 3  test patients A C D   also in train: A, C, D
+      fold 4  test patients A B B   also in train: A, B
+   GroupKFold(4)
+      fold 1  test patients D D D   also in train: none
+      fold 2  test patients C C C   also in train: none
+      fold 3  test patients B B B   also in train: none
+      fold 4  test patients A A A   also in train: none
+\end{codeout}
+Two consequences follow. You need at least $k$ groups, since a fold cannot
+hold less than one. And the effective sample size is the number of groups,
+not the number of rows --- which is exactly why the grouped estimate above
+carries the wider error bar.
+
 \begin{keyidea}
 Ask ``what is the unit of independence?'' before you split. It is the patient,
 not the window; the customer, not the transaction; the document, not the
@@ -625,9 +652,11 @@ sentence; the subject, not the trial.
 \texttt{GroupKFold} keeps groups intact but ignores the class balance;
 \texttt{StratifiedKFold} balances classes but ignores groups. When the target
 is skewed \emph{and} the rows are grouped, use \texttt{StratifiedGroupKFold},
-which attempts both. Note also that \texttt{GroupKFold} is deterministic: to
-average over several groupings, use \texttt{GroupShuffleSplit} with different
-seeds.
+which attempts both. Note also that by default \texttt{GroupKFold} is
+deterministic --- the same groups always land in the same folds. Since
+scikit-learn~1.6 it accepts \texttt{shuffle=True, random\_state=...}, so to
+average over several groupings, repeat it with different seeds (or use
+\texttt{GroupShuffleSplit}).
 \end{caution}
 
 \subsection{Time-ordered rows}

@@ -446,8 +446,7 @@
 \newdimen\UPES@frametopmargin
 \newdimen\UPES@framebottommargin
 
-% Defaults tuned from the working (aligned) deck in:
-%   D:\InSync-tofik\Work\UPES\Project-Mentoship\2026-Spring
+% Defaults tuned against a known-good aligned deck.
 % Keep all overlaid text safely inside the white region (away from the left
 % gradient strip + bottom curve). Background bars extend further left, but we
 % intentionally start text at the footer bar start (keeps white text fully on
@@ -620,6 +619,40 @@
   }%
 }
 
+% ------------------------------------------------------------------------------
+% Auto-fit header navigation.
+% Beamer's \insertnavigation{<w>} always sets the section list in a box exactly
+% <w> wide and lets anything extra run off the edge. \UPES@fitnavigation first
+% measures the list's natural width; if it fits, the navigation is typeset
+% exactly as before, otherwise the whole row is scaled down uniformly to <w>,
+% so every section stays visible whatever the number or length of section names.
+% ------------------------------------------------------------------------------
+\newbox\UPES@navrow
+\newdimen\UPES@navavail
+\def\UPES@fitnavigation#1{%
+  \UPES@navavail=#1\relax
+  % Same row that \insertnavigation builds (beamerbasenavigation.sty), but in
+  % a box of natural width so it can be measured.
+  \setbox\UPES@navrow=\hbox{{%
+    \usebeamerfont{section in head/foot}\usebeamercolor[fg]{section in head/foot}%
+    \beamer@xpos=0\relax
+    \beamer@ypos=1\relax
+    \ifcsname beamer@ypos@offset\endcsname\csname beamer@ypos@offset\endcsname=0\relax\fi
+    \hskip.3cm\setbox\beamer@sectionbox=\hbox{\kern1sp}%
+    \ht\beamer@sectionbox=1.875ex%
+    \dp\beamer@sectionbox=0.75ex%
+    \hskip-1.875ex plus-1fill%
+    \ifcsname beamer@section@min@dim\endcsname\global\csname beamer@section@min@dim\endcsname\z@\fi
+    \dohead
+    \csname beamer@section@set@min@width\endcsname
+    \box\beamer@sectionbox\hfil\hskip.3cm}}%
+  \ifdim\wd\UPES@navrow>\UPES@navavail
+    \resizebox{\UPES@navavail}{!}{\box\UPES@navrow}%
+  \else
+    \insertnavigation{\UPES@navavail}%
+  \fi
+}
+
 \setbeamertemplate{headline}{%
   % Header navigation aligned to the blue header bar in upes-*.jpeg
   % (and constrained to the white safe region, so it doesn't overlap the gradient strip).
@@ -638,7 +671,7 @@
               \usebeamerfont{section in head/foot}%
               \usebeamercolor[fg]{section in head/foot}%
               \begingroup\beamer@compresstrue%
-                \insertnavigation{\dimexpr\UPES@contentwidth-2\UPES@pad\relax}%
+                \UPES@fitnavigation{\dimexpr\UPES@contentwidth-2\UPES@pad\relax}%
               \endgroup%
             }%
             \hskip\UPES@pad%
