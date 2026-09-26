@@ -1,6 +1,7 @@
 \documentclass[11pt]{article}
 
 \input{../../../_shared/notes-common.tex}
+\usepackage{tikz}
 
 \graphicspath{{../figures/}}
 
@@ -147,9 +148,47 @@ code or your library versions, not in chance --- which is the only thing that
 makes a printed number worth anything to you.
 \end{keyidea}
 
+\subsection{Abbreviations and notation}
+\label{sec:abbrev}
+
+Each abbreviation is also spelled out where it first appears in the text.
+
+\begin{center}\small
+\begin{tabular}{@{}lp{0.72\textwidth}@{}}
+  \toprule
+  \textbf{Short form} & \textbf{Meaning}\\
+  \midrule
+    SLR & simple linear regression: one predictor, a straight line\\
+    SSE & sum of squared errors, $\sum_i (y_i-\hat y_i)^2 = \sum_i e_i^2$\\
+    SST & total sum of squares, $\sum_i (y_i-\bar y)^2$\\
+    SSR & regression (explained) sum of squares, $\sum_i(\hat y_i-\bar y)^2$\\
+    SAE & sum of absolute errors, $\sum_i |e_i|$\\
+    LAD & least absolute deviations: the line that minimises SAE\\
+    RMSE & root mean squared error, $\sqrt{\mathrm{SSE}/n}$, in the units of $y$\\
+    GD, SGD & gradient descent; stochastic gradient descent\\
+    SVD & singular value decomposition (a matrix factorisation)\\
+    sd & standard deviation\\
+    BMI & body mass index\\
+    $k$-NN & $k$-nearest neighbours\\
+    L3, L9, \dots & Lecture 3, Lecture 9, \dots\ of this course\\
+  OLS & ordinary least squares --- the method of this lecture\\
+  ANOVA & analysis of variance (the SST $=$ SSR $+$ SSE split, Lecture 9)\\
+  CO1, CO2, \dots & course outcomes: the official outcomes of this course that
+    each learning outcome below serves\\
+  \midrule
+    $\bar x,\ \bar y$ & means of $x$ and $y$ (\texttt{xbar}, \texttt{ybar} in printed output)\\
+    $\hat y_i$ & fitted value $b_0 + b_1x_i$ (\texttt{yhat})\\
+    $e_i$ & residual $y_i - \hat y_i$\\
+    $S_{xx},\ S_{xy},\ S_{yy}$ & $\sum(x_i-\bar x)^2$, $\sum(x_i-\bar x)(y_i-\bar y)$, $\sum(y_i-\bar y)^2$ (\texttt{Sxx}, \dots)\\
+    $X^{\!\top}$ & transpose of $X$ (\texttt{X'} or \texttt{X.T} in code)\\
+  \bottomrule
+\end{tabular}
+\end{center}
+
 \subsection{Learning outcomes}
 
-By the end of this lecture you should be able to:
+By the end of this lecture you should be able to (the tag in brackets is the
+course outcome, CO, that each item serves):
 
 \begin{enumerate}[leftmargin=*]
   \item Define a regression problem, distinguish it from classification, name
@@ -307,6 +346,12 @@ with scikit-learn, so it is available on a machine with no network at all.
 \end{tabular}
 \end{center}
 
+The last column uses three words that recur all lecture. A \textbf{closed
+form} answer is a formula: substitute the data, compute once, and you are
+done. An \textbf{iterative} method (gradient descent, Lecture 3) instead
+repeats an update until the numbers stop changing. \textbf{Convex} means
+bowl-shaped; it is defined properly in Section~\ref{sec:words}.
+
 \subsection{``Linear'' means linear in the parameters}
 \label{sec:linearinparams}
 
@@ -385,7 +430,9 @@ be able to reproduce from memory.
     making about $\varepsilon$.
   \item \textbf{Choice of fitting method.} Least squares, maximum likelihood,
     penalised least squares, a robust criterion. This lecture is about the
-    first; Lecture 9 shows the first two coincide under Normal noise.
+    first; Lecture 9 shows the first two coincide under Normal (Gaussian)
+    noise. (\emph{Maximum likelihood} picks the parameter values under which
+    the observed data would have been most probable.)
   \item \textbf{Fitting the model.} Compute the estimates. On the scale of
     problems in this course this is the fastest step of the eight.
   \item \textbf{Model validation and criticism.} Do the residuals look like
@@ -428,7 +475,8 @@ m = LinearRegression().fit(xtr, ytr)
 Three things in that output are worth reading twice. First, line 6: the
 library and the hand formula of Section~\ref{sec:derive} agree to four
 decimal places, which is the whole point of this lecture. Second, line 7: the
-cross-validated RMSE of $62.6$ against $77.0$ for the null model that always
+cross-validated RMSE (root mean squared error, $\sqrt{\mathrm{SSE}/n}$,
+in the units of $y$) of $62.6$ against $77.0$ for the null model that always
 predicts $\bar y$ --- \emph{one} column of \emph{one} measurement removes
 about a fifth of the error. Third, also line 7: the test RMSE ($64.7$) is
 close to the training RMSE ($61.7$), so there is no over-fitting here. With
@@ -485,6 +533,78 @@ error and $e_i = y_i - \hat y_i$ is the observable residual. Writing
 importantly, means you have not seen the distinction.
 \end{caution}
 
+\subsection{Four words you need before the derivation}
+\label{sec:words}
+
+The rest of the lecture leans on four pieces of vocabulary from calculus and
+optimisation. They are defined here once.
+
+\begin{description}[leftmargin=0pt]
+  \item[Closed form.] The answer can be written as a formula in the data ---
+    plug in, compute once. The opposite is an \emph{iterative} method, which
+    improves a guess step by step until it stops changing.
+  \item[Stationary point.] A point where every partial derivative of the
+    function is zero, so the surface is flat there. A stationary point can be
+    a minimum, a maximum, or a \emph{saddle} (a minimum in one direction and
+    a maximum in another; see Section~\ref{sec:soc}).
+  \item[Local and global minimum.] A local minimum is lower than every
+    point \emph{near} it; a global minimum is lower than every point
+    \emph{anywhere}. A function can have many local minima and only one
+    global minimum value.
+  \item[Convex function.] $f$ is convex if the straight chord joining any
+    two points of its graph never lies \emph{below} the graph:
+    \[
+      f\bigl(\lambda u + (1-\lambda)v\bigr) \;\le\; \lambda f(u) +
+        (1-\lambda) f(v)\qquad\text{for all } u, v \text{ and }
+        0\le\lambda\le1 .
+    \]
+    Picture a bowl. $f$ is \emph{strictly} convex if the inequality is strict
+    whenever $u \ne v$: the bowl then has exactly one bottom. In one
+    variable, $f''(x) > 0$ everywhere guarantees strict convexity (for
+    example $x^2$); $x^4 - x^2$ is not convex --- it has two separate
+    dips.
+\end{description}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[scale=1.0]
+    \begin{scope}
+      \draw[->,gray] (-2.1,0) -- (2.2,0);
+      \draw[very thick,blue!60!black,domain=-1.9:1.9,smooth]
+        plot (\x,{0.45*\x*\x+0.2});
+      \draw[orange,thick] (-1.5,{0.45*2.25+0.2}) -- (1.2,{0.45*1.44+0.2});
+      \fill[orange] (-1.5,{0.45*2.25+0.2}) circle (2pt)
+        (1.2,{0.45*1.44+0.2}) circle (2pt);
+      \fill[green!50!black] (0,0.2) circle (2.5pt);
+      \node[font=\small] at (0,2.3) {convex: every chord lies above};
+      \node[font=\footnotesize,below] at (0,0.1) {one minimum};
+    \end{scope}
+    \begin{scope}[xshift=5.5cm]
+      \draw[->,gray] (-2.1,0) -- (2.2,0);
+      \draw[very thick,blue!60!black,domain=-1.95:1.95,smooth,samples=60]
+        plot (\x,{0.28*\x*\x*\x*\x-0.9*\x*\x+0.25*\x+1.0});
+      \draw[orange,thick] (-1.35,{0.28*1.35^4-0.9*1.35^2-0.25*1.35+1.0})
+        -- (1.25,{0.28*1.25^4-0.9*1.25^2+0.25*1.25+1.0});
+      \node[font=\small] at (0,2.3) {not convex: this chord dips below};
+      \node[font=\footnotesize] at (-1.35,-0.35) {global min};
+      \node[font=\footnotesize] at (1.3,-0.35) {local min};
+    \end{scope}
+  \end{tikzpicture}
+  \caption{Left: a convex function. Every chord (orange) lies above the
+    graph, and there is one minimum. Right: a function that is not convex.
+    The chord between its two dips passes below the graph, and ``the
+    derivative is zero'' holds at a local minimum, the global minimum and the
+    hump between them.}
+  \label{fig:convex}
+\end{figure}
+
+\begin{keyidea}[Why convexity matters]
+For a convex function \textbf{every stationary point is a global minimum}.
+So if the least-squares criterion is convex --- and
+Section~\ref{sec:soc} proves it is --- then ``set the derivatives to zero''
+finds the best line, not merely a locally good one.
+\end{keyidea}
+
 \subsection{Which line? Choosing a criterion}
 \label{sec:criterion}
 
@@ -496,7 +616,8 @@ that we then make as small as possible. Four candidates:
   \item $\sum_i e_i$. \textbf{Useless.} Positive and negative errors cancel,
     so infinitely many lines score exactly zero --- including some very bad
     ones. We will meet three of them in Section~\ref{sec:candidates}.
-  \item $\sum_i |e_i|$ (least absolute deviations). Sensible and robust to
+  \item $\sum_i |e_i|$, the sum of absolute errors (SAE); the line that
+    minimises it is the least absolute deviations (LAD) line. Sensible and robust to
     outliers, and it has \emph{no closed form}: $|e|$ has a corner at $e=0$,
     so ``differentiate and set to zero'' is not available. Its minimiser need
     not even be unique.
@@ -695,8 +816,34 @@ rescaled by the ratio of the two standard deviations.
 \subsection{Second-order condition: it really is a minimum}
 \label{sec:soc}
 
-A vanishing gradient marks a minimum, a maximum or a saddle. Differentiate
-\eqref{eq:d0} and \eqref{eq:d1} again:
+A vanishing gradient marks a minimum, a maximum or a saddle. In one
+variable you would settle the question with the second-derivative test:
+$f'(x)=0$ and $f''(x)>0$ means a minimum. With several variables the second
+derivative becomes a matrix.
+
+\begin{description}[leftmargin=0pt]
+  \item[Hessian.] The matrix $H$ of all second partial derivatives, with
+    entry $(j,k)$ equal to $\partial^2 f/\partial b_j\,\partial b_k$. It is
+    symmetric, and it records how the surface curves in every direction.
+  \item[Positive definite.] A symmetric matrix $H$ is positive definite if
+    $v^{\!\top}Hv > 0$ for every non-zero vector $v$. Geometrically: whichever
+    direction $v$ you walk from the stationary point, the surface curves
+    \emph{upward}. For a $2\times2$ matrix it is enough to check that
+    $H_{11} > 0$ and $\det H > 0$. Equivalently, all the \emph{eigenvalues}
+    of $H$ are positive; the eigenvalues are the curvatures along the
+    principal axes of the bowl.
+  \item[Saddle.] A stationary point where the surface curves up in some
+    directions and down in others. The standard example is
+    $f(u,v) = u^2 - v^2$ at the origin: $H = \mathrm{diag}(2,-2)$ has one
+    positive and one negative eigenvalue, so it is not positive definite.
+\end{description}
+
+The multivariable test is then: gradient zero and Hessian positive definite
+$\Rightarrow$ strict local minimum. If the Hessian is positive definite
+\emph{everywhere}, the function is strictly convex and that minimum is the
+unique global one (Section~\ref{sec:words}).
+
+Differentiate \eqref{eq:d0} and \eqref{eq:d1} again:
 \[
   \frac{\partial^2\mathrm{SSE}}{\partial b_0^2} = 2n, \qquad
   \frac{\partial^2\mathrm{SSE}}{\partial b_1^2} = 2\sum_i x_i^2, \qquad
@@ -787,8 +934,10 @@ and, when $X^{\!\top}\!X$ is invertible,
   \label{eq:ols}
 \end{equation}
 The Hessian is $2X^{\!\top}\!X$, which is positive definite exactly when $X$
-has full column rank --- the general form of the ``not all $x_i$ equal''
-condition. Note that \eqref{eq:matne} never mentions the number of columns:
+has \textbf{full column rank}, meaning no column of $X$ is a linear
+combination of the others --- the general form of the ``not all $x_i$
+equal'' condition (a constant $x$ column would be a multiple of the column
+of ones). Note that \eqref{eq:matne} never mentions the number of columns:
 the same three lines fit a multiple regression with fifty predictors, which is
 Lecture 11 already done.
 
@@ -845,7 +994,9 @@ $-15/50 = -0.3$.
 \begin{caution}[Never write \texttt{np.linalg.inv} in real code]
 It gives the same answer here, and worse answers than
 \texttt{np.linalg.solve} or \texttt{np.linalg.lstsq} whenever
-$X^{\!\top}\!X$ is close to singular --- which, as Lecture 6 showed with the
+$X^{\!\top}\!X$ is close to singular (almost non-invertible: its
+determinant is near zero, so the inverse is huge and unreliable) --- which, as
+Lecture 6 showed with the
 dummy variable trap (condition number $1.2\times10^{15}$), is not a rare
 event. Use \texttt{solve} when you know the matrix is well conditioned and
 \texttt{lstsq} when you do not. \texttt{LinearRegression} uses
@@ -949,7 +1100,9 @@ max abs difference, hand vs LinearRegression 0.000e+00
 
 Not ``close'': \texttt{LinearRegression} matched the hand arithmetic
 \textbf{exactly}, and \texttt{np.polyfit} differs by one unit in the last
-place of a double because it routes through a singular value decomposition.
+place of a double because it routes through a singular value decomposition
+(SVD) --- a factorisation of $X$ itself that solves least squares without
+ever forming $X^{\!\top}\!X$, which is numerically safer.
 
 \begin{keyidea}
 The library is not doing anything you did not just do on paper. It is doing it
@@ -1032,7 +1185,7 @@ at $x=\bar x$:
   \label{eq:centroid}
 \end{equation}
 Every least-squares line with an intercept passes through
-$(\bar x, \bar y)$. This is a good sanity check on any hand computation: if
+$(\bar x, \bar y)$, the \textbf{centroid} (the point of means) of the data. This is a good sanity check on any hand computation: if
 your line misses the centroid, you have made an arithmetic error.
 
 \subsection{Property 3: residuals are orthogonal to the predictor}
@@ -1049,7 +1202,9 @@ Combining with \eqref{eq:sumzero},
     = 0 .
   \label{eq:orthyhat}
 \end{equation}
-Geometrically the residual vector is orthogonal both to the column of ones and
+Two vectors are \textbf{orthogonal} when their dot product is zero, which is
+exactly what \eqref{eq:orthx} and \eqref{eq:orthyhat} say. Geometrically the
+residual vector is orthogonal both to the column of ones and
 to the column $x$, hence to every vector in the plane they span --- which is
 to say, \textbf{there is no linear signal left in the residuals}. If you
 regressed $e$ on $x$ you would get a slope of exactly zero.
@@ -1143,7 +1298,10 @@ the words ``with an intercept'' are doing all the work.
 \label{sec:precision}
 
 The estimates $b_0$ and $b_1$ are computed from data, and data is noisy, so
-they are random quantities. Under the four assumptions of
+they are random quantities: collect a fresh sample, refit, and you get
+slightly different numbers. The distribution of $b_1$ over all such repeated
+samples is its \textbf{sampling distribution}; its standard deviation,
+$\sqrt{\mathrm{Var}(b_1)}$, is the \textbf{standard error} of $b_1$. Under the four assumptions of
 Section~\ref{sec:slr} one can show
 \begin{equation}
   \mathbb{E}[b_1] = \beta_1, \qquad
@@ -1151,7 +1309,8 @@ Section~\ref{sec:slr} one can show
   \mathrm{Var}(b_0) = \sigma^2\left(\frac1n + \frac{\bar x^2}{S_{xx}}\right).
   \label{eq:varb}
 \end{equation}
-(The first says least squares is \emph{unbiased}; the Gauss--Markov theorem
+(The first says least squares is \emph{unbiased}: on average over
+repeated samples it hits the true value; the Gauss--Markov theorem
 strengthens this to ``no other linear unbiased estimator has smaller
 variance''. Lecture 9 does the derivations properly.)
 
@@ -1303,7 +1462,7 @@ the stochastic version stops 6.1% away from the slope: that is the
 noise floor of Lecture 3, not a bug
 \end{codeout}
 
-One hundred steps of full-batch descent reproduce
+One hundred steps of full-batch gradient descent (GD in the printout) reproduce
 $(X^{\!\top}\!X)^{-1}X^{\!\top}y$ to fifteen significant figures.
 \texttt{SGDRegressor} with a constant step size lands $6.1\%$ away on the
 slope, and that is not a defect of the implementation: Lecture 3 established
@@ -1899,8 +2058,8 @@ All links were checked on 22 August 2026. Free resources are marked
   \item \emph{Seeing Theory}, Chapter 6: Regression Analysis (Brown
     University). \textbf{[free]} Uses exactly the $S_{xy}/S_{xx}$ notation of
     these notes, lets you drag points in each of \textbf{Anscombe's four
-    datasets} and watch the OLS table update live, and continues into
-    correlation and ANOVA.
+    datasets} and watch the OLS (ordinary least squares) table update live, and continues into
+    correlation and ANOVA (analysis of variance).
     \url{https://seeing-theory.brown.edu/regression-analysis/index.html}
   \item NIST/SEMATECH, \emph{e-Handbook of Statistical Methods}, \S4.1.4.1
     ``Linear Least Squares Regression''. \textbf{[free]} The authoritative

@@ -1,0 +1,2640 @@
+\documentclass[11pt]{article}
+
+\input{../../_shared/notes-common.tex}
+
+\usepackage{array}
+\usepackage{multicol}
+\hypersetup{colorlinks=true, linkcolor=UPESBlueD, urlcolor=UPESBlueD}
+
+\newcommand{\method}[1]{\begin{keyidea}[The method: #1]}
+\newcommand{\ans}[1]{\subsection*{#1}}
+\newcommand{\sgn}{\operatorname{sign}}
+\newcommand{\IQR}{\mathrm{IQR}}
+\newcommand{\MAD}{\mathrm{MAD}}
+\newcommand{\unit}[1]{\par\medskip\noindent{\large\bfseries\color{UPESPurple}#1}\par\smallskip}
+
+\newtcolorbox{concept}[1][Short-answer questions, with model answers]{breakable, enhanced,
+  colback=black!2, colframe=black!45, fonttitle=\bfseries\small,
+  title={#1}, boxrule=0.6pt, arc=2pt, left=6pt,right=6pt,top=4pt,bottom=4pt}
+
+\title{Applied Machine Learning (CSAI2017P)\\
+  \large Mid-Semester Study Material\\
+  \normalsize The examinable topics of Lectures 1--9, worked by hand ---
+  with the course's practice questions, exercises and answers}
+\author{Dr.\ Tofik Ali \\ School of Computer Science, UPES Dehradun}
+\date{Autumn 2026 \textbullet\ Lecture packages L1--L9 (Units I--IV and Unit V to Lecture 9)}
+
+\begin{document}
+\sloppy
+\maketitle
+
+\begin{keyidea}[{{Read this first}}]
+\textbf{Syllabus.} The mid-semester paper covers Lectures 1--9:
+Unit I (L1), Unit II (L2), Unit III (L3--L4), Unit IV (L5--L7) and the first
+two lectures of Unit V (L8, regression foundations and least squares; L9,
+maximum likelihood, $R^2$, model adequacy and over-fitting).
+\textbf{Not examined} at mid-semester: the classification and margin losses of
+Lecture~2 --- binary, categorical and sparse categorical cross-entropy, hinge
+(SVM) loss and triplet loss --- and everything from Lecture~10 onwards
+(logistic regression, multiple regression, regularisation). Adjusted $R^2$
+with a given number of features $p$ \emph{is} examined; fitting a
+multiple regression is not.
+
+\textbf{What is inside.} Twenty-one topics, in lecture order. Each has
+\textbf{the method} as a numbered recipe and \textbf{worked examples} done in
+full; most also list the \textbf{mistakes} that cost marks and end with
+\textbf{exercises} --- numerical ones in a purple box (answers at the back)
+and short-answer ones with model answers in a grey box. The exercises draw on the course's shared
+practice material (the chapter notes, the \emph{Practice \& Worked Solutions}
+workbook and Class Test Set~B), recreated here with every answer checked. Two
+complete practice papers with solutions close the booklet.
+
+\textbf{How to use it.} Attempt every exercise on paper before you look at
+Section~\ref{sec:answers}. Reading a solution feels like understanding; only
+doing it is.
+\end{keyidea}
+
+\begin{center}
+\small
+\begin{tabular}{@{}rll@{\qquad}rll@{}}
+\toprule
+& \textbf{Topic} & \textbf{Lecture} & & \textbf{Topic} & \textbf{Lecture}\\ \midrule
+1 & What ML is; types of learning & L1 & 10 & Outliers and transformations & L5\\
+2 & Regression losses & L2 & 11 & Feature scaling & L6\\
+3 & Gradient descent by hand & L3 & 12 & Encoding and feature engineering & L6\\
+4 & Batch, stochastic, mini-batch & L3 & 13 & Data reduction and PCA & L6\\
+5 & Momentum & L3 & 14 & Splitting and cross-validation & L7\\
+6 & Adagrad and RMSprop & L4 & 15 & Imbalanced data & L7\\
+7 & Adam & L4 & 16 & Data leakage and pipeline order & L5--L7\\
+8 & Adadelta; comparing optimisers & L4 & 17 & Regression foundations & L8\\
+9 & Missing data & L5 & 18 & Least squares by hand & L8\\
+ & & & 19 & Direct regression; max.\ likelihood & L9\\
+ & & & 20 & $R^2$, adjusted $R^2$, error summary & L9\\
+ & & & 21 & Adequacy, over-fitting, CV & L9\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{caution}[{{How numericals are marked}}]
+A correct final number with no working earns little; a correct method with a
+slip in one line earns most of the marks. Write the method visibly --- the
+residual column, the gradient at each step, the accumulator, the sorted data
+and the quartiles, the centred table --- carry \textbf{four decimal places},
+and round only at the end. Finish every answer with a \textbf{check}:
+residuals that sum to zero, a first Adam step of exactly $\eta$, a line that
+passes through $(\bar x, \bar y)$.
+\end{caution}
+
+\begin{keyidea}[{{Conventions used throughout}}]
+\begin{itemize}
+  \item \textbf{Residual} $e = y - \hat y$ (actual minus predicted). Positive
+    means the model \emph{under}-predicted.
+  \item \textbf{Standard deviation.} Standardisation (\texttt{StandardScaler})
+    uses the population $\sigma$, divisor $n$. The $z$-score outlier rule and
+    the sample sd of a column use $s$, divisor $n - 1$.
+  \item \textbf{Quartiles by hand}: sort, split into a lower and an upper
+    half (for odd $n$ leave the median out of both), and take the median of
+    each half (Tukey's hinges). NumPy's default \texttt{np.percentile}
+    interpolates and can differ slightly; either is accepted if you say which
+    you used.
+  \item \textbf{Optimiser toy problem.} Unless stated otherwise the optimiser
+    sections use two targets $y = 1$ and $y = 3$, a constant model $w$,
+    half-squared row loss $\tfrac12(w - y)^2$ and their mean
+    $J(w) = \tfrac12(w-2)^2 + \tfrac12$, so $J'(w) = w - 2$. With a loss
+    $(w-c)^2$ (no half) the gradient is $2(w - c)$ --- say which you use.
+  \item \textbf{Momentum} is $v \leftarrow \beta v + g$, $w \leftarrow w - \eta
+    v$. Adam's first moment is $m \leftarrow \beta_1 m + (1-\beta_1) g$. Do not
+    mix them.
+\end{itemize}
+\end{keyidea}
+
+\tableofcontents
+\newpage
+\unit{Unit I --- Introduction to machine learning (L1)}
+%======================================================================
+\section{What machine learning is, and the three types of learning}
+\label{sec:intro}
+
+\method{naming and classifying a learning problem}
+\begin{enumerate}
+  \item \textbf{Definition} (Mitchell): a program learns from experience $E$
+    on task $T$, measured by $P$, if its performance at $T$, as measured by
+    $P$, improves with $E$. Name all three, and make $P$ specific.
+  \item \textbf{Decide the type from the feedback.} Known answers in the
+    training table $\Rightarrow$ \emph{supervised}; no answers, find structure
+    $\Rightarrow$ \emph{unsupervised}; rewards for actions $\Rightarrow$
+    \emph{reinforcement}.
+  \item \textbf{If supervised, look at the target column}: a number on a
+    continuous scale $\Rightarrow$ regression; a category $\Rightarrow$
+    classification. The target decides, not the features.
+  \item \textbf{Say what one training row contains}: the features, and the
+    target if there is one.
+  \item \textbf{Vocabulary}: a \emph{sample} is a row, a \emph{feature} a
+    column used as input, the \emph{target} the column to predict. A
+    \emph{parameter} is learned from data (a slope $b_1$); a
+    \emph{hyperparameter} is set before learning (the $k$ of $k$-NN, a
+    learning rate).
+  \item \textbf{Judge generalisation on data the model never saw}: train on
+    the training set, choose settings on the validation set, report once on
+    the test set.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 1.1 --- classify the problem}}]
+\small
+\begin{tabular}{@{}p{5.2cm}p{3.3cm}p{5.6cm}@{}}
+\toprule
+\textbf{Problem} & \textbf{Type} & \textbf{One training row}\\ \midrule
+Predict tomorrow's peak electricity demand in Dehradun & supervised,
+regression & one day's weather and calendar features + that day's peak
+demand\\[2pt]
+Group 50{,}000 shoppers by purchasing behaviour, no categories given &
+unsupervised (clustering) & one customer's purchase summary, no target\\[2pt]
+Pneumonia or not, from 40{,}000 labelled X-rays & supervised,
+classification & one X-ray's pixels + the radiologist's label\\[2pt]
+Robot arm placing a cup: $+1$ success, $-1$ drop & reinforcement & no table
+--- a stream of (state, action, reward)\\[2pt]
+Predict a student's end-sem \emph{percentage} & supervised, regression &
+attendance, internal marks, \dots\ + the percentage\\[2pt]
+Predict the student's \emph{letter grade} A--F & supervised, classification
+& the same features + the grade\\
+\bottomrule
+\end{tabular}
+
+\normalsize
+The last two rows are the same situation with the target recorded
+differently --- which is exactly why the target column decides the type.
+
+\textbf{$T$, $E$, $P$ for fraud detection.} $T$: label each card
+transaction fraudulent or legitimate. $E$: past transactions with confirmed
+outcomes. $P$: recall on the fraud class together with the false-alarm rate.
+\emph{Not} plain accuracy: if $0.1\%$ of transactions are fraud, a model that
+says ``legitimate'' every time is $99.9\%$ accurate and catches nothing.
+\end{worked}
+
+\begin{worked}[{{Example 1.2 --- 1-nearest neighbour, and reading results}}]
+\textbf{1-NN by hand.} Five training flowers (petal length, petal width):
+$(1.4, 0.2)$ setosa, $(1.3, 0.2)$ setosa, $(4.7, 1.4)$ versicolor,
+$(4.5, 1.5)$ versicolor, $(6.0, 2.5)$ virginica. New flower $(4.6, 1.4)$.
+Distances $\sqrt{\Delta_1^2 + \Delta_2^2}$: $3.42,\ 3.51,\ \mathbf{0.10},\
+0.14,\ 1.78$. The nearest is $(4.7, 1.4)$, so 1-NN predicts
+\textbf{versicolor}. It has no training step: it stores the data and does all
+its work at prediction time, and it rests entirely on distance --- which is
+why feature scaling (Section~\ref{sec:scaling}) matters to it.
+
+\textbf{Reading train/test scores.} Three models on the same data:
+\begin{center}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & A & B & C\\ \midrule
+training $R^2$ & $0.62$ & $0.88$ & $0.999$\\
+test $R^2$ & $0.60$ & $0.85$ & $0.41$\\ \midrule
+diagnosis & underfitting & good fit & overfitting\\
+\bottomrule
+\end{tabular}
+\end{center}
+A: both scores low and close --- too simple; add features or flexibility.
+C: near-perfect on training, poor on test --- it has memorised. Deploy
+\textbf{B}.
+
+\textbf{Extrapolation.} A line fitted on houses of $1000$--$3000$ sq ft is
+$\hat y = -50.9 + 0.0754x$ (lakh). At $2400$ sq ft: $130.1$ lakh. At $400$
+sq ft: $-20.7$ lakh --- a negative price. Outside the range of the training
+data the model has no information and gives no warning.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{Deciding the type from the features} instead of the target.
+  \item \textbf{A vague $P$} (``good performance''). Name the measure and say
+    why it suits the task.
+  \item \textbf{Quoting a training score as performance.} 100\% on the
+    training data is consistent with memorisation. Ask for the test score.
+  \item \textbf{Using ML where an exact rule exists} (GST on an invoice, a
+    published fee formula): learning an approximation can only be worse.
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 1 --- numerical}}]
+\begin{enumerate}[label=\textbf{E1.\arabic*}]
+  \item A model is $\hat y = 5 + 0.06x$ with $x$ in sq ft and $\hat y$ in lakh.
+    Predict at $x = 1000$.
+  \item An input matrix has 120 houses and 4 features. How many numerical
+    feature entries does it hold? What is its shape, and the shape of $y$?
+  \item Using the five flowers of Example 1.2, predict the species of
+    $(1.5, 0.3)$ by 1-NN. Show all five distances.
+  \item A hospital's readmission model is $94\%$ accurate overall, yet on the
+    $6\%$ of patients who are readmitted it is right only $20\%$ of the time.
+    How can both be true? What measure would have exposed it?
+\end{enumerate}
+\end{tryit}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C1.\arabic*}]
+  \item \emph{Traditional programming vs ML: what is input and what is
+    output?} Traditional: data + hand-written rules in, answers out. ML: data
+    + known answers in, the rules (a model) out.
+  \item \emph{Classify: (a) group unlabelled houses by similarity; (b) a
+    robot learning from rewards.} (a) Unsupervised --- no feedback at all,
+    only structure. (b) Reinforcement --- feedback is a reward for an action,
+    not a correct answer.
+  \item \emph{Parameter vs hyperparameter, one example each.} A parameter is
+    learned from data ($b_1$ in $\hat y = b_0 + b_1x$); a hyperparameter is set
+    before learning and never changed by the algorithm ($k$ in $k$-NN, the
+    learning rate $\eta$, a polynomial degree).
+  \item \emph{Why is unsupervised learning harder to evaluate?} There is no
+    correct answer to subtract the prediction from, so it is judged by
+    stability, internal separation measures and usefulness --- all of which
+    need judgement, not arithmetic.
+  \item \emph{``fit'' vs ``predict''; which data for what?} \texttt{fit}
+    learns parameters from the training set; \texttt{predict} applies them to
+    new rows. Training set: fit. Validation set (or CV on training data):
+    choose hyperparameters. Test set: one final, honest report.
+  \item \emph{Removing a caste or religion column --- does the model then
+    ignore it?} No. Locality, surname, school or pincode act as proxies, and a
+    flexible model reconstructs the attribute from them; removing the column
+    only removes your ability to audit the effect.
+  \item \emph{Roles of NumPy, pandas and scikit-learn.} NumPy: fast
+    vectorised arithmetic on arrays. pandas: loading, cleaning and grouping
+    tables. scikit-learn: one \texttt{fit}/\texttt{predict} interface for
+    preprocessing, models and evaluation.
+  \item \emph{What is wrong with each line?}
+    \texttt{model.fit(X\_test, y\_test)} --- fitting on the test set destroys
+    it as a test; fit on the training data.
+    \texttt{model.fit(df["Area"], df["Price"])} --- $X$ must be 2-D:
+    \texttt{df[["Area"]]}.
+    \texttt{X\_train, X\_test = train\_test\_split(X, y, ...)} --- with $X$
+    and $y$ it returns four objects.
+    \texttt{model.score(X\_train, y\_train)} --- a training score measures
+    fit, not performance; score on the test set.
+\end{enumerate}
+\end{concept}
+
+\unit{Unit II --- Loss functions (L2): the regression losses}
+%======================================================================
+\section{Regression losses: SSE, MSE, RMSE, MAE and Huber}
+\label{sec:regloss}
+
+\method{computing a regression loss}
+\begin{enumerate}
+  \item Write the residual row $e_i = y_i - \hat y_i$. Keep the sign: it
+    tells you over- or under-prediction, and Huber needs $|e_i|$.
+  \item One column per loss: $e_i^2$ (SSE, MSE, RMSE), $|e_i|$ (MAE), and for
+    Huber first compare $|e_i|$ with $\delta$, \emph{then} pick the branch:
+    \[
+      L_\delta(e) = \begin{cases} \tfrac12 e^2 & |e| \le \delta\\
+      \delta\bigl(|e| - \tfrac12\delta\bigr) & |e| > \delta\end{cases}
+    \]
+  \item $\mathrm{SSE} = \sum e_i^2$; $\mathrm{MSE} = \mathrm{SSE}/n$;
+    $\mathrm{RMSE} = \sqrt{\mathrm{MSE}}$ (back in the units of $y$);
+    $\mathrm{MAE} = \frac1n\sum|e_i|$; mean Huber $= \frac1n\sum L_\delta(e_i)$.
+  \item Comment on which row dominates, and on robustness: squaring makes a
+    doubled residual cost four times as much.
+  \item \textbf{Gradients} (with respect to the prediction $\hat y$):
+    $e^2 \to -2e$;\ $\tfrac12e^2 \to -e$;\ $|e| \to -\sgn(e)$ for $e \ne 0$;\
+    Huber $\to -e$ inside, $-\delta\,\sgn(e)$ outside.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 2.1 --- three houses, every regression loss}}]
+Observed $y = (5, 5, 5)$, predicted $\hat y = (4, 7, 2)$, Huber $\delta = 1$.
+\begin{center}
+\begin{tabular}{@{}lrrr|r@{}}
+\toprule
+house & 1 & 2 & 3 & $\Sigma$\\ \midrule
+$e = y - \hat y$ & $1$ & $-2$ & $3$ & $2$\\
+meaning & under & over & under & \\
+$e^2$ & $1$ & $4$ & $9$ & $14$\\
+$|e|$ & $1$ & $2$ & $3$ & $6$\\
+$|e| \le 1$? & yes & no & no & \\
+Huber & $\tfrac12(1)^2 = 0.5$ & $1(2 - 0.5) = 1.5$ & $1(3 - 0.5) = 2.5$ & $4.5$\\
+\bottomrule
+\end{tabular}
+\end{center}
+\[
+  \mathrm{SSE} = 14, \quad \mathrm{MSE} = \tfrac{14}{3} = 4.6667, \quad
+  \mathrm{RMSE} = 2.1602,
+\]
+\[
+  \mathrm{MAE} = \tfrac63 = 2, \quad
+  \text{Huber} = \tfrac{4.5}{3} = 1.5 .
+\]
+The mean \emph{signed} residual, $2/3$, is useless as an error measure:
+residuals $(3, -3)$ would average $0$ while both miss by $3$. If $y$ is in
+lakh, MSE is in lakh$^2$; RMSE and MAE are in lakh.
+
+\textbf{Huber is smooth at the join.} At $e = \delta$ both branches give
+$\tfrac12\delta^2$, and both slopes equal $\delta$. $\delta$ is measured in
+the units of $y$ and sets where the linear tail begins.
+\end{worked}
+
+\begin{worked}[{{Example 2.2 --- the best constant: MSE picks the mean, MAE the median}}]
+Targets $(0, 0, 9)$; the model must predict one constant $w$.
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+constant & SSE & sum of $|e|$\\ \midrule
+$w = 3$ (mean) & $9 + 9 + 36 = \mathbf{54}$ & $3 + 3 + 6 = 12$\\
+$w = 0$ (median) & $0 + 0 + 81 = 81$ & $0 + 0 + 9 = \mathbf{9}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Squared error is minimised by the mean ($3$); absolute error by the median
+($0$). The single extreme target drags the MSE answer; the MAE answer stays
+with the typical value.
+
+\textbf{From loss to gradient.} Constant $w$, targets $(1, 3)$, row loss
+$\tfrac12(w - y)^2$, at $w = 4$: row losses $4.5$ and $0.5$, so $J = 2.5$; row
+gradients $w - y = 3$ and $1$, so $J'(4) = 2$. Loss and gradient are
+different quantities --- the gradient is what the optimiser in Unit III uses.
+Minimising SSE or MSE gives the same minimiser; their gradients differ by the
+factor $n$, which matters for the learning rate.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{Averaging signed residuals} as an error measure.
+  \item \textbf{Huber's linear branch without $-\tfrac12\delta$}: it is
+    $\delta(|e| - \tfrac12\delta)$, not $\delta|e|$.
+  \item \textbf{Choosing the Huber branch from $e$ instead of $|e|$}: $e = -2$
+    with $\delta = 1$ is \emph{outside}.
+  \item \textbf{MSE in the wrong units.} Report RMSE when the units matter.
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 2 --- numerical}}]
+\begin{enumerate}[label=\textbf{E2.\arabic*}]
+  \item $y = 50$, $\hat y = 47$: the residual? And for $y = 40$, $\hat y = 45$:
+    is the model over- or under-predicting?
+  \item Residuals $(-1, 2, 4)$: compute MSE, MAE and mean Huber loss with
+    $\delta = 1$.
+  \item With $\delta = 2$ and residuals $(1, -3)$, compute the mean Huber loss.
+  \item Errors $(-4, 2)$: MAE and MSE. A residual changes from $3$ to $6$: by
+    what factor does its squared penalty change? Its absolute penalty?
+  \item $y = (10, 12, 15, 20)$, $\hat y = (11, 12, 13, 24)$. Compute MSE, MAE,
+    RMSE and Huber ($\delta = 2$). Which row supplies most of the MSE?
+  \item For $y = (1, 2, 2, 3, 12)$, find the best constant under MSE and under
+    MAE. The $12$ is mistyped as $112$: what happens to each?
+\end{enumerate}
+\end{tryit}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C2.\arabic*}]
+  \item \emph{Is a loss function the same as an optimiser?} No. The loss
+    states the penalty to be minimised; the optimiser is the rule that
+    changes the parameters to reduce it.
+  \item \emph{Show that RMSE $\ge$ MAE.} $\frac1n\sum e_i^2 -
+    (\frac1n\sum|e_i|)^2$ is the variance of the numbers $|e_i|$, which is
+    $\ge 0$; so $\mathrm{MSE} \ge \mathrm{MAE}^2$. Equality only when every
+    $|e_i|$ is the same.
+  \item \emph{When would you choose MAE or Huber over MSE?} When a few large
+    residuals (outliers, or a heavy-tailed target) should not dominate the
+    fit. MSE suits cases where a large miss really is disproportionately
+    costly.
+  \item \emph{Why does MAE have no ordinary derivative at $e = 0$?} $|e|$ has
+    a corner there; any value in $[-1, 1]$ is a valid subgradient. Huber is
+    differentiable everywhere, including at $\pm\delta$.
+  \item \emph{Mean loss vs summed loss --- same training?} Same minimiser on a
+    fixed dataset, but the gradient scales with $n$, so with a fixed learning
+    rate (or an unscaled regularisation weight) the training behaves
+    differently.
+\end{enumerate}
+\end{concept}
+\unit{Unit III --- Optimizer functions (L3--L4)}
+%======================================================================
+\section{Gradient descent by hand}
+\label{sec:gd}
+
+\method{running gradient descent on paper}
+\begin{enumerate}
+  \item Write the objective and differentiate it. For the toy problem,
+    row gradients are $g_i = w - y_i$ and the full gradient is their mean,
+    $J'(w) = w - 2$. For the MSE of a line $\hat y = b + wx$,
+    $\partial J/\partial w = \frac2n\sum(\hat y_i - y_i)x_i$ and
+    $\partial J/\partial b = \frac2n\sum(\hat y_i - y_i)$.
+  \item Update: $w_{\text{new}} = w_{\text{old}} - \eta\, J'(w_{\text{old}})$.
+    Subtracting a positive gradient moves left; a negative one moves right.
+  \item Tabulate $k$, $w_k$, $J(w_k)$, $J'(w_k)$ --- one row per step --- and
+    check the loss falls.
+  \item \textbf{Stability.} For the toy problem
+    $w_{\text{new}} - 2 = (1 - \eta)(w_{\text{old}} - 2)$: the error shrinks
+    when $|1 - \eta| < 1$, i.e.\ $0 < \eta < 2$. In general, for
+    $J = \tfrac a2 (w - c)^2$ the factor is $1 - a\eta$ and the range is
+    $0 < \eta < 2/a$; for $(w - c)^2$ (no half) it is $1 - 2\eta$ and
+    $0 < \eta < 1$.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 3.1 --- the toy problem, and four learning rates}}]
+Targets $1$ and $3$, start $w_0 = 6$, $\eta = 0.2$. At $w = 6$: row losses
+$\tfrac12 5^2 = 12.5$ and $\tfrac12 3^2 = 4.5$, $J = 8.5$; row gradients $5$
+and $3$, mean $4$.
+\begin{center}
+\begin{tabular}{@{}rrrr@{}}
+\toprule
+$k$ & $w_k$ & $J(w_k)$ & $J'(w_k) = w_k - 2$\\ \midrule
+0 & 6.0000 & 8.5000 & 4.0000\\
+1 & 5.2000 & 5.6200 & 3.2000\\
+2 & 4.5600 & 3.7768 & 2.5600\\
+3 & 4.0480 & 2.5972 & 2.0480\\
+4 & 3.6384 & 1.8422 & \\
+\bottomrule
+\end{tabular}
+\end{center}
+The minimum is at $w = 2$ with $J(2) = 0.5$ --- not zero, because the two
+targets disagree.
+
+\begin{center}
+\small
+\begin{tabular}{@{}rrll@{}}
+\toprule
+$\eta$ & $1 - \eta$ & first steps from $6$ & behaviour\\ \midrule
+$0.2$ & $0.8$ & $5.2,\ 4.56,\ 4.048$ & approaches gradually\\
+$1$ & $0$ & $2$ & reaches the optimum in one step\\
+$1.2$ & $-0.2$ & $1.2,\ 2.16,\ 1.968$ & overshoots, but converges\\
+$2$ & $-1$ & $-2,\ 6,\ -2$ & undamped oscillation\\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{worked}
+
+\begin{worked}[{{Example 3.2 --- two parameters: a line through three points}}]
+Fit $\hat y = b + wx$ to $x = (1,2,3)$, $y = (3,5,7)$ with
+$J = \frac13\sum(\hat y_i - y_i)^2$, from $(b, w) = (0, 0)$, $\eta = 0.1$.
+
+\textbf{Step 1.} Errors $\hat y - y = (-3, -5, -7)$, $J = 27.6667$.
+\[
+  \tfrac{\partial J}{\partial b} = \tfrac23(-15) = -10, \qquad
+  \tfrac{\partial J}{\partial w} = \tfrac23\bigl(-3 - 10 - 21\bigr) = -22.6667,
+\]
+so $b = 1.0000$, $w = 2.2667$. \textbf{Step 2.} Errors
+$(0.2667, 0.5333, 0.8000)$, $J = 0.3319$; gradient $(1.0667, 2.4889)$; so
+$b = 0.8933$, $w = 2.0178$ and $J = 0.0053$. The true line is $y = 1 + 2x$.
+Both partial derivatives are computed from the \emph{same} old parameters
+before either is updated.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{Adding the gradient} instead of subtracting it.
+  \item \textbf{Confusing the loss value with the gradient.} At $w = 6$,
+    $J = 8.5$ but $J' = 4$.
+  \item \textbf{Dropping or doubling the factor 2.} With $\tfrac12(w-y)^2$ the
+    row gradient is $w - y$; with $(w - y)^2$ it is $2(w - y)$.
+  \item \textbf{``Larger $\eta$ is faster.''} $\eta = 0.8$ and $\eta = 1.2$
+    have the same $|1 - \eta|$ and converge at the same rate.
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 3 --- numerical}}]
+\begin{enumerate}[label=\textbf{E3.\arabic*}]
+  \item For $J(w) = \tfrac12(w - 3)^2$: find $J'(5)$, and the next parameter
+    from $w = 5$ with $\eta = 0.1$.
+  \item For that objective, derive the range of constant learning rates that
+    converge to $3$ from any start, and the rate that gets there in one step.
+  \item Toy problem (targets $1, 3$): at $w = 1$, find the full gradient and
+    the direction of the step. From $w = 5$ with $\eta = 0.1$, take one step.
+  \item Five steps of gradient descent on $f(w) = (w + 1)^2$ from $w_0 = 3$ with
+    $\eta = 0.2$. By what factor does the distance to the minimum shrink?
+  \item Fit $\hat y = b + wx$ to $x = (0,1,2)$, $y = (1,3,5)$ with
+    $J = \frac13\sum(\hat y - y)^2$, from $(0,0)$, $\eta = 0.1$. Two steps;
+    report $J$ after each.
+\end{enumerate}
+\end{tryit}
+
+%======================================================================
+\section{Batch, stochastic and mini-batch gradient descent}
+\label{sec:sgd}
+
+\method{updates, batches and epochs}
+\begin{enumerate}
+  \item An \textbf{update} is one change to the parameters; a \textbf{batch}
+    is the set of rows that supplied its gradient; an \textbf{epoch} is one
+    pass through the training data.
+  \item \textbf{Full batch}: one update per epoch, the mean gradient over all
+    rows. \textbf{SGD}: one row per update. \textbf{Mini-batch}: $B$ rows per
+    update, averaged over the batch's actual size.
+  \item Updates per epoch $= \lceil n/B\rceil$ when the last short batch is
+    kept.
+  \item In SGD each row's gradient is taken at the \emph{current} parameter,
+    the one just produced --- not at the value the epoch started with.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 4.1 --- SGD and mini-batch on the toy problem}}]
+Start $w = 6$, $\eta = 0.2$, rows visited in the order $1, 3, 1, 3$.
+\begin{center}
+\begin{tabular}{@{}ccrrr@{}}
+\toprule
+$t$ & selected $y$ & $w$ before & $g = w - y$ & $w$ after\\ \midrule
+1 & 1 & 6.0000 & 5.0000 & 5.0000\\
+2 & 3 & 5.0000 & 2.0000 & 4.6000\\
+3 & 1 & 4.6000 & 3.6000 & 3.8800\\
+4 & 3 & 3.8800 & 0.8800 & 3.7040\\
+\bottomrule
+\end{tabular}
+\end{center}
+\textbf{Mini-batch} with both rows: gradient $4 \Rightarrow w = 5.2$; then
+$3.2 \Rightarrow w = 4.56$. (Here the batch is the whole toy dataset, so it is
+also full-batch descent.)
+
+\textbf{SGD can increase the full loss.} At the optimum $w = 2$ the full
+gradient is $0$, but the row gradients are $+1$ and $-1$. One SGD step on the
+$y = 1$ row moves $w$ to $2 - 0.2(1) = 1.8$ and the full loss rises from
+$0.5$ to $0.52$. That is sampling noise, not a bug --- and why constant-rate
+SGD fluctuates around the optimum.
+\end{worked}
+
+\begin{worked}[{{Example 4.2 --- one epoch of each, and counting updates}}]
+$x = (1,2,3,4)$, $y = (3,5,8,9)$, model $\hat y = wx$, row loss
+$(wx_i - y_i)^2$ with gradient $2x_i(wx_i - y_i)$, $w = 0$, $\eta = 0.02$.
+Exact answer $w^\star = \sum xy/\sum x^2 = 73/30 = 2.4333$.
+\begin{itemize}
+  \item \textbf{Batch}: gradients at $0$ are $(-6, -20, -48, -72)$, mean
+    $-36.5$; $w = 0.73$.
+  \item \textbf{SGD}: $0.12,\ 0.5008,\ 1.2805,\ \mathbf{1.9010}$.
+  \item \textbf{Mini-batch $B = 2$}: batch $\{1,2\}$ mean $-13$, $w = 0.26$;
+    batch $\{3,4\}$ at $0.26$: $-43.32$ and $-63.68$, mean $-53.5$,
+    $w = \mathbf{1.33}$.
+\end{itemize}
+Same work (four row-gradients), three answers: more updates per epoch mean
+later gradients are taken at better parameters.
+
+\textbf{Counting.} $100$ rows, $B = 20$: $5$ updates per epoch. $103$ rows,
+$B = 20$, last batch kept: $\lceil 103/20\rceil = 6$ per epoch, $24$ in four
+epochs. $n = 12{,}000$: $B = 1 \to 12{,}000$ updates, $B = 32 \to 375$,
+$B = n \to 1$ --- and every one of them uses $12{,}000$ row-gradients per
+epoch.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{Evaluating every SGD gradient at the starting $w$.}
+  \item \textbf{Summing a mini-batch gradient} instead of averaging it.
+  \item \textbf{``Epoch'' $=$ ``update''.} An epoch contains $\lceil n/B\rceil$
+    updates.
+  \item \textbf{Shuffling time-series rows} as if they were independent.
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 4 --- numerical}}]
+\begin{enumerate}[label=\textbf{E4.\arabic*}]
+  \item $100$ training rows, batch size $20$, no rows dropped: updates per
+    epoch?
+  \item Constant model $w = 4$, targets $(1, 3)$, row loss $\tfrac12(w - y)^2$:
+    the batch-mean gradient?
+  \item At $w = 2$ with targets $(1, 3)$, compare the full-data gradient with
+    the single-row SGD gradient for $y = 1$. Can that SGD step increase the
+    full loss?
+  \item Toy problem from $w = 6$, $\eta = 0.2$: if the first selected target
+    were $3$ rather than $1$, where would the first update land?
+  \item $x = (2,1,3)$, $y = (4,3,5)$, $\hat y = wx$, $w_0 = 0$, $\eta = 0.05$.
+    One batch step and one SGD epoch (in the order given). Which ends nearer
+    $w^\star$?
+  \item $n = 50{,}000$, $B = 250$, 10 epochs: how many updates, and how many
+    row-gradient evaluations?
+\end{enumerate}
+\end{tryit}
+
+%======================================================================
+\section{Momentum}
+\label{sec:momentum}
+
+\method{momentum updates by hand}
+\begin{enumerate}
+  \item $v_t = \beta v_{t-1} + g_t$, then $w_t = w_{t-1} - \eta v_t$, from
+    $v_0 = 0$.
+  \item Tabulate $t$, $g_t$ (at the current $w$), $v_t$, $w_t$.
+  \item Facts: $v_t = \sum_j \beta^j g_{t-j}$, a decaying sum of past
+    gradients; with a constant gradient $g$, $v_t = g(1 - \beta^t)/(1-\beta)
+    \to g/(1 - \beta)$, so the effective step is $\eta/(1-\beta)$ --- ten times
+    $\eta$ at $\beta = 0.9$.
+  \item The other convention, $v = \beta v + (1-\beta)g$, tends to $g$
+    instead. Never mix them.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 5.1 --- history matters}}]
+\textbf{One step.} $v_{\text{old}} = 2$, $g = -1$, $\beta = 0.9$, $\eta = 0.1$,
+$w_{\text{old}} = 5$: $v_{\text{new}} = 0.9(2) + (-1) = 0.8$, and
+$w_{\text{new}} = 5 - 0.1(0.8) = 4.92$. The current gradient says ``go
+right'', but the stored velocity is still positive, so $w$ moves left.
+
+\textbf{Constant gradient} $g = 2$, $\beta = 0.9$: $v = 2,\ 3.8,\ 5.42,\
+6.878,\ 8.1902,\dots$ $= 2(1 - 0.9^t)/0.1 \to 20$.
+\textbf{Alternating} $g = 2, -2, 2, -2$: $v = 2,\ -0.2,\ 1.82,\ -0.362$ ---
+the contributions cancel. In a ravine the along-floor gradient is steady and
+the across-wall gradient flips, so momentum speeds up along the floor and
+damps the zig-zag.
+\end{worked}
+
+\begin{worked}[{{Example 5.2 --- four steps, two values of $\beta$}}]
+$f(w) = (w - 2)^2$, $g = 2(w - 2)$, $w_0 = 6$, $\eta = 0.1$.
+\begin{center}
+\begin{tabular}{@{}rrrr@{}}
+\toprule
+$t$ & $g_t$ & $v_t = 0.5v_{t-1} + g_t$ & $w_t$\\ \midrule
+1 & $8.0000$ & $8.0000$ & $5.2000$\\
+2 & $6.4000$ & $10.4000$ & $4.1600$\\
+3 & $4.3200$ & $9.5200$ & $3.2080$\\
+4 & $2.4160$ & $7.1760$ & $\mathbf{2.4904}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Plain GD reaches $3.6384$ after four steps. With $\beta = 0.9$:
+$v = 8,\ 13.6,\ 15.92,\ 14.824$ and $w = 5.2,\ 3.84,\ 2.248,\
+\mathbf{0.7656}$ --- it has overshot the minimum, carried by nine tenths of
+its past velocity although the gradient at step 4 is only $0.496$.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{Using $g$ instead of $v$} in the parameter update.
+  \item \textbf{Mixing conventions} ($\beta v + g$ versus $\beta v +
+    (1-\beta)g$).
+  \item \textbf{Calling an overshoot divergence.} Divergence means the swings
+    grow.
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 5 --- numerical}}]
+\begin{enumerate}[label=\textbf{E5.\arabic*}]
+  \item $v_0 = 0$, $\beta = 0.9$, $g_1 = g_2 = 2$: find $v_1$ and $v_2$.
+  \item With $v_0 = 0$ and a constant gradient $g = 2$, derive $v_t$ for
+    $\beta = 0.9$ and its limit.
+  \item Three momentum steps on $f(w) = (w - 3)^2$ from $w_0 = 0$, $\eta = 0.1$,
+    $\beta = 0.5$. Compare with plain GD ($1.4640$ after three steps).
+  \item $\beta = 0.8$; gradients arrive as $4, 3, -1, -2$. Give the velocity
+    after each.
+\end{enumerate}
+\end{tryit}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C5.\arabic*}]
+  \item \emph{What does $v$ store?} A decaying (unnormalised) sum of past
+    gradients --- the accumulated direction of travel.
+  \item \emph{What problem does momentum solve, and what does it cost?} It
+    accelerates along directions where the gradient is consistent and damps
+    oscillation where it flips; the price is overshoot, and one more
+    hyperparameter $\beta$.
+  \item \emph{Why does the convention matter for the learning rate?} With
+    $v = \beta v + g$ the steady step is $\eta g/(1 - \beta)$; with $v = \beta
+    v + (1-\beta)g$ it is $\eta g$. The same $\eta$ gives steps ten times
+    apart at $\beta = 0.9$.
+\end{enumerate}
+\end{concept}
+%======================================================================
+\section{Adagrad and RMSprop}
+\label{sec:adagrad}
+
+\method{adaptive step sizes by hand}
+\begin{enumerate}
+  \item One accumulator per parameter, starting at $0$.
+  \item \textbf{Adagrad} adds: $G_t = G_{t-1} + g_t^2$.
+    \textbf{RMSprop} averages: $V_t = \rho V_{t-1} + (1-\rho) g_t^2$
+    ($\rho = 0.9$ unless told otherwise).
+  \item Step: $w_t = w_{t-1} - \eta\, g_t/(\sqrt{G_t} + \varepsilon)$ (or
+    $\sqrt{V_t}$). Update the accumulator \emph{first}, then step. Ignore
+    $\varepsilon$ by hand unless the accumulator is $0$.
+  \item The numerator keeps the sign of $g$; only the denominator is squared.
+  \item Checks: Adagrad's first step has size exactly $\eta$; RMSprop's is
+    $\eta/\sqrt{1-\rho}$ ($3.1623\eta$ at $\rho = 0.9$).
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 6.1 --- single steps, and three Adagrad steps}}]
+\textbf{Adagrad, one step.} $G_{\text{old}} = 9$, $g = 4$, $\eta = 0.1$,
+$w_{\text{old}} = 2$: $G_{\text{new}} = 9 + 16 = 25$, $\sqrt{G} = 5$, step
+$= 0.1 \times 4/5 = 0.08$, $w_{\text{new}} = 1.92$.
+\textbf{RMSprop, one step.} $V_{\text{old}} = 4$, $\rho = 0.9$, $g = 2$,
+$\eta = 0.1$, $w_{\text{old}} = 5$: $V_{\text{new}} = 0.9(4) + 0.1(4) = 4$,
+step $= 0.1 \times 2/2 = 0.1$, $w_{\text{new}} = 4.9$.
+
+\textbf{Three Adagrad steps} on $f(w) = (w - 4)^2$, $g = 2(w - 4)$, $w_0 = 0$,
+$\eta = 1$:
+\begin{center}
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+$t$ & $g_t$ & $G_t$ & $\sqrt{G_t}$ & step & $w_t$\\ \midrule
+1 & $-8.0000$ & $64.0000$ & $8.0000$ & $+1.0000$ & $1.0000$\\
+2 & $-6.0000$ & $100.0000$ & $10.0000$ & $+0.6000$ & $1.6000$\\
+3 & $-4.8000$ & $123.0400$ & $11.0923$ & $+0.4327$ & $2.0327$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Step 1 is exactly $\eta$. Then the steps shrink faster than the gradient,
+because $G$ only ever grows --- Adagrad's weakness on long runs. Its
+strength: a rarely-active coordinate keeps a small $G$ and so a large step.
+\end{worked}
+
+\begin{worked}[{{Example 6.2 --- RMSprop on the same bowl}}]
+$w_0 = 0$, $\eta = 0.5$, $\rho = 0.9$.
+\begin{center}
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+$t$ & $g_t$ & $V_t = 0.9V_{t-1} + 0.1g_t^2$ & $\sqrt{V_t}$ & step & $w_t$\\ \midrule
+1 & $-8.0000$ & $6.4000$ & $2.5298$ & $+1.5811$ & $1.5811$\\
+2 & $-4.8377$ & $8.1004$ & $2.8461$ & $+0.8499$ & $2.4310$\\
+3 & $-3.1380$ & $8.2750$ & $2.8766$ & $+0.5454$ & $2.9764$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Check: $0.5/\sqrt{0.1} = 1.5811$. Adagrad at the same $\eta$ reaches only
+$0.5,\ 0.8293,\ 1.0854$. RMSprop forgets old gradients (it remembers about
+$1/(1-\rho) = 10$), so its denominator stays near the size of recent
+gradients and can \emph{fall}. After $k$ zero gradients $V$ becomes
+$\rho^k V_0$ --- the history changes although $w$ does not move.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{Dividing by $G$ instead of $\sqrt{G}$.}
+  \item \textbf{Forgetting $(1-\rho)$ in RMSprop}, or using $\rho g^2$.
+  \item \textbf{Stepping with the old accumulator.} Update $G$ or $V$ first.
+  \item \textbf{Losing the sign}: with $G_{\text{old}} = 0$, $g = -3$, $\eta =
+    0.1$, the change is $-0.1(-3)/3 = +0.1$.
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 6 --- numerical}}]
+\begin{enumerate}[label=\textbf{E6.\arabic*}]
+  \item $G_{\text{old}} = 9$, $g = 4$: the new accumulator? Then with
+    $G_{\text{new}} = 25$, $g = 4$, $\eta = 0.1$, $w_{\text{old}} = 2$: $w_{\text{new}}$?
+  \item $V_{\text{old}} = 4$, $\rho = 0.9$, $g = 2$, $\eta = 0.1$,
+    $w_{\text{old}} = 5$: $w_{\text{new}}$ by RMSprop. And for $V_{\text{old}} =
+    0$, $g = 2$: $V_{\text{new}}$ and the denominator.
+  \item Three Adagrad steps on $f(w) = (w - 1)^2$ from $w_0 = 5$, $\eta = 0.5$.
+  \item Gradients $4, 2, 1, 0.5$: the Adagrad and the RMSprop ($\rho = 0.9$)
+    accumulators after each, and $g/\sqrt{\cdot}$ for each. Which ratio
+    stays larger, and why?
+  \item After $k$ consecutive zero gradients, what is $V$ if it started at
+    $V_0$? Does the parameter move during those updates?
+\end{enumerate}
+\end{tryit}
+
+%======================================================================
+\section{Adam, with bias correction}
+\label{sec:adam}
+
+\method{Adam by hand}
+\begin{enumerate}
+  \item Defaults $\beta_1 = 0.9$, $\beta_2 = 0.999$; $m_0 = v_0 = 0$; $t$
+    counts updates from $1$ and is never reset at an epoch boundary.
+  \item $m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t$ (signed history);
+    $v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2$ (squared history).
+  \item Bias correction: $\hat m_t = m_t/(1 - \beta_1^t)$,
+    $\hat v_t = v_t/(1 - \beta_2^t)$. Divisors: $0.1$ and $0.001$ at $t = 1$;
+    $0.19$ and $0.001999$ at $t = 2$.
+  \item Step: $w_t = w_{t-1} - \eta\,\hat m_t/(\sqrt{\hat v_t} + \varepsilon)$.
+    Carry the \emph{uncorrected} $m_t$, $v_t$ forward.
+  \item Check: $\hat m_1 = g_1$ and $\hat v_1 = g_1^2$, so the first step is
+    exactly $\pm\eta$, whatever the size of $g_1$.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 7.1 --- Adam, two steps from a given gradient sequence}}]
+$w_0 = 5$, $\eta = 0.1$, gradients $g_1 = 2$, $g_2 = 1$.
+
+\textbf{Step 1.} $m_1 = 0.1(2) = 0.2$; $v_1 = 0.001(4) = 0.004$;
+$\hat m_1 = 0.2/0.1 = 2$; $\hat v_1 = 0.004/0.001 = 4$; direction
+$2/\sqrt4 = 1$; $w_1 = 5 - 0.1 = 4.9$.
+
+\textbf{Step 2} (keep the history). $m_2 = 0.9(0.2) + 0.1(1) = 0.28$;
+$v_2 = 0.999(0.004) + 0.001(1) = 0.004996$;
+$\hat m_2 = 0.28/0.19 = 1.473684$; $\hat v_2 = 0.004996/0.001999 = 2.499250$;
+direction $1.473684/1.580902 = 0.932180$; $w_2 = 4.9 - 0.0932 = 4.806782$.
+
+The second direction is not simply $\sgn(g_2) = 1$: both stored histories
+still remember $g_1 = 2$.
+\end{worked}
+
+\begin{worked}[{{Example 7.2 --- three steps on a bowl, and without the correction}}]
+$f(w) = (w - 4)^2$, $w_0 = 0$, $\eta = 0.5$.
+\begin{center}
+\begin{tabular}{@{}rrrrrrr@{}}
+\toprule
+$t$ & $g_t$ & $m_t$ & $v_t$ & $\hat m_t$ & $\sqrt{\hat v_t}$ & $w_t$\\ \midrule
+1 & $-8.0000$ & $-0.8000$ & $0.064000$ & $-8.0000$ & $8.0000$ & $0.5000$\\
+2 & $-7.0000$ & $-1.4200$ & $0.112936$ & $-7.4737$ & $7.5164$ & $0.9972$\\
+3 & $-6.0057$ & $-1.8786$ & $0.148891$ & $-6.9320$ & $7.0484$ & $1.4889$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Steps $0.500,\ 0.497,\ 0.492$: Adam moves at almost exactly the speed $\eta$.
+
+\textbf{Without bias correction} the first step would be
+$0.5 \times 0.8/\sqrt{0.064} = 1.5811$ --- three times $\eta$ --- because $m$ is
+shrunk by $1 - \beta_1 = 0.1$ but $\sqrt v$ only by $\sqrt{1-\beta_2} =
+0.0316$; the ratio is inflated by $0.1/0.0316 = 3.1623$.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{$1 - \beta$ instead of $1 - \beta^t$} at step 2 or later.
+  \item \textbf{Carrying $\hat m$, $\hat v$ forward} instead of $m$, $v$.
+  \item \textbf{$v = m^2$.} $v$ averages $g^2$.
+  \item \textbf{Calling $v$ the variance.} It is an uncentred second moment.
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 7 --- numerical}}]
+\begin{enumerate}[label=\textbf{E7.\arabic*}]
+  \item $t = 1$, $g = 2$, $w_0 = 5$, $\eta = 0.1$, defaults: find $w_1$. If
+    instead $g_1 = -2$: $\hat m_1$, $\hat v_1$ and the signed step?
+  \item Two Adam steps on $f(w) = (w - 1)^2$ from $w_0 = 3$, $\eta = 0.1$.
+  \item Show that the corrected first step is $-\eta\,\sgn(g_1)$. What is it
+    for $g_1 = -0.003$, $\eta = 0.01$?
+  \item Without correction, how large is the first step (as a multiple of
+    $\eta$) for $\beta_2 = 0.999$? For $\beta_2 = 0.99$ (with $\beta_1 = 0.9$)?
+\end{enumerate}
+\end{tryit}
+
+%======================================================================
+\section{Adadelta, and comparing optimisers}
+\label{sec:adadelta}
+
+\method{Adadelta by hand}
+\begin{enumerate}
+  \item Two decaying averages: $G$ of squared gradients and $U$ of squared
+    \emph{updates}, both from $0$; $\rho = 0.9$; $\varepsilon$ inside both
+    roots.
+  \item In this order: (i) $G_t = \rho G_{t-1} + (1-\rho)g_t^2$;
+    (ii) $\Delta w_t = -\dfrac{\sqrt{U_{t-1} + \varepsilon}}{\sqrt{G_t +
+    \varepsilon}}\, g_t$; (iii) $w_t = w_{t-1} + \Delta w_t$;
+    (iv) $U_t = \rho U_{t-1} + (1-\rho)\Delta w_t^2$.
+  \item The numerator uses the \emph{previous} $U_{t-1}$ --- $U_t$ cannot
+    exist until $\Delta w_t$ does. There is no learning rate in the original
+    form: the ratio has the units of $w$.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 8.1 --- one step with history, and the first step from zero}}]
+\textbf{With history.} $G_{\text{old}} = 4$, $U_{\text{old}} = 1$, $\rho =
+0.9$, $g = 2$, $\varepsilon$ ignored: $G = 0.9(4) + 0.1(4) = 4$; ratio
+$\sqrt1/\sqrt4 = 0.5$; $\Delta w = -0.5 \times 2 = -1$; $U = 0.9(1) + 0.1(1)
+= 1$.
+
+\textbf{From zero} on $f(w) = (w - 3)^2$, $w_0 = 0$, $\varepsilon = 10^{-6}$:
+$g_1 = -6$, $G_1 = 0.1 \times 36 = 3.6$, $\sqrt{G_1 + \varepsilon} = 1.8974$;
+$\sqrt{U_0 + \varepsilon} = \sqrt{10^{-6}} = 0.001$; so
+$\Delta w_1 = -(0.001/1.8974)(-6) = +0.003162$. Tiny: Adagrad's first step
+here would be $\eta$, Adadelta's is set by $\varepsilon$. Then $U_1 = 0.1
+(0.003162)^2 = 10^{-6}$, the numerator grows to $\sqrt{2\times10^{-6}} =
+0.001414$, and the steps grow as updates accumulate.
+\end{worked}
+
+\begin{worked}[{{Example 8.2 --- what each optimiser stores}}]
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Method} & \textbf{State beyond $w$} & \textbf{Main sensitivity}\\ \midrule
+Plain SGD / batch & none & learning rate, sampling, feature scaling\\
+Momentum & decaying signed sum $v$ & $\beta$ and the velocity convention\\
+Adagrad & cumulative $g^2$ per coordinate & ever-growing denominator\\
+RMSprop & decaying mean of $g^2$ & $\rho$, placement of $\varepsilon$\\
+Adam & $m$, $v$ and the update count $t$ & bias correction, variant\\
+Adadelta & decaying means of $g^2$ and $\Delta w^2$ & update order, $\varepsilon$\\
+\bottomrule
+\end{tabular}
+
+\normalsize
+\textbf{A fair comparison} keeps the model, loss reduction, data split,
+preprocessing and metric fixed; gives each optimiser its own tuned learning
+rate (the same number means different step sizes in different rules);
+repeats stochastic runs; chooses on validation data; and reports on untouched
+test data together with the compute used. A lower training loss is not proof
+of better generalisation.
+\end{worked}
+
+\begin{tryit}[{{Exercises 8 --- numerical}}]
+\begin{enumerate}[label=\textbf{E8.\arabic*}]
+  \item $G_{\text{old}} = 4$, $U_{\text{old}} = 1$, $\rho = 0.9$, $g = 2$,
+    $\varepsilon$ ignored: compute $\Delta w$.
+  \item $G_{\text{old}} = 1$, $U_{\text{old}} = 0.25$, $\rho = 0.9$, $g = -2$,
+    $\varepsilon$ ignored: compute $G$, $\Delta w$ and the new $U$.
+\end{enumerate}
+\end{tryit}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C8.\arabic*}]
+  \item \emph{What do Adam's $m$ and $v$ average?} $m$: the signed gradients
+    (direction, as in momentum). $v$: the squared gradients (scale, as in
+    RMSprop).
+  \item \emph{Why can Adagrad learn rare coordinates differently, and why can
+    it stall?} Each coordinate has its own $G$; rarely active ones keep a
+    small $G$ and a large step. But $G$ never decreases, so every step shrinks
+    towards zero on long runs.
+  \item \emph{What distinguishes RMSprop from Adagrad?} An exponentially
+    weighted \emph{average} of $g^2$ instead of a cumulative sum, so old
+    gradients lose weight and the denominator can fall.
+  \item \emph{Which two moving averages does Adadelta track?} $E[g^2]$ and
+    $E[\Delta w^2]$.
+  \item \emph{Two correct demonstrations give different trajectories --- why?}
+    Different loss reduction (sum or mean, with or without $\tfrac12$),
+    momentum convention, $\varepsilon$ placement, initial values or learning
+    rate. Compare conventions before declaring an error.
+  \item \emph{Your analytic gradient is twice the finite-difference value.
+    What do you check first?} Whether the loss has a $\tfrac12$ (or an
+    averaging factor) that the derivative dropped.
+\end{enumerate}
+\end{concept}
+\unit{Unit IV --- Data preprocessing (L5--L7)}
+
+\begin{keyidea}[{{The housing dataset used in Unit IV}}]
+Twelve houses offered for sale in Dehradun (from the course's chapter notes).
+Area in sq ft, Age in years, Dist in km to the city centre, buyer Income and
+Price in lakh rupees.
+\begin{center}
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}lrrrrllllrrr@{}}
+\toprule
+ID & Area & Bed & Bath & Age & Location & Garage & Condition & & Dist & Income & Price\\ \midrule
+H01 & 1000 & 2 & 1 & 12 & Clement Town & No & Average & & 8.5 & 9.5 & 42\\
+H02 & 1500 & 3 & 2 & 5 & Rajpur Road & Yes & Good & & 3.2 & 18 & 78\\
+H03 & ? & 3 & 2 & 9 & Sahastradhara & No & Average & & 8.0 & 14 & 61\\
+H04 & 2000 & 4 & 3 & 2 & Rajpur Road & Yes & Excellent & & 2.5 & 32 & 120\\
+H05 & 1200 & 2 & 1 & 18 & Prem Nagar & No & Poor & & 12.4 & 7 & 38\\
+H06 & 2500 & 4 & 3 & 7 & Rajpur Road & Yes & Good & & 4.0 & 28 & 140\\
+H07 & 1800 & 3 & 2 & ? & Clement Town & Yes & Good & & 7.8 & 16 & 72\\
+H08 & 3000 & 5 & 4 & 3 & Sahastradhara & Yes & Excellent & & 5.5 & 45 & 185\\
+H09 & 1350 & 3 & 1 & 15 & Prem Nagar & ? & Average & & 13.0 & 11 & 46\\
+H10 & 2200 & 4 & 3 & 6 & Clement Town & Yes & Good & & 6.5 & 24 & 105\\
+H11 & 9500 & 6 & 6 & 4 & Rajpur Road & Yes & Excellent & & 2.0 & 95 & 620\\
+H12 & 1600 & 3 & 2 & 150 & Prem Nagar & No & Average & & 10.2 & ? & 58\\
+\bottomrule
+\end{tabular}
+\end{center}
+Seven problems hide in it: three blanks (H03 Area, H07 Age, H09 Garage) and a
+fourth (H12 Income); an impossible value (H12 Age $= 150$); a genuine extreme
+(H11); columns on wildly different scales; three text columns; an identifier
+(ID) that carries no information; and Income, which is recorded \emph{after}
+the sale --- a leak (Section~\ref{sec:leakage}).
+\end{keyidea}
+
+%======================================================================
+\section{Missing data}
+\label{sec:missing}
+
+\method{handling a blank}
+\begin{enumerate}
+  \item \textbf{Ask why it is missing.} MCAR: unrelated to anything. MAR:
+    depends on other \emph{observed} columns. MNAR: depends on the missing
+    value itself --- cannot be detected from the data, only from how it was
+    collected.
+  \item \textbf{Fix known errors first}, then compute any statistic you will
+    fill with.
+  \item \textbf{Choose}: delete rows (tiny fraction, MCAR only); delete a
+    column (mostly empty); impute the \emph{median} for a skewed numeric column,
+    the \emph{mean} for a symmetric one, the \emph{mode} for a categorical one
+    --- group-wise when a sensible group exists; add a
+    \emph{missing-indicator} column when missingness may itself be
+    informative (MNAR); or a model-based imputer (KNN, iterative).
+  \item \textbf{Compute from observed values only}, on the \textbf{training}
+    rows only.
+  \item Know the side effect: mean imputation leaves the mean unchanged but
+    shrinks the spread --- the sample variance is multiplied by
+    $(m-1)/(n-1)$ when $m$ of $n$ values are observed.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 9.1 --- the blanks in the housing table}}]
+\textbf{Deletion.} Blanks in H03, H07, H09 and H12: $12 \to 8$ rows, $66.7\%$
+kept --- a third of the data thrown away to repair four cells of $132$.
+
+\textbf{H03 Area (numeric).} Eleven observed values, sum $27{,}650$:
+mean $= 27650/11 = 2513.64$. Sorted: $1000, 1200, 1350, 1500, 1600,
+\mathbf{1800}, 2000, 2200, 2500, 3000, 9500$; median $=$ 6th value $= 1800$.
+The single 9500 pulls the mean $40\%$ above the median; nine of eleven houses
+are below the mean. Fill with the \textbf{median, 1800} (also plausible for a
+3-bed, 2-bath house).
+
+\textbf{H09 Garage (categorical).} Global mode: Yes (7) vs No (4) $\Rightarrow$
+Yes. But the other Prem Nagar houses (H05, H12) have no garage: the
+\textbf{group-wise mode} within Location says No --- more likely correct.
+
+\textbf{H07 Age, and the order of operations.} With H12's $150$ still in: mean
+$231/11 = 21.00$, median $7$. After correcting $150 \to 15$: mean $96/11 =
+8.73$, median $7$. Impute before fixing the error and H07 is recorded as 21
+years old; the other Clement Town houses are 12 and 6. Fix errors first --- and note that the
+median did not move.
+
+\textbf{H12 Income, with an indicator.} Fill with the median ($18$) and add
+\texttt{Income\_missing} $= 1$: a column is added, no row is. (Income is later
+removed as a leak --- Section~\ref{sec:leakage}.)
+\end{worked}
+
+\begin{worked}[{{Example 9.2 --- mean imputation shrinks the spread}}]
+Marks $40, 46, ?, 50, 54, ?, 60, 98$. Observed ($m = 6$): mean $348/6 = 58$,
+median $(50 + 54)/2 = 52$, sample sd $20.7461$. Right-skewed (mean $>$
+median) $\Rightarrow$ the median is the safer fill.
+
+If both holes are filled with the mean $58$: the mean stays $58$, the sum of
+squared deviations is unchanged, but $n$ grows from $6$ to $8$, so
+$s^2_{\text{after}} = \tfrac57 s^2_{\text{before}}$ and
+$s_{\text{after}} = 20.7461 \times 0.8452 = 17.5336$. The model sees a spread
+$15\%$ narrower than the real one, and the column's relationship with the
+target is weakened.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{Counting the blank} in $n$.
+  \item \textbf{Imputing before correcting known errors.}
+  \item \textbf{Computing the fill value on all rows} before splitting ---
+    leakage.
+  \item \textbf{Filling a blank that is not missing}: an empty
+    \texttt{Garage\_Area} may simply mean $0$.
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 9 --- numerical}}]
+\begin{enumerate}[label=\textbf{E9.\arabic*}]
+  \item Training values $10, 20, ?, 40$. Impute with the observed median.
+  \item A column holds $1200, 1500, ?, 1800, 2000, 2500, 9000$. Mean and median
+    of the observed values; which do you impute with?
+  \item The eleven observed buyer incomes are $7, 9.5, 11, 14, 16, 18, 24, 28,
+    32, 45, 95$. Mean and median; which fills H12's blank, and why?
+  \item $n = 100$ with $20$ values mean-imputed. By what factor does the
+    population sd shrink? The sample sd?
+\end{enumerate}
+\end{tryit}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C9.\arabic*}]
+  \item \emph{Why is the median usually safer than the mean? When is the mean
+    as good?} The mean uses magnitudes, so one extreme value moves it without
+    limit; the median uses ranks. For a roughly symmetric column the two
+    nearly coincide.
+  \item \emph{Distinguish MCAR, MAR and MNAR. Which cannot be detected from
+    the data?} See the method box. MNAR cannot, because the evidence needed is
+    exactly what is missing; handle it with an indicator column and state the
+    limitation.
+  \item \emph{Missing income is more common among high earners. Deletion or
+    median imputation?} This is MNAR. Deleting drops the high earners and
+    biases the data; plain median imputation understates their income. Impute
+    the median \emph{and} add \texttt{Income\_missing}, fitted on training
+    data only, and report the limitation.
+  \item \emph{Is every unusual house price a data error?} No --- see
+    Section~\ref{sec:outliers}.
+\end{enumerate}
+\end{concept}
+
+%======================================================================
+\section{Outliers and transformations}
+\label{sec:outliers}
+
+\method{detecting and treating an extreme value}
+\begin{enumerate}
+  \item \textbf{Sort}, find $Q_1$ and $Q_3$ (hinges: medians of the lower and
+    upper halves), $\IQR = Q_3 - Q_1$.
+  \item \textbf{Tukey fences}: flag values below $Q_1 - 1.5\IQR$ or above
+    $Q_3 + 1.5\IQR$.
+  \item \textbf{$z$-score}: $z = (x - \bar x)/s$ (sample $s$), flag
+    $|z| > 3$. Beware \emph{masking} --- the outlier inflates the $\bar x$ and
+    $s$ it is judged by --- and the ceiling $|z| \le (n - 1)/\sqrt n$.
+  \item \textbf{Modified $z$}: $M = 0.6745(x - \tilde x)/\MAD$ with $\MAD =
+    \operatorname{median}|x_i - \tilde x|$, flag $|M| > 3.5$.
+  \item \textbf{Decide}, don't delete by reflex. Impossible $\Rightarrow$
+    correct it or treat as missing. Genuine $\Rightarrow$ keep it and use a
+    tolerant method (log transform, robust scaler, MAE/Huber, trees), clip
+    (winsorise) at the fence, or scope the model and say so.
+  \item \textbf{Shape}: skewness $g_1 = m_3/m_2^{3/2}$ with $m_k =
+    \frac1n\sum(x_i - \bar x)^k$; $g_1 > 0$ means a long right tail --- a
+    candidate for $\ln x$.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 10.1 --- the twelve prices}}]
+Sorted: $38, 42, 46, 58, 61, 72 \mid 78, 105, 120, 140, 185, 620$.
+
+\textbf{IQR.} $Q_1 = (46 + 58)/2 = 52$, $Q_3 = (120 + 140)/2 = 130$,
+$\IQR = 78$. Fences $52 - 117 = -65$ and $130 + 117 = 247$. $620 > 247$:
+\textbf{H11 flagged}. H08 (185) is not --- the rule picks out a separate
+observation, not merely the top of the range. (NumPy's interpolated quartiles
+are $55$ and $125$, upper fence $230$: the same verdict.)
+
+\textbf{$z$-score.} $\bar x = 130.42$, $s = 160.46$:
+$z = (620 - 130.42)/160.46 = 3.05$ --- only just over $3$, because H11 itself
+inflated $s$ from $46.63$ to $160.46$. Judged against the other eleven houses
+($\bar x = 85.91$, $s = 46.63$) it scores $z = 11.45$. And with $n = 12$ no
+point can exceed $11/\sqrt{12} = 3.175$: the $|z| > 3$ rule could never fire
+on ten points or fewer.
+
+\textbf{Decision.} H11 is a genuine luxury property: keep it if you will price
+such houses, or restrict the model's stated domain and say so. H12's Age $=
+150$ is impossible for its context: correct it to $15$.
+\textbf{Treatments.} Clipping sets $620 \to 247$ (a fiction, but capped).
+$\ln$: prices $38$--$620$ (ratio $16.3\times$) become $3.64$--$6.43$
+(ratio $1.77\times$); nothing is deleted, the scale is changed, and
+predictions must be exponentiated back.
+\end{worked}
+
+\begin{worked}[{{Example 10.2 --- skewness, and why the log helps}}]
+$x = (1, 1, 2, 4, 7)$, $\bar x = 3$, deviations $(-2,-2,-1,1,4)$:
+$m_2 = 26/5 = 5.2$, $m_3 = (-8 - 8 - 1 + 1 + 64)/5 = 9.6$,
+$g_1 = 9.6/5.2^{1.5} = 9.6/11.8579 = +0.8096$ --- a right tail, produced by
+the single $7$.
+
+$\ln$ of the geometric sequence $1, 4, 16, 64$ gives $0, 1.3863, 2.7726,
+4.1589$: equal gaps of $\ln 4$. The log turns ``four times bigger'' into
+``one step bigger'', which is why prices, areas and incomes usually want it.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{``Outlier $=$ error.''} H11 is rare but true.
+  \item \textbf{Concluding ``no outliers'' from $|z| \le 3$} on a small sample.
+  \item \textbf{Recomputing the fences on the test set.} $Q_1$, $Q_3$ and the
+    fences are learned from training data and applied unchanged.
+  \item \textbf{Deleting rows from the test set.} It must reflect reality.
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 10 --- numerical}}]
+\begin{enumerate}[label=\textbf{E10.\arabic*}]
+  \item $Q_1 = 10$, $Q_3 = 18$: the IQR and the upper fence.
+  \item Apply the IQR rule to $20, 25, 30, 35, 40, 45, 50, 200$: $Q_1$, $Q_3$,
+    both fences, flagged values.
+  \item $12, 14, 15, 15, 16, 17, 18, 19, 60$ ($n = 9$). Apply the IQR rule
+    (leave the median out of both halves), the $z$-score rule and the
+    modified $z$ to the $60$. Why does the $z$ rule fail?
+  \item The largest possible $|z|$ for $n = 10$? $n = 11$? For which can
+    $|z| > 3$ ever fire?
+  \item Skewness $g_1$ of $(0, 0, 0, 0, 10)$. Compare with the ceiling
+    $(n - 2)/\sqrt{n - 1}$.
+\end{enumerate}
+\end{tryit}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C10.\arabic*}]
+  \item \emph{A student removed every row with $|z| > 3$, then mean-imputed,
+    then split. Three mistakes?} (i) Deleting by a rule instead of deciding
+    error vs genuine (and the $z$ rule is masked on small samples);
+    (ii) mean imputation of skewed columns, computed on all rows; (iii) every
+    statistic was learned before the split --- leakage into the test set.
+  \item \emph{What changes when prices are log-transformed before
+    regression?} The model predicts $\ln(\text{price})$; errors become
+    roughly proportional (percentage) errors; predictions must be
+    exponentiated back, and an RMSE on the log scale is not in lakh.
+  \item \emph{Where does the 1.5 come from?} A convenient compromise: for
+    normal data the fences cover about $99.3\%$, so about $0.7\%$ of clean
+    points are flagged. Use $3$ to flag only very extreme points.
+\end{enumerate}
+\end{concept}
+
+%======================================================================
+\section{Feature scaling}
+\label{sec:scaling}
+
+\method{the four scalers}
+\begin{enumerate}
+  \item From the \textbf{training} column compute the statistics, then apply
+    $x \mapsto (x - a)/b$ to training \emph{and} test rows:
+    \begin{center}\small
+    \begin{tabular}{@{}llll@{}}
+    \toprule
+    scaler & $a$ & $b$ & result\\ \midrule
+    min--max (normalisation) & $x_{\min}$ & $x_{\max} - x_{\min}$ & $[0, 1]$ on training data\\
+    standardisation ($z$) & $\bar x$ & $\sigma$ (divisor $n$) & mean $0$, sd $1$\\
+    robust & median & $\IQR$ & median $0$, IQR $1$\\
+    max-abs & $0$ & $\max|x|$ & $[-1, 1]$, zeros kept\\
+    \bottomrule
+    \end{tabular}
+    \end{center}
+  \item Test values may land outside $[0, 1]$: that is correct, and it
+    signals a value outside the training range. Never refit on the test set.
+  \item \textbf{Who needs it?} Anything that compares or combines features
+    numerically: $k$-NN, $k$-means, SVM (RBF), neural networks, gradient
+    descent, ridge/lasso. Not trees or forests (they split one feature at a
+    time on order), and not least squares by the exact formula.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 11.1 --- scaling changes the nearest neighbour}}]
+Query house (2000 sq ft, 4 bed); A $=$ (2050, 2); B $=$ (1500, 4).
+
+\textbf{Unscaled}: $d(Q, A) = \sqrt{50^2 + 2^2} = 50.04$;
+$d(Q, B) = \sqrt{500^2 + 0} = 500$. A is ``nearest'' --- the bedroom
+difference supplies $4$ of $2504$, $0.16\%$ of the squared distance.
+
+\textbf{Min--max} with Area $\in [1000, 3000]$, Bedrooms $\in [2, 5]$:
+Q $= (0.500, 0.667)$, A $= (0.525, 0)$, B $= (0.250, 0.667)$;
+$d(Q, A) = \sqrt{0.000625 + 0.4444} = 0.667$, $d(Q, B) = 0.250$. Now
+\textbf{B is nearest}: a 4-bedroom house is priced from a 4-bedroom house.
+Scaling added no information; it stopped one column monopolising the
+distance.
+
+\textbf{Min--max is ruined by an outlier.} With H11 in the column
+($x_{\max} = 9500$), a 2000 sq ft house scales to $1000/8500 = 0.1176$ and a
+3000 sq ft house to $0.2353$ --- every ordinary house is squashed into the
+bottom quarter.
+\end{worked}
+
+\begin{worked}[{{Example 11.2 --- one column through four scalers}}]
+$v = (2, 4, 4, 4, 5, 5, 7, 9)$: mean $5$, deviations $(-3,-1,-1,-1,0,0,2,4)$,
+$\sigma = \sqrt{32/8} = 2$; min $2$, max $9$; median $4.5$; hinges
+$Q_1 = 4$ (median of $2,4,4,4$), $Q_3 = 6$ (median of $5,5,7,9$), $\IQR = 2$.
+\begin{center}
+\small
+\begin{tabular}{@{}lrrrrrrrr@{}}
+\toprule
+$v$ & 2 & 4 & 4 & 4 & 5 & 5 & 7 & 9\\ \midrule
+standard $(v - 5)/2$ & $-1.5$ & $-0.5$ & $-0.5$ & $-0.5$ & $0$ & $0$ & $1$ & $2$\\
+min--max $(v - 2)/7$ & $0$ & $.2857$ & $.2857$ & $.2857$ & $.4286$ & $.4286$ & $.7143$ & $1$\\
+robust $(v - 4.5)/2$ & $-1.25$ & $-0.25$ & $-0.25$ & $-0.25$ & $0.25$ & $0.25$ & $1.25$ & $2.25$\\
+max-abs $v/9$ & $.2222$ & $.4444$ & $.4444$ & $.4444$ & $.5556$ & $.5556$ & $.7778$ & $1$\\
+\bottomrule
+\end{tabular}
+\end{center}
+(\texttt{RobustScaler} uses NumPy quartiles, $4$ and $5.5$, so it divides by
+$1.5$; by hand, state your rule.) \textbf{A test value outside the range:}
+training Area $200$--$800$, test house $950$: correctly $(950 - 200)/600 =
+1.25$. A scaler wrongly fitted on all the data (max $950$) gives $1.00$ ---
+hiding exactly the fact that the house lies outside the training range.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{Sample sd in standardisation.} \texttt{StandardScaler} divides
+    by $n$.
+  \item \textbf{\texttt{fit\_transform} on the test set.} Fit on training,
+    \texttt{transform} the test set.
+  \item \textbf{Scaling for a tree} and claiming it helped.
+  \item \textbf{Min--max on a column with kept extremes.} Use the robust
+    scaler.
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 11 --- numerical}}]
+\begin{enumerate}[label=\textbf{E11.\arabic*}]
+  \item Training mean $80$, sd $20$: standardise $x = 100$. Training min $10$,
+    max $30$: min--max scale a held-out $40$ without clipping.
+  \item Area ranges from $500$ to $5000$: min--max scale $x = 2000$.
+  \item For $\{10, 20, 30, 40, 50\}$ compute $\mu$, $\sigma$ (divisor $n$) and
+    the $z$-score of $50$.
+  \item Using the data of E10.2 (median $37.5$, $\IQR = 20$), robust-scale
+    $x = 60$.
+  \item Query (1800 sq ft, 3 bed); A (1850, 1); B (1400, 3). Distances
+    unscaled, then with Area $\in [1000, 3000]$ and Bedrooms $\in [1, 5]$
+    min--max scaled. Nearest in each case?
+  \item Put $v = (-4, 0, 2, 6, 8, 16)$ through all four scalers (hinges for the
+    robust scaler).
+\end{enumerate}
+\end{tryit}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C11.\arabic*}]
+  \item \emph{Normalisation vs standardisation, one point.} Normalisation
+    (min--max) maps to a range, $[0,1]$; standardisation maps to mean $0$ and
+    sd $1$ and is not bounded.
+  \item \emph{Why does a decision tree need no scaling?} A split asks ``is
+    $x_j < t$?''. Any increasing rescaling moves $t$ but not which rows fall
+    on each side.
+  \item \emph{Features range from $0.001$ to $5000$ and you use an RBF SVM.}
+    Standardise: the kernel uses squared distance, which the large feature
+    would otherwise dominate.
+\end{enumerate}
+\end{concept}
+%======================================================================
+\section{Encoding and feature engineering}
+\label{sec:encoding}
+
+\method{turning text into numbers, and building better features}
+\begin{enumerate}
+  \item \textbf{Nominal} (no order: Location) $\to$ one-hot, one $0/1$ column
+    per level. With an intercept and interpreted coefficients, drop one level
+    (\texttt{drop='first'}) to avoid the dummy-variable trap. Set
+    \texttt{handle\_unknown='ignore'} for levels unseen in training.
+  \item \textbf{Ordinal} (real order: Condition) $\to$ integer codes \emph{in
+    that order}, given explicitly: Poor $0$, Average $1$, Good $2$,
+    Excellent $3$.
+  \item \textbf{Binary} (Garage) $\to$ one $0/1$ column.
+  \item \textbf{Columns after one-hot}: original columns $- 1 + k$ for a
+    column with $k$ levels ($-1 + k - 1$ with drop-first).
+  \item \textbf{Feature engineering}: create columns from domain knowledge ---
+    ratios, sums, differences, date parts --- \emph{only} from information
+    available at prediction time. A feature computed from the target is a
+    leak.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 12.1 --- encoding the housing table}}]
+\textbf{Location} (4 levels) $\to$ \texttt{Loc\_ClementTown},
+\texttt{Loc\_PremNagar}, \texttt{Loc\_RajpurRoad}, \texttt{Loc\_Sahastradhara};
+H02 (Rajpur Road) becomes $(0, 0, 1, 0)$. With drop-first, 3 columns and
+Clement Town is the baseline $(0,0,0)$.
+
+\textbf{Why not codes $0,1,2,3$ for Location?} They impose an order and equal
+spacing that do not exist: a linear model must then put Prem Nagar's effect
+exactly between Clement Town's and Rajpur Road's, and $k$-NN would call
+Clement Town ``closer'' to Prem Nagar than to Sahastradhara. With three
+colours coded $0, 1, 2$ and mean targets $20, 50, 10$, the best line through
+$(0,20), (1,50), (2,10)$ is $\hat y = 31.67 - 5x$, with fitted values
+$31.67, 26.67, 21.67$ and $\mathrm{SSE} = 816.7$ (against $866.7$ for
+predicting the overall mean): the codes explain almost nothing. One-hot fits
+the three means exactly ($\mathrm{SSE} = 0$). (Trees are fine with integer codes.)
+
+\textbf{Dummy-variable trap.} With an intercept and all $k$ dummies, the
+dummies sum to $1$ in every row --- the intercept column --- so $X^\top X$ is
+singular and the coefficients are not unique. Drop one level (or use ridge/lasso,
+whose penalty makes the solution unique).
+
+\textbf{Unseen level.} A test house in Mussoorie gets $(0,0,0,0)$ under
+\texttt{handle\_unknown='ignore'}: it matches no known locality and receives
+only the intercept (with drop-first it would be mistaken for the baseline), so
+its prediction should be flagged as less trustworthy. Label encoding would have
+crashed or silently assigned a meaningless new code.
+\end{worked}
+
+\begin{worked}[{{Example 12.2 --- engineering a feature}}]
+H09 (1350 sq ft, 3 bed, 1 bath, 46 lakh) and H02 (1500 sq ft, 3 bed,
+2 bath, 78 lakh) look nearly identical on Area and Bedrooms, yet H02 costs
+$70\%$ more. \texttt{Area\_per\_Bedroom}: $450$ vs $500$;
+\texttt{Bath\_per\_Bed}: $0.33$ vs $0.67$ --- the layout information was in
+the table, but only in the \emph{relationship} between columns.
+
+For a 2400 sq ft house with 3 bedrooms and 2 bathrooms:
+\texttt{Area\_per\_Bedroom} $= 800$, \texttt{Total\_Rooms} $= 5$.
+\texttt{Age\_at\_sale} is safe (known when you price the house);
+\texttt{Price\_per\_sqft} is not --- it is computed from the price you are
+trying to predict.
+\end{worked}
+
+\begin{tryit}[{{Exercises 12 --- numerical}}]
+\begin{enumerate}[label=\textbf{E12.\arabic*}]
+  \item Three known localities, full one-hot: how many indicator columns?
+  \item A dataset has 500 rows and 6 columns, one categorical with 5 levels.
+    Columns after one-hot encoding it? With drop-first?
+  \item Codes blue $0$, green $1$, red $2$; mean targets $30$, $10$, $20$. Fit
+    the least-squares line through the three points and give its SSE. What
+    would one-hot give?
+\end{enumerate}
+\end{tryit}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C12.\arabic*}]
+  \item \emph{Blood group (A, B, AB, O) for a linear model? Education
+    (School, Bachelor, Master, PhD) for a linear model?} Blood group is
+    nominal $\Rightarrow$ one-hot. Education has a real order $\Rightarrow$
+    ordinal codes $0$--$3$ in that order.
+  \item \emph{When is label encoding nevertheless fine?} For tree-based models,
+    which only split on order within one column.
+  \item \emph{Encoding vs feature engineering in one line.} Encoding
+    translates an existing column into numbers; engineering creates new
+    information from existing columns.
+  \item \emph{Why is \texttt{OrdinalEncoder}'s default wrong for \{low, medium,
+    high\}?} It sorts alphabetically --- high $0$, low $1$, medium $2$ ---
+    scrambling the order. Pass the categories explicitly.
+\end{enumerate}
+\end{concept}
+
+%======================================================================
+\section{Data reduction and PCA}
+\label{sec:pca}
+
+\method{reducing columns, and PCA by hand}
+\begin{enumerate}
+  \item \textbf{Three kinds of reduction}: \emph{feature selection} keeps a
+    subset of the original columns (filter, wrapper, embedded);
+    \emph{dimensionality reduction} (feature extraction, e.g.\ PCA) builds new
+    columns from all of them; \emph{sampling} (numerosity reduction) keeps
+    fewer rows. Selection cuts columns; sampling cuts rows.
+  \item \textbf{PCA}: standardise if the units differ; centre; covariance
+    matrix $S$; solve $\det(S - \lambda I) = 0$ (for $2\times2$,
+    $\lambda^2 - \operatorname{tr}(S)\lambda + \det S = 0$); unit eigenvectors
+    from $(S - \lambda I)u = 0$.
+  \item \textbf{Shortcut} for two standardised columns with correlation $r$:
+    $S = \begin{pmatrix}1 & r\\ r & 1\end{pmatrix}$, $\lambda = 1 \pm r$,
+    $u = \frac{1}{\sqrt2}(1, \pm1)$.
+  \item Explained variance $\lambda_k/\sum\lambda$; scores $t = x_c \cdot u$.
+    Check $\sum\lambda = \operatorname{tr}S$, $\prod\lambda = \det S$.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 13.1 --- five houses, Area and Bedrooms}}]
+Area $(1000, 1500, 2000, 2500, 3000)$, Bedrooms $(2, 3, 4, 4, 5)$.
+\textbf{Standardise} (divisor $n$): Area $\mu = 2000$, $\sigma = 707.11$,
+$z_A = (-1.4142, -0.7071, 0, 0.7071, 1.4142)$; Bedrooms $\mu = 3.6$,
+$\sigma = \sqrt{5.2/5} = 1.0198$, $z_B = (-1.5689, -0.5883, 0.3922, 0.3922,
+1.3728)$.
+
+\textbf{Correlation} $r = \frac15\sum z_Az_B = 4.8536/5 = 0.9707$, so
+$S = \begin{pmatrix}1 & 0.9707\\0.9707 & 1\end{pmatrix}$.
+\textbf{Eigenvalues} $\lambda_1 = 1.9707$, $\lambda_2 = 0.0293$ (sum $2$);
+PC1 explains $1.9707/2 = 98.5\%$. \textbf{Directions}
+$u_1 = \frac1{\sqrt2}(1,1)$ (``overall size''), $u_2 = \frac1{\sqrt2}(1,-1)$.
+\textbf{Scores} PC1 $= (z_A + z_B)/\sqrt2$: H01 $(-1.4142 - 1.5689)/1.4142 =
+-2.1094$; all five: $-2.1094, -0.9160, 0.2774, 0.7774, 1.9707$. Two columns
+replaced by one, $1.5\%$ of the variance lost --- because the two columns
+said nearly the same thing.
+\end{worked}
+
+\begin{worked}[{{Example 13.2 --- a covariance matrix that needs the full method}}]
+Points $(1,1), (3,3), (4,3), (5,5), (7,3)$; mean $(4,3)$; centred
+$(-3,-2), (-1,0), (0,0), (1,2), (3,0)$. Sums $\sum x_1^2 = 20$,
+$\sum x_2^2 = 8$, $\sum x_1x_2 = 8$; divide by $n - 1 = 4$:
+$S = \begin{pmatrix}5 & 2\\2 & 2\end{pmatrix}$.
+$\lambda^2 - 7\lambda + 6 = 0 \Rightarrow \lambda = 6, 1$ (check: $6+1 = 7$,
+$6 \times 1 = 6$). $\lambda = 6$: $-u_1 + 2u_2 = 0 \Rightarrow u =
+(2,1)/\sqrt5$; $\lambda = 1$: $u = (-1,2)/\sqrt5$. PC1 explains $6/7 =
+85.7\%$. Scores $(2x_{c1} + x_{c2})/\sqrt5 = (-8,-2,0,4,6)/\sqrt5$, sample
+variance $120/20 = 6 = \lambda_1$.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{Not scaling first} --- PCA then finds the column with the
+    largest numbers.
+  \item \textbf{Calling PCA feature selection.} Every component mixes every
+    original feature; ``Age was not useful'' cannot be concluded from PCA.
+  \item \textbf{Forgetting PCA is unsupervised}: it never looks at $y$, and
+    the discarded low-variance direction may be the predictive one.
+  \item \textbf{Unnormalised eigenvectors} in the scores.
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 13 --- numerical}}]
+\begin{enumerate}[label=\textbf{E13.\arabic*}]
+  \item Unit principal direction $u = (1/\sqrt2, 1/\sqrt2)$; project the centred
+    point $(2, 2)$ onto it.
+  \item Two standardised features have $r = 0.8$. Write the covariance matrix,
+    both eigenvalues, and the variance explained by PC1.
+  \item Points $(1,3), (5,3), (5,4), (7,3), (7,7)$: $S$ (divisor $n-1$),
+    eigenvalues, unit eigenvectors, PC1's share, and the PC1 scores.
+  \item Eigenvalues $5.2, 2.1, 1.1, 0.9, 0.4, 0.3$. How many components keep
+    $90\%$ of the variance? $95\%$?
+\end{enumerate}
+\end{tryit}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C13.\arabic*}]
+  \item \emph{Does PCA keep a subset of the named columns?} No --- it builds
+    new columns, each a weighted mix of all of them.
+  \item \emph{50 features: PCA keeps 5 components (92\% variance); a colleague
+    selects 5 original features. Which can you explain to a manager? Which
+    helps $k$-NN more?} Selection --- the features keep their meaning and
+    units. PCA usually helps $k$-NN more: its components are uncorrelated and
+    carry information from all 50 columns.
+  \item \emph{Why might keeping 95\% of the variance hurt prediction? How
+    should $k$ be chosen?} Variance in $X$ is not relevance to $y$. Choose the
+    number of components by cross-validated prediction error, inside the
+    pipeline.
+  \item \emph{Curse of dimensionality: what and whom?} As dimensions grow the
+    space's volume grows exponentially, data become sparse and all points
+    nearly equidistant. $k$-NN, $k$-means and RBF SVMs suffer directly.
+  \item \emph{3000 features, 200 rows?} Reduce (PCA or lasso) or regularise
+    strongly, selecting inside cross-validation; a linear model could fit the
+    training data perfectly.
+\end{enumerate}
+\end{concept}
+
+%======================================================================
+\section{Splitting and cross-validation}
+\label{sec:splits}
+
+\method{honest evaluation}
+\begin{enumerate}
+  \item \textbf{Train / validation / test}: fit on training; choose
+    hyperparameters on validation; report \emph{once} on test.
+  \item \textbf{Split counts}: $n$ rows at ratio $a{:}b$ $\to$ $na/(a+b)$ and
+    $nb/(a+b)$.
+  \item \textbf{$k$-fold CV}: $k$ folds of $n/k$ rows; each is the
+    validation fold once; $k$ fits, each on $n(1 - 1/k)$ rows. Report the
+    mean \emph{and} the spread of the $k$ scores. LOOCV is $k = n$.
+  \item \textbf{Match the split to the data}: \emph{stratified} (keep class
+    proportions in every fold), \emph{grouped} (all rows of one patient or
+    customer on one side), \emph{time-ordered} (train on the past, test on the
+    future).
+  \item A random split of $n$ rows with $n_+$ positives puts $k$ positives in
+    a test set of $t$ rows with probability
+    $\binom{n_+}{k}\binom{n - n_+}{t - k}/\binom nt$.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 14.1 --- counts, and the mean and spread of CV}}]
+$400$ houses split $75{:}25$: $300$ training, $100$ test. 5-fold CV on $100$
+rows: $20$ validation rows per fold, $5$ fits of $80$ rows each.
+
+Fold scores $0.78, 0.82, 0.75, 0.80, 0.85$: mean $4.00/5 = 0.80$; deviations
+$-0.02, 0.02, -0.05, 0, 0.05$; squares sum to $0.0058$; sd $=
+\sqrt{0.0058/5} = 0.0341$ (divisor $k$; with $k - 1$, $0.0381$ --- say which).
+Two models whose CV means differ by less than about this spread have not been
+shown to differ.
+\end{worked}
+
+\begin{worked}[{{Example 14.2 --- why stratify, group and respect time}}]
+\textbf{Twenty patients, five ill, four held out.} At random, the chance of
+\emph{no} ill patient in the test set is
+$\binom{15}{4}/\binom{20}{4} = 1365/4845 = 0.2817$ --- more than one split in
+four leaves recall uncomputable. Stratified: $5 \times \tfrac{4}{20} = 1$ ill
+and $3$ healthy, every time.
+
+\textbf{Grouped.} Repeated measurements of the same patient (or many
+transactions per customer) in both train and test let the model recognise
+individuals: the score is inflated. Split by patient (\texttt{GroupKFold}).
+\textbf{Time.} Stock prices split at random let the model train on the future
+and interpolate; use a temporal split.
+\end{worked}
+
+\begin{tryit}[{{Exercises 14 --- numerical}}]
+\begin{enumerate}[label=\textbf{E14.\arabic*}]
+  \item $400$ rows split $75{:}25$: rows in the training portion?
+  \item 5-fold CV on $100$ rows: validation rows per fold, and model fits?
+  \item Fold scores $0.81, 0.79, 0.86, 0.74, 0.80$: mean and sd (divisor $k$).
+  \item $30$ rows, $6$ positive, $5$ held out at random: probability of no
+    positive in the test set? What does a stratified split give?
+\end{enumerate}
+\end{tryit}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C14.\arabic*}]
+  \item \emph{Use of training, validation and test sets?} Training: learn the
+    parameters. Validation: compare models and tune hyperparameters. Test: a
+    single, final, unbiased estimate of performance on new data.
+  \item \emph{``My model is 96\% accurate'' --- measured on training data.
+    What is wrong, and what instead?} A training score measures fit, not
+    generalisation, and rewards memorisation. Evaluate on a held-out test set
+    (or by cross-validation).
+  \item \emph{Why a validation set when a test set exists?} Choosing a
+    hyperparameter by the test score is fitting to the test set; after many
+    comparisons the winner partly reflects that set's noise. The validation
+    set absorbs this so the test set stays clean.
+  \item \emph{Only 60 observations --- how to estimate performance?} $k$-fold
+    CV (or LOOCV); a single test set of a few rows is too unstable.
+  \item \emph{Tuning 50 models on the same CV scores and reporting the best?}
+    Selection optimism: the best of 50 noisy scores is biased upward. Use
+    nested CV, or confirm on an untouched test set.
+\end{enumerate}
+\end{concept}
+
+%======================================================================
+\section{Imbalanced data}
+\label{sec:imbalance}
+
+\method{metrics and remedies for a rare class}
+\begin{enumerate}
+  \item Build the confusion matrix for the rare (positive) class: $TP$,
+    $FP$, $FN$, $TN$.
+  \item accuracy $= \frac{TP + TN}{\text{all}}$; precision $= \frac{TP}{TP +
+    FP}$ (of those flagged, how many were real); recall $= \frac{TP}{TP + FN}$
+    (of the real ones, how many were caught); $F_1 = \frac{2PR}{P + R}$.
+  \item Compare with the \textbf{always-negative} baseline: its accuracy
+    equals the majority share, its recall is $0$.
+  \item \textbf{Remedies}, applied to the training part only: random
+    oversampling (duplicate minority rows), random undersampling (discard
+    majority rows), SMOTE ($x_{\text{new}} = x_i + \lambda(x_{\text{nb}} -
+    x_i)$, $\lambda \in [0,1]$), class weights, a moved threshold.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 15.1 --- one thousand patients, fifty ill}}]
+\textbf{Always ``no disease''}: $TN = 950$, $FN = 50$, $TP = FP = 0$. Accuracy
+$950/1000 = 95\%$; recall $0/50 = 0$; precision $0/0$, undefined.
+
+\textbf{A real model} flags 100 patients, 40 truly ill: $TP = 40$, $FP = 60$,
+$FN = 10$, $TN = 890$.
+\[
+  \text{precision} = \tfrac{40}{100} = 0.40, \quad
+  \text{recall} = \tfrac{40}{50} = 0.80, \quad
+  F_1 = \tfrac{2(0.40)(0.80)}{1.20} = 0.533,
+\]
+\[
+  \text{accuracy} = \tfrac{930}{1000} = 93\% .
+\]
+Lower accuracy than the useless model, yet it catches $80\%$ of the sick. In
+screening that trade is worth making; whether to favour precision or recall
+is a decision about consequences, not statistics.
+\end{worked}
+
+\begin{worked}[{{Example 15.2 --- resampling arithmetic, and SMOTE}}]
+From $950 + 50$: random oversampling $\to 950 + 950 = 1900$ rows (the 50 ill
+patients repeated); random undersampling $\to 50 + 50 = 100$ rows ($900$
+patients, $90\%$ of the data, thrown away). Balanced class weights
+$n/(K n_c)$: $1000/1900 = 0.5263$ and $1000/100 = 10$.
+
+\textbf{SMOTE} between $x_i = (5, 120)$ and its neighbour $(8, 150)$ with
+$\lambda = 0.25$: $x_i + 0.25(3, 30) = (5.75, 127.5)$. Every synthetic point
+lies on the segment between two real minority points --- unsafe when the
+classes interleave, with categorical features, or in high dimensions.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{Reporting accuracy} on an imbalanced problem.
+  \item \textbf{Resampling before the split}, or resampling the test set:
+    copies or interpolations of test rows leak into training, and a resampled
+    test set describes a world with the wrong prevalence.
+  \item \textbf{Swapping precision and recall.}
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 15 --- numerical}}]
+\begin{enumerate}[label=\textbf{E15.\arabic*}]
+  \item Among $400$ rows, $40$ are positive: the positive percentage? The
+    accuracy of an always-negative classifier?
+  \item Of $2000$ transactions, $40$ are fraudulent. A model flags $90$ and
+    catches $30$ of the frauds. Confusion matrix, accuracy, precision, recall,
+    $F_1$.
+  \item $10{,}000$ transactions, $100$ fraudulent; a detector flags $150$ and
+    catches $60$. Confusion matrix and all four metrics. A rival flags
+    nothing: its accuracy? Which would you deploy?
+  \item $1200$ majority and $80$ minority rows: rows after random oversampling
+    to balance? After undersampling? How many discarded?
+  \item $10{,}000$ patients, $200$ with a condition: accuracy and recall of
+    ``always healthy''?
+\end{enumerate}
+\end{tryit}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C15.\arabic*}]
+  \item \emph{400 houses, only 40 expensive: one sampling method; does it add
+    or remove rows?} Random oversampling (or SMOTE) adds minority rows; random
+    undersampling removes majority rows.
+  \item \emph{One application where recall matters more, one for precision.}
+    Recall: disease screening (a miss is costly). Precision: automatically
+    suspending accounts (a false alarm is costly).
+  \item \emph{Oversampling vs SMOTE.} Oversampling duplicates existing rows
+    (the model can memorise them); SMOTE interpolates new points (it asserts
+    that the segment between two minority points is minority territory).
+\end{enumerate}
+\end{concept}
+
+%======================================================================
+\section{Data leakage and the order of the pipeline}
+\label{sec:leakage}
+
+\method{finding a leak}
+\begin{enumerate}
+  \item \textbf{Target leakage}: a feature that would not exist at the moment
+    the prediction is made, or is computed from the target. Test: \emph{at
+    prediction time, would I have this value?}
+  \item \textbf{Preprocessing leakage}: any statistic (mean, median, min/max,
+    quartiles, selected features, PCA axes, resampling) learned from rows
+    that include the test set.
+  \item \textbf{The safe order}: understand the columns $\to$ drop leaks and
+    identifiers $\to$ correct known errors $\to$ \textbf{split} $\to$ impute,
+    transform, encode, scale, select, resample --- all \emph{fitted on
+    training data} inside a \texttt{Pipeline} $\to$ model $\to$ evaluate once
+    on test.
+  \item A pipeline prevents preprocessing leakage; only domain judgement
+    prevents target leakage.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 16.1 --- find every leak}}]
+\begin{lstlisting}
+df["price_per_sqft"] = df["Price_lakh"] / df["Area_sqft"]
+df = df.fillna(df.mean(numeric_only=True))
+X = StandardScaler().fit_transform(df.drop(columns=["Price_lakh"]))
+X = SelectKBest(k=5).fit_transform(X, df["Price_lakh"])
+\end{lstlisting}
+\begin{enumerate}[label=(\roman*)]
+  \item \texttt{price\_per\_sqft} is computed from the target: \textbf{target
+    leakage} --- the model is handed the answer.
+  \item \texttt{fillna(df.mean())} on all rows: \textbf{preprocessing
+    leakage} (and the mean is a poor fill for skewed columns).
+  \item \texttt{StandardScaler().fit\_transform} on all rows:
+    \textbf{preprocessing leakage}.
+  \item \texttt{SelectKBest} with the labels of all rows:
+    \textbf{preprocessing leakage} through feature selection --- and it
+    survives later cross-validation, because every fold inherits the same
+    contaminated columns.
+\end{enumerate}
+Also in the housing table: \textbf{Buyer\_Income} is known only after the
+sale --- a target leak; \textbf{ID} is an identifier --- drop it (data
+reduction: feature selection).
+\end{worked}
+
+\begin{worked}[{{Example 16.2 --- the pipeline, in order}}]
+\small
+\begin{enumerate}
+  \item Drop \texttt{ID} and \texttt{Income}; correct H12's Age $150 \to 15$.
+  \item Split into training and test sets (stratify or group if needed).
+  \item On the training set only: median-impute Area and Age, group-wise
+    mode for Garage; log-transform Price (or keep H11 and use a robust
+    method); one-hot Location, ordinal Condition, binary Garage; engineer
+    \texttt{Area\_per\_Bedroom}; scale if the model needs it.
+  \item Wrap step 3 and the model in a \texttt{Pipeline}, tune by
+    cross-validation on the training set, then evaluate \emph{once} on the
+    test set.
+\end{enumerate}
+\end{worked}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C16.\arabic*}]
+  \item \emph{\texttt{scaler.fit\_transform(X\_test)} appears in a pipeline.}
+    It learns new parameters from the test data, so train and test are scaled
+    differently and the test set influences the transformation. Use
+    \texttt{fit\_transform} on training, \texttt{transform} on test.
+  \item \emph{A readmission model uses \texttt{discharge\_destination}.} Target
+    leakage for any model meant to predict at admission: the value is recorded
+    at discharge and reflects the outcome being predicted.
+  \item \emph{SMOTE on the whole dataset, then split, then 99\% accuracy.}
+    Synthetic points derived from rows that later land in the test set sit in
+    training --- the model has seen smeared copies of the answers.
+  \item \emph{The 50 features most correlated with the target are selected,
+    then the data are split and cross-validated; scores collapse in
+    production.} Selection leakage: the test rows helped choose the features,
+    and CV cannot catch it because selection happened before the loop. Put
+    selection inside the pipeline.
+  \item \emph{A house-price model uses the final registered sale tax.} Target
+    leakage --- the tax is computed from the sale price. Remove it and
+    evaluate on data that mimics prediction time.
+  \item \emph{Loan default (3\% default): which column goes first ---
+    \texttt{days\_until\_first\_missed\_payment} or
+    \texttt{loan\_officer\_id}?} The first: it exists only after a default
+    has begun --- a textbook target leak. The officer ID is an identifier and
+    should also go.
+  \item \emph{Why is leakage more dangerous than a crash?} It makes results
+    look \emph{better}, so every incentive is to accept it.
+  \item \emph{Why must SMOTE, scaling and selection sit inside the CV loop?}
+    So that every statistic is refitted on each fold's training part and the
+    held-out fold stays unseen.
+\end{enumerate}
+\end{concept}
+\unit{Unit V --- Regression (L8--L9)}
+%======================================================================
+\section{Regression foundations}
+\label{sec:regfound}
+
+\method{setting up a regression problem}
+\begin{enumerate}
+  \item \textbf{Regression} predicts a continuous numerical target from one
+    or more features, by estimating $f$ with $y \approx f(x)$ --- for the data
+    given and for new data.
+  \item \textbf{Two jobs}: \emph{estimation} (how much does a square foot add?)
+    and \emph{prediction} (what will this 1750 sq ft house fetch?).
+  \item \textbf{``Linear'' means linear in the parameters}, not in $x$:
+    $b_0 + b_1x + b_2x^2$ and $b_0 + b_1\ln x$ are linear models;
+    $b_0e^{b_1x}$ is not.
+  \item \textbf{Eight steps}: state the question $\to$ collect and plot $\to$
+    choose the form $\to$ split $\to$ estimate (least squares) $\to$ check
+    adequacy (residuals) $\to$ validate $\to$ interpret and report. If the
+    residuals say the form is wrong, go back to step 3.
+  \item \textbf{Simple linear regression}: $y_i = \beta_0 + \beta_1x_i +
+    \varepsilon_i$; fitted $\hat y_i = b_0 + b_1x_i$. Greek $=$ unknown
+    population values; Latin $=$ estimates from the sample. $\varepsilon_i$
+    (from the true line) is unobservable; the residual $e_i = y_i - \hat y_i$
+    is computed.
+  \item \textbf{Assumptions}, most to least damaging when violated:
+    linearity, independence, homoscedasticity (constant $\operatorname{Var}
+    \varepsilon$), normality.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 17.1 --- regression or not, linear or not}}]
+\small
+\begin{tabular}{@{}p{5.6cm}p{8.3cm}@{}}
+\toprule
+\textbf{Model / task} & \textbf{Verdict}\\ \midrule
+Predict tomorrow's closing price, yield per hectare, length of hospital stay
+& regression: the target is continuous\\
+Predict whether a house is ``expensive'' & classification: the target is a
+category\\
+$\hat y = b_0 + b_1x + b_2x^2$ & linear regression: make a column $x^2$ and it is
+a two-feature linear model\\
+$\hat y = b_0 + b_1\ln x$ & linear regression in the feature $\ln x$\\
+$\hat y = b_0e^{b_1x}$ & \emph{not} linear: $b_1$ sits inside the exponential
+(taking $\ln y$ turns it into a linear model of $\ln y$)\\
+\bottomrule
+\end{tabular}
+
+\normalsize
+\textbf{$\beta$ vs $b$, $\varepsilon$ vs $e$.} A different sample of 200 houses
+gives different $b$'s and the same $\beta$'s. The error term carries
+everything not in the model --- condition of the plaster, the seller's
+urgency --- and the model asks only that it be unsystematic.
+\end{worked}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C17.\arabic*}]
+  \item \emph{State the simple linear regression model and name every
+    symbol.} $y_i = \beta_0 + \beta_1x_i + \varepsilon_i$: $y$ target, $x$
+    feature, $\beta_0$ intercept, $\beta_1$ slope, $\varepsilon_i$ unobserved
+    error, $i = 1,\dots,n$.
+  \item \emph{Why squared error to derive the estimates? Two reasons.} It is
+    differentiable and convex, giving a unique closed-form solution; and it
+    punishes large misses more than small ones, which is usually wanted (and,
+    by the Gauss--Markov theorem, gives the minimum-variance linear unbiased
+    estimator). The price: one outlier can drag the line.
+  \item \emph{Name the four assumptions and rank them.} Linearity,
+    independence, homoscedasticity, normality --- in that order of damage.
+    Heteroscedasticity leaves the coefficients unbiased but the intervals
+    wrong; normality matters only for small-sample inference.
+  \item \emph{Estimation vs prediction?} Estimation asks for a trustworthy
+    coefficient; prediction asks for a good $\hat y$ on new data. A model can
+    do one well and the other badly.
+\end{enumerate}
+\end{concept}
+
+%======================================================================
+\section{Least squares by hand}
+\label{sec:ls}
+
+\method{fitting $\hat y = b_0 + b_1x$}
+\begin{enumerate}
+  \item Minimise $S(b_0, b_1) = \sum_i (y_i - b_0 - b_1x_i)^2$.
+  \item \textbf{Normal equations} (set both partial derivatives to zero):
+    $nb_0 + b_1\sum x_i = \sum y_i$ and $b_0\sum x_i + b_1\sum x_i^2 = \sum
+    x_iy_i$.
+  \item Solution: $b_1 = S_{xy}/S_{xx}$, $b_0 = \bar y - b_1\bar x$, with
+    $S_{xx} = \sum(x_i - \bar x)^2 = \sum x_i^2 - n\bar x^2$ and
+    $S_{xy} = \sum(x_i - \bar x)(y_i - \bar y) = \sum x_iy_i - n\bar x\bar y$.
+  \item \textbf{Table}: $x - \bar x$, $y - \bar y$, $(x - \bar x)^2$,
+    $(x - \bar x)(y - \bar y)$, then $\hat y$, $e$, $e^2$.
+  \item \textbf{Checks} (they are the two normal equations): $\sum e_i = 0$,
+    $\sum x_ie_i = 0$; the line passes through $(\bar x, \bar y)$;
+    $\mathrm{SST} = \mathrm{SSR} + \mathrm{SSE}$ with $\mathrm{SSR} =
+    b_1^2S_{xx}$.
+  \item \textbf{Matrix form}: $b = (X^\top X)^{-1}X^\top y$ with a column of
+    ones; $X^\top X = \begin{pmatrix} n & \sum x\\ \sum x & \sum
+    x^2\end{pmatrix}$, $X^\top y = \begin{pmatrix}\sum y\\ \sum
+    xy\end{pmatrix}$.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 18.1 --- derive $b_0$ and $b_1$ (Class Test Q4)}}]
+\textbf{What we minimise:} $S(b_0, b_1) = \sum_{i=1}^{n}(y_i - b_0 -
+b_1x_i)^2$.
+
+\textbf{Differentiate.}
+\[
+  \frac{\partial S}{\partial b_0} = -2\sum(y_i - b_0 - b_1x_i) = 0,
+  \qquad
+  \frac{\partial S}{\partial b_1} = -2\sum x_i(y_i - b_0 - b_1x_i) = 0 .
+\]
+\textbf{Normal equations.} $nb_0 + b_1\sum x_i = \sum y_i$ \ (1), and
+$b_0\sum x_i + b_1\sum x_i^2 = \sum x_iy_i$ \ (2).
+
+\textbf{Solve.} Divide (1) by $n$: $b_0 + b_1\bar x = \bar y$, so $b_0 =
+\bar y - b_1\bar x$. Substitute into (2) and use $\sum x_i = n\bar x$:
+\[
+  b_1\Bigl(\sum x_i^2 - n\bar x^2\Bigr) = \sum x_iy_i - n\bar x\bar y
+  \quad\Longrightarrow\quad
+  b_1 = \frac{\sum x_iy_i - n\bar x\bar y}{\sum x_i^2 - n\bar x^2}
+      = \frac{S_{xy}}{S_{xx}} .
+\]
+Defined only when $S_{xx} > 0$ (the $x$ values are not all equal). The
+second derivatives ($2n > 0$ and a positive determinant $4nS_{xx}$) confirm a
+minimum.
+
+\textbf{The line passes through $(\bar x, \bar y)$}: at $x = \bar x$,
+$\hat y = b_0 + b_1\bar x = (\bar y - b_1\bar x) + b_1\bar x = \bar y$.
+\end{worked}
+
+\begin{worked}[{{Example 18.2 --- six houses by hand}}]
+\begin{center}
+\small
+\begin{tabular}{@{}lrrrrrr|r@{}}
+\toprule
+house & A & B & C & D & E & F & sum\\ \midrule
+Area $x$ & 600 & 800 & 1000 & 1200 & 1400 & 1600 & 6600\\
+Price $y$ & 40 & 61 & 74 & 81 & 87 & 107 & 450\\ \midrule
+$x - \bar x$ & $-500$ & $-300$ & $-100$ & $100$ & $300$ & $500$ & $0$\\
+$y - \bar y$ & $-35$ & $-14$ & $-1$ & $6$ & $12$ & $32$ & $0$\\
+$(x - \bar x)^2$ & 250000 & 90000 & 10000 & 10000 & 90000 & 250000 & \textbf{700000}\\
+$(x - \bar x)(y - \bar y)$ & 17500 & 4200 & 100 & 600 & 3600 & 16000 & \textbf{42000}\\ \midrule
+$\hat y = 9 + 0.06x$ & 45 & 57 & 69 & 81 & 93 & 105 & 450\\
+$e = y - \hat y$ & $-5$ & $+4$ & $+5$ & $0$ & $-6$ & $+2$ & $0$\\
+$e^2$ & 25 & 16 & 25 & 0 & 36 & 4 & \textbf{106}\\
+\bottomrule
+\end{tabular}
+\end{center}
+$\bar x = 1100$, $\bar y = 75$; $b_1 = 42000/700000 = 0.06$ lakh per sq ft;
+$b_0 = 75 - 0.06 \times 1100 = 9$:
+\[
+  \boxed{\hat y = 9 + 0.06\,x}
+\]
+\textbf{Checks.} $\sum e = 0$; $\sum xe = 0$; at $x = 1100$, $\hat y = 75$.
+$\mathrm{SSE} = 106$, $\mathrm{MSE} = 106/6 = 17.67$. $\mathrm{SST} = S_{yy} =
+2626$, $\mathrm{SSR} = 2626 - 106 = 2520 = 0.06^2 \times 700000$ \checkmark.
+No other straight line has a smaller SSE: $S(b_0, b_1)$ is a convex bowl with
+one bottom at $(9, 0.06)$ --- which is why calculus, not gradient descent, is
+enough here. (Gradient descent on the same SSE reaches the same answer, more slowly --- and much faster when the features are scaled.)
+
+\textbf{Interpretation.} Each extra square foot is \emph{associated with}
+$0.06$ lakh (Rs.~6{,}000) more;
+$b_0 = 9$ is the value at $x = 0$, far outside the data and not meaningful on
+its own.
+\end{worked}
+
+\begin{worked}[{{Example 18.3 --- the matrix route}}]
+$x = (0, 1, 2, 3)$, $y = (1, 3, 4, 6)$:
+$X^\top X = \begin{pmatrix}4 & 6\\ 6 & 14\end{pmatrix}$,
+$X^\top y = \begin{pmatrix}14\\ 29\end{pmatrix}$, $\det = 56 - 36 = 20$,
+\[
+  b = \frac1{20}\begin{pmatrix}14 & -6\\ -6 & 4\end{pmatrix}
+      \begin{pmatrix}14\\29\end{pmatrix}
+    = \frac1{20}\begin{pmatrix}196 - 174\\ -84 + 116\end{pmatrix}
+    = \begin{pmatrix}1.1\\ 1.6\end{pmatrix}.
+\]
+Cross-check: $\bar x = 1.5$, $\bar y = 3.5$, $S_{xx} = 5$, $S_{xy} = 8$,
+$b_1 = 1.6$, $b_0 = 1.1$ \checkmark.
+
+\textbf{How precise is $b_1$?} $\operatorname{Var}(b_1) = \sigma^2/S_{xx}$:
+spreading the $x$ values out (larger $S_{xx}$) pins the slope down more
+precisely, at no extra cost in $n$.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{$b_1 = S_{xy}/S_{yy}$} --- that is the slope of $x$ on $y$.
+  \item \textbf{Rounding $b_1$ before computing $b_0$.}
+  \item \textbf{Residuals that do not sum to zero} mean an arithmetic error,
+    every time (with an intercept).
+  \item \textbf{Extrapolating} far outside the range of $x$, or reading $b_1$
+    causally.
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 18 --- numerical}}]
+\begin{enumerate}[label=\textbf{E18.\arabic*}]
+  \item $y = 12$, $\hat y = 10$: the squared residual. For six houses with
+    $\mathrm{SSE} = 106$: the MSE.
+  \item Least-squares slope and intercept for $(1,2), (2,3), (3,5)$.
+  \item Use $\hat y = 9 + 0.06x$ at $x = 600$ with observed $y = 40$: the signed
+    residual.
+  \item $x = (2, 4, 6, 8, 10)$, $y = (5, 11, 14, 20, 25)$: $\bar x$, $\bar y$,
+    $S_{xx}$, $S_{xy}$, $b_1$, $b_0$; predict at $x = 7$; verify the residuals
+    sum to zero and compute SSE.
+  \item From summary statistics: $n = 10$, $\sum x = 50$, $\sum y = 120$,
+    $\sum x^2 = 310$, $\sum xy = 660$. Find $b_1$, $b_0$ and $\hat y(7)$.
+  \item Fit $\hat y = wx$ (no intercept) to $x = (1, 2, 3)$, $y = (4, 5, 7)$
+    with $w = \sum xy/\sum x^2$. Do the residuals sum to zero? Which property
+    survives, and why?
+\end{enumerate}
+\end{tryit}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C18.\arabic*}]
+  \item \emph{Write the two normal equations and say what each forces on the
+    residuals.} $\sum(y_i - b_0 - b_1x_i) = 0$ forces $\sum e_i = 0$;
+    $\sum x_i(y_i - b_0 - b_1x_i) = 0$ forces $\sum x_ie_i = 0$ (residuals
+    uncorrelated with $x$).
+  \item \emph{Why does changing area from sq ft to sq m change $b_1$ but not
+    the correlation?} $b_1 = r\,s_y/s_x$: $r$ is unit-free, the slope carries
+    the units (a factor of $10.76$ here).
+  \item \emph{Model A: train RMSE 2, validation RMSE 9. Model B: 4 and 5.
+    Which?} B: A overfits --- its training error flatters it.
+\end{enumerate}
+\end{concept}
+%======================================================================
+\section{Direct regression and maximum likelihood}
+\label{sec:mle}
+
+\method{choosing ``closest'', and the likelihood route to least squares}
+\begin{enumerate}
+  \item \textbf{Three defensible lines}, all through $(\bar x, \bar y)$:
+    \emph{direct} (vertical distances, $y$ on $x$) slope $S_{xy}/S_{xx}$;
+    \emph{inverse} ($x$ on $y$, drawn on $y$--$x$ axes) slope $S_{yy}/S_{xy}$;
+    \emph{orthogonal} (perpendicular distances) slope $=$ direction of the
+    leading eigenvector of the covariance matrix. Their ratio:
+    $\text{direct}/\text{inverse} = r^2$; for $r > 0$ the orthogonal slope lies
+    between the other two.
+  \item \textbf{Likelihood.} Assume $\varepsilon_i \sim N(0, \sigma^2)$
+    independent, so $y_i \mid x_i \sim N(\beta_0 + \beta_1x_i, \sigma^2)$ with
+    density $f(y_i) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\!\bigl(-\frac{(y_i -
+    \beta_0 - \beta_1x_i)^2}{2\sigma^2}\bigr)$.
+  \item $L = \prod_i f(y_i)$; take logs:
+    $\ln L = -\frac n2\ln(2\pi) - \frac n2\ln\sigma^2 - \frac{1}{2\sigma^2}
+    \sum(y_i - \beta_0 - \beta_1x_i)^2$.
+  \item \textbf{Punchline}: for any fixed $\sigma^2$, maximising $\ln L$ over
+    the coefficients $=$ minimising SSE. Under normal errors, least squares
+    \emph{is} maximum likelihood.
+  \item $\partial\ln L/\partial\sigma^2 = 0$ gives $\hat\sigma^2_{\text{ML}} =
+    \mathrm{SSE}/n$ --- biased low. The unbiased estimate is $s^2 =
+    \mathrm{SSE}/(n - p - 1)$ ($= \mathrm{SSE}/(n-2)$ for one feature); $s$ is
+    the typical residual size, in the units of $y$.
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 19.1 --- three lines through the same five points}}]
+$x = (1,2,3,4,5)$, $y = (2,4,5,4,5)$: $\bar x = 3$, $\bar y = 4$,
+$S_{xx} = 10$, $S_{yy} = 6$, $S_{xy} = 6$.
+
+\textbf{Direct}: $b_1 = 6/10 = 0.6$, $b_0 = 4 - 1.8 = 2.2$.
+\textbf{Inverse}: slope $S_{yy}/S_{xy} = 1.0$, intercept $4 - 3 = 1.0$.
+\textbf{Orthogonal}: covariance matrix ($n-1 = 4$)
+$\begin{pmatrix}2.5 & 1.5\\1.5 & 1.5\end{pmatrix}$, $\lambda =
+(4 \pm \sqrt{10})/2 = 3.5811, 0.4189$; leading eigenvector
+$(2.5 - 3.5811)v_1 + 1.5v_2 = 0 \Rightarrow$ slope $v_2/v_1 = 0.7208$.
+
+Ratio $0.6/1.0 = 0.6 = r^2 = 36/60$ \checkmark, and $0.6 < 0.7208 < 1.0$. Each
+line minimises its own criterion and no other. ``Regression'' means the direct
+line; the next example shows why that criterion in particular.
+\textbf{Do not use the direct fit backwards}: rearranging $\hat y = 2.2 + 0.6x$
+to predict $x$ gives slope $1/0.6$, not the inverse regression.
+\end{worked}
+
+\begin{worked}[{{Example 19.2 --- from the likelihood to least squares, on six houses}}]
+In $\ln L$ the first two terms do not contain $\beta_0, \beta_1$, and the third
+is $-\mathrm{SSE}$ times the positive constant $1/(2\sigma^2)$. So the
+$(\beta_0, \beta_1)$ that maximise $\ln L$ are exactly the least-squares
+$(b_0, b_1)$: for the six houses, $(9, 0.06)$.
+
+Then
+$\frac{\partial \ln L}{\partial\sigma^2} = -\frac{n}{2\sigma^2} +
+\frac{\mathrm{SSE}}{2\sigma^4} = 0 \Rightarrow \hat\sigma^2_{\text{ML}} =
+\frac{\mathrm{SSE}}{n} = \frac{106}{6} = 17.67$, while
+$s^2 = \frac{106}{6 - 2} = 26.5$, $s = 5.15$ lakh. The ratio $(n-2)/n = 4/6$:
+at $n = 6$ the ML estimate is a third too small in expectation; at $n = 200$
+the gap nearly vanishes.
+
+\textbf{Likelihood is a product of densities.} Two independent observations
+with densities $0.2$ and $0.3$ under a candidate model have likelihood
+$0.2 \times 0.3 = 0.06$ ($\ln L = -2.8134$). A density height is not the
+probability of that exact value --- for a continuous outcome that probability
+is $0$.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{Dividing SSE by $n$ and calling it unbiased.} That is the ML
+    estimate; the unbiased one divides by $n - 2$ (one feature).
+  \item \textbf{``Normality is needed for $b_0, b_1$ to be good.''} It is not:
+    linearity, independence and constant variance suffice (Gauss--Markov).
+    Normality gives the ML interpretation and exact small-sample tests.
+  \item \textbf{Forgetting the logs}: maximise $\ln L$, not $L$ --- same
+    maximiser, far easier algebra.
+  \item \textbf{Unequal error variances}: if $\operatorname{Var}\varepsilon_i$
+    differs by row, ML becomes \emph{weighted} least squares.
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 19 --- numerical}}]
+\begin{enumerate}[label=\textbf{E19.\arabic*}]
+  \item Independent observations have densities $0.2$ and $0.3$ under a
+    candidate model. Their joint likelihood, and its log?
+  \item For the line of Example 18.3 ($x = (0,1,2,3)$, $y = (1,3,4,6)$,
+    $\hat y = 1.1 + 1.6x$) compute SSE, $\hat\sigma^2_{\text{ML}}$, $s^2$ and $s$.
+  \item For $x = (2,4,6,8,10)$, $y = (5,11,14,20,25)$ (E18.4) the direct slope is
+    $2.45$. Compute the inverse slope $S_{yy}/S_{xy}$ and check that
+    direct/inverse $= r^2$.
+  \item Derive $\hat\sigma^2_{\text{ML}} = \mathrm{SSE}/n$ from $\ln L$.
+\end{enumerate}
+\end{tryit}
+
+%======================================================================
+\section{\texorpdfstring{$R^2$, adjusted $R^2$ and the error summary}{R squared, adjusted R squared and the error summary}}
+\label{sec:r2}
+
+\method{judging how good a fit is}
+\begin{enumerate}
+  \item $\mathrm{SST} = \sum(y_i - \bar y)^2$ (the ``predict $\bar y$''
+    model), $\mathrm{SSE} = \sum e_i^2$, $\mathrm{SSR} = \sum(\hat y_i - \bar
+    y)^2 = b_1^2S_{xx}$, and $\mathrm{SST} = \mathrm{SSR} + \mathrm{SSE}$
+    (exact, because of the normal equations).
+  \item $R^2 = \mathrm{SSR}/\mathrm{SST} = 1 - \mathrm{SSE}/\mathrm{SST}$: the
+    share of the variation in $y$ the model accounts for. For one feature,
+    $R^2 = r^2$ with $r = S_{xy}/\sqrt{S_{xx}S_{yy}}$ --- use it as a check.
+  \item Adjusted: $R^2_{\text{adj}} = 1 - (1 - R^2)\frac{n-1}{n-p-1}$, $p$ =
+    number of features (not counting the intercept). It can fall when a
+    useless feature is added.
+  \item On held-out data use the test mean in SST; $R^2$ can then be
+    \emph{negative} (worse than predicting the mean).
+  \item \textbf{Report three numbers}: $R^2$ (share explained), RMSE $=
+    \sqrt{\mathrm{SSE}/n}$ (in the units of $y$, punishes big misses), MAE
+    (typical miss).
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 20.1 --- the six houses}}]
+$\mathrm{SST} = S_{yy} = 2626$, $\mathrm{SSE} = 106$, $\mathrm{SSR} = 2520$
+($= 0.06^2 \times 700000$ \checkmark).
+\[
+  R^2 = \tfrac{2520}{2626} = 0.9596, \qquad
+  r = \tfrac{42000}{\sqrt{700000 \times 2626}} = 0.9796,\ r^2 = 0.9596\ \checkmark
+\]
+\[
+  R^2_{\text{adj}} = 1 - (0.0404)\tfrac{5}{4} = 0.9495,
+\]
+\[
+  \mathrm{RMSE} = \sqrt{106/6} = 4.20 \text{ lakh}, \qquad
+  \mathrm{MAE} = \tfrac{22}{6} = 3.67 \text{ lakh}.
+\]
+``Explains $96\%$ of the variation'' and ``typically wrong by about 4 lakh'' are
+both true; only the second tells a buyer whether the model is usable.
+\end{worked}
+
+\begin{worked}[{{Example 20.2 --- negative $R^2$, and adjusted $R^2$ deciding}}]
+\textbf{Held-out rows} $y = (4, 6, 8, 10)$, predictions $(7, 6, 6, 5)$. Test
+mean $7$: SST $= 9 + 1 + 1 + 9 = 20$; SSE $= 9 + 0 + 4 + 25 = 38$;
+$R^2 = 1 - 38/20 = \mathbf{-0.90}$. Predicting $7$ everywhere would score $0$;
+$R^2$ has no lower bound. (Likewise SSE $= 150$, SST $= 100$ gives
+$R^2 = -0.5$.)
+
+\textbf{Two models, $n = 30$}: A ($p = 2$, $R^2 = 0.64$) and B ($p = 8$,
+$R^2 = 0.70$).
+$R^2_{\text{adj}}(A) = 1 - 0.36 \times \tfrac{29}{27} = 0.6133$;
+$R^2_{\text{adj}}(B) = 1 - 0.30 \times \tfrac{29}{21} = 0.5857$ --- A is
+preferred. At $n = 200$ the same $R^2$s give $0.6363$ and $0.6874$ and B wins:
+the penalty weakens as $n$ grows, so the final judge is still a held-out or
+cross-validated score.
+\end{worked}
+
+\begin{caution}[{{Mistakes that cost marks}}]
+\begin{itemize}
+  \item \textbf{``$R^2 = 0.94$, so the model is 94\% accurate.''} $R^2$ is
+    not accuracy (a classification term); it is unit-free and says nothing
+    about the size of a typical error --- and a training $R^2$ is not evidence
+    at all.
+  \item \textbf{Training $R^2$ rose when I added a feature, so it helps.} It
+    can never fall: the old fit is still available with the new coefficient at
+    $0$.
+  \item \textbf{Test $R^2$ with the training mean}, or $p$ counting the
+    intercept.
+  \item \textbf{$R^2$ as proof the form is right.} Anscombe's four datasets
+    share $R^2 \approx 0.67$; only one is a straight line with scatter.
+\end{itemize}
+\end{caution}
+
+\begin{tryit}[{{Exercises 20 --- numerical}}]
+\begin{enumerate}[label=\textbf{E20.\arabic*}]
+  \item SSE $= 20$ and SST $= 100$ on the same evaluation set: $R^2$? And for
+    SSE $= 150$, SST $= 100$?
+  \item For the fit of E18.4 ($\hat y = 0.30 + 2.45x$): SSE, SST, $R^2$ (two
+    ways), RMSE and MAE.
+  \item $n = 50$, $p = 6$, SST $= 48{,}000$, SSE $= 7{,}200$: $R^2$, adjusted
+    $R^2$ and $s = \sqrt{\mathrm{SSE}/(n - p - 1)}$. A seventh feature raises
+    $R^2$ to $0.858$: the new adjusted $R^2$ --- did it earn its place?
+  \item Held-out $y = (2, 5, 8)$, predictions $(6, 5, 3)$: the test $R^2$.
+  \item $n = 20$. A: $p = 1$, $R^2 = 0.50$. B: $p = 6$, $R^2 = 0.60$. Which
+    does adjusted $R^2$ prefer?
+\end{enumerate}
+\end{tryit}
+
+%======================================================================
+\section{Model adequacy, over-fitting and cross-validation}
+\label{sec:adequacy}
+
+\method{checking a fitted regression}
+\begin{enumerate}
+  \item \textbf{Plot residuals against fitted values.} A formless band around
+    $0$ is healthy. A curve (smile or frown) $\Rightarrow$ wrong functional
+    form (add $x^2$, transform). A funnel $\Rightarrow$ non-constant variance
+    (log the target, or weighted least squares). Isolated points $\Rightarrow$
+    investigate them; a high-\emph{leverage} point (extreme in $x$) can rotate
+    the line.
+  \item Residuals against each feature, against time (drift $\Rightarrow$
+    dependence), and a normal Q--Q plot (least important).
+  \item \textbf{Over-fitting}: great training score, much worse held-out score.
+    \textbf{Under-fitting}: poor on both. Over-fitting depends on flexibility
+    \emph{relative to} $n$.
+  \item \textbf{Cross-validation as the detector}: choose the model (e.g.\ the
+    polynomial degree) with the best cross-validated error; report the mean and
+    spread across folds. Pool fold errors through MSE: pooled RMSE $=
+    \sqrt{\text{mean of fold MSEs}}$ (equal-size folds).
+\end{enumerate}
+\end{keyidea}
+
+\begin{worked}[{{Example 21.1 --- the degree curve}}]
+Sixteen houses fitted, eight withheld; polynomials in area:
+\begin{center}
+\small
+\begin{tabular}{@{}rrrl@{}}
+\toprule
+degree & train $R^2$ & held-out $R^2$ & verdict\\ \midrule
+1 & $0.811$ & $+0.838$ & the relationship, correctly identified\\
+3 & $0.820$ & $+0.758$ & extra flexibility already costing accuracy\\
+5 & $0.954$ & $-37.5$ & fitting noise\\
+9 & $0.979$ & $-16{,}028$ & fitting noise energetically\\
+\bottomrule
+\end{tabular}
+\end{center}
+Training $R^2$ climbs every time; the held-out score collapses. Every training-set
+score ($R^2$, even adjusted $R^2$) prefers degree 9 --- over-fitting is
+invisible from inside. The fix is procedural: withhold data and never let a
+decision depend on it. Choose \textbf{degree 1}.
+\end{worked}
+
+\begin{worked}[{{Example 21.2 --- reading fold scores}}]
+Five folds give RMSE $3.0, 2.5, 3.5, 4.0, 3.0$ lakh. Mean fold RMSE $= 3.2$.
+Pooled RMSE $= \sqrt{(9 + 6.25 + 12.25 + 16 + 9)/5} = \sqrt{10.5} = 3.2404$
+--- not the same number, because RMSE is a square root of an average. The
+spread ($2.5$ to $4.0$) is part of the answer: quoting one split's RMSE to four
+figures claims a precision the data does not have.
+
+\textbf{Model A}: train RMSE $2$, validation RMSE $9$. \textbf{Model B}: $4$
+and $5$. Choose \textbf{B}; A's training error flatters it (over-fitting).
+\end{worked}
+
+\begin{tryit}[{{Exercises 21 --- numerical}}]
+\begin{enumerate}[label=\textbf{E21.\arabic*}]
+  \item Fold RMSEs are $2, 3, 4$: their mean? Three equal folds have MSEs $4, 9,
+    16$: the pooled out-of-fold RMSE?
+  \item Three models: A (train $R^2$ $0.63$, test $0.61$), B ($0.88$, $0.85$),
+    C ($0.999$, $0.41$). Diagnose each and choose.
+\end{enumerate}
+\end{tryit}
+
+\begin{concept}
+\begin{enumerate}[label=\textbf{C21.\arabic*}]
+  \item \emph{A curved residual-vs-fitted pattern suggests?} The linear form
+    is wrong (linearity violated); the coefficients describe a relationship
+    that does not exist. Add a polynomial term or transform the feature.
+  \item \emph{A funnel?} Non-constant variance: coefficients stay unbiased but
+    their standard errors and intervals are wrong. Log the target or use
+    weighted least squares.
+  \item \emph{Distinguish nonlinearity, unequal variance and dependence in
+    diagnostics. Can CV alone establish every assumption?} Curve vs funnel vs
+    pattern over time/order. No --- CV measures predictive error; it does not
+    test independence or constant variance.
+  \item \emph{Why is $R^2$ undefined when all evaluated targets are equal? Why
+    can training $R^2$ rise with a useless predictor?} SST $= 0$, so the ratio
+    divides by zero. Adding a column enlarges the space least squares
+    searches, so SSE cannot rise.
+  \item \emph{Adding a feature raises training $R^2$ from $0.81$ to $0.83$
+    but lowers CV $R^2$ from $0.79$ to $0.74$.} Over-fitting: drop the
+    feature; trust the cross-validated score.
+  \item \emph{Name Anscombe's point in one sentence.} Four datasets with the
+    same means, line and $R^2$ look completely different when plotted ---
+    always plot.
+  \item \emph{Leave-one-out or 5-fold?} 5- or 10-fold is the default; LOOCV
+    ($n$ fits) is nearly unbiased but high-variance, for very small datasets.
+\end{enumerate}
+\end{concept}
+%======================================================================
+\section{Practice papers}
+\label{sec:papers}
+
+Sit each paper in 60 minutes without notes, then mark it against the
+solution. Both follow the class-test pattern: five questions, 20 marks,
+simple calculator allowed, all steps shown.
+
+\subsection*{Class Test --- Set B \quad (as set on 1 September 2026)}
+
+\begin{enumerate}[label=\textbf{Q\arabic*.}]
+  \item \textbf{Standardisation} \hfill [3]\\
+    In a housing dataset the Price column has mean $80$ lakh and standard
+    deviation $20$ lakh.
+    (a) Give one difference between normalisation (min--max) and
+    standardisation ($z$-score). (1)
+    (b) Standardise three houses priced $100$, $60$ and $80$ lakh. (2)
+  \item \textbf{Data reduction and sampling} \hfill [3]\\
+    A dataset has 400 houses and 15 columns, one of which is House\_ID.
+    (a) Why should House\_ID be removed before training? Which preprocessing
+    step is this? (2)
+    (b) Only 40 of the 400 houses are marked expensive. Name one sampling
+    method to fix this. Does it add rows or remove rows? (1)
+  \item \textbf{Model validation} \hfill [4]\\
+    (a) Give the use of the training, validation and test sets. (2)
+    (b) A student says ``my model is 96\% accurate'', measured on the
+    training data. Why is this number not correct, and what should he do
+    instead? (1)
+    (c) 400 houses are split $75{:}25$. How many go in each part? (1)
+  \item \textbf{Finding the formulas for $b_0$ and $b_1$} \hfill [4]\\
+    We fit $\hat y = b_0 + b_1x$. Write down what is made as small as
+    possible, derive $b_0$ and $b_1$ showing all steps, and show that the line
+    passes through $(\bar x, \bar y)$.
+  \item \textbf{Fitting a straight line} \hfill [6]\\
+    \begin{tabular}{@{}lccccc@{}}
+    Area $x$ (sq ft) & 600 & 900 & 1200 & 1500 & 1800\\
+    Price $y$ (lakh) & 42 & 65 & 80 & 97 & 116
+    \end{tabular}\\
+    (a) Find $\bar x$, $\bar y$, $S_{xx}$ and $S_{xy}$. (3)
+    (b) Find $b_1$ and $b_0$ and write the line. (2)
+    (c) Predict the price of a 1350 sq ft house. (1)
+\end{enumerate}
+
+\begin{worked}[{{Set B --- solutions}}]
+\textbf{Q1.} (a) Min--max maps to a fixed range $[0,1]$ using the minimum and
+maximum; standardisation centres on the mean and divides by the standard
+deviation, giving mean $0$, sd $1$ and no fixed range (it is less distorted by
+a single extreme than min--max). (b) $z = (x - 80)/20$: $100 \to +1$;
+$60 \to -1$; $80 \to 0$.
+
+\textbf{Q2.} (a) An identifier carries no information about price; a model can
+still latch onto it (memorising rows, or spurious order), which hurts
+generalisation. Removing it is \emph{data reduction --- feature selection}
+(dropping an irrelevant column). (b) Random oversampling (or SMOTE) of the
+expensive class --- \emph{adds} rows; or random undersampling of the rest ---
+\emph{removes} rows.
+
+\textbf{Q3.} (a) Training: learn the parameters. Validation: compare models
+and tune hyperparameters. Test: one final, unbiased estimate on unseen data.
+(b) A training score measures how well the model fits data it has already
+seen and rewards memorisation (overfitting); evaluate on a held-out test set
+or by cross-validation. (c) $300$ training, $100$ test.
+
+\textbf{Q4.} See Example 18.1: minimise $S = \sum(y_i - b_0 - b_1x_i)^2$;
+normal equations; $b_0 = \bar y - b_1\bar x$, $b_1 = S_{xy}/S_{xx}$; at
+$x = \bar x$, $\hat y = \bar y$.
+
+\textbf{Q5.} (a) $\bar x = 6000/5 = 1200$, $\bar y = 400/5 = 80$.
+$x - \bar x = (-600, -300, 0, 300, 600)$; $y - \bar y = (-38, -15, 0, 17,
+36)$. $S_{xx} = 360000 + 90000 + 0 + 90000 + 360000 = 900000$;
+$S_{xy} = 22800 + 4500 + 0 + 5100 + 21600 = 54000$.
+(b) $b_1 = 54000/900000 = 0.06$; $b_0 = 80 - 0.06 \times 1200 = 8$;
+$\hat y = 8 + 0.06x$. (Check: $\hat y = 44, 62, 80, 98, 116$; residuals
+$-2, 3, 0, -1, 0$, sum $0$.) (c) $\hat y(1350) = 8 + 81 = 89$ lakh.
+\end{worked}
+
+\subsection*{Practice Set C \quad (new, same pattern)}
+
+\begin{enumerate}[label=\textbf{Q\arabic*.}]
+  \item \textbf{Scaling} \hfill [3]\\
+    Training Area has mean $1500$ and sd $400$ sq ft (population); its minimum
+    is $1000$ and maximum $3000$.
+    (a) Standardise areas $1900$, $1100$ and $1500$. (1.5)
+    (b) A test house has area $3400$. Give its min--max scaled value, and say
+    why the answer exceeding $1$ is not an error. (1.5)
+  \item \textbf{Imbalanced data} \hfill [4]\\
+    600 loan applications, 60 of which defaulted.
+    (a) What accuracy does ``nobody defaults'' achieve? What is its recall? (1)
+    (b) A model gives $TP = 45$, $FN = 15$, $FP = 55$, $TN = 485$. Compute
+    accuracy, precision, recall and $F_1$. (2)
+    (c) How many rows after random oversampling to balance? After random
+    undersampling? Where in the workflow must resampling happen? (1)
+  \item \textbf{Optimisers} \hfill [4]\\
+    $J(w) = \tfrac12(w - 5)^2$, $w_0 = 1$, $\eta = 0.5$.
+    (a) Two steps of plain gradient descent. (1.5)
+    (b) Two steps of momentum with $\beta = 0.5$ ($v \leftarrow \beta v + g$). (1.5)
+    (c) The first Adam step with default $\beta$'s (ignore $\varepsilon$). (1)
+  \item \textbf{Missing values and outliers} \hfill [3]\\
+    A column reads $30, 34, ?, 38, 40, 41, 44, 46, 120$.
+    (a) Mean and median of the observed values; which would you impute, and
+    why? (1)
+    (b) Quartiles (hinges), IQR and fences; which values are flagged? (1.5)
+    (c) Name one way to keep the flagged value but reduce its influence. (0.5)
+  \item \textbf{Fitting a straight line} \hfill [6]\\
+    \begin{tabular}{@{}lccccc@{}}
+    Experience $x$ (years) & 1 & 3 & 5 & 7 & 9\\
+    Salary $y$ (thousand/month) & 29 & 37 & 42 & 49 & 53
+    \end{tabular}\\
+    (a) $\bar x$, $\bar y$, $S_{xx}$, $S_{xy}$. (2)
+    (b) $b_1$, $b_0$, the line, and a check on the residuals. (1.5)
+    (c) Predict the salary at 6 years. (1)
+    (d) Compute SSE, $R^2$ and $s = \sqrt{\mathrm{SSE}/(n-2)}$. (1.5)
+\end{enumerate}
+
+\begin{worked}[{{Set C --- solutions}}]
+\textbf{Q1.} (a) $z = (x - 1500)/400$: $1900 \to 1$, $1100 \to -1$,
+$1500 \to 0$. (b) $(3400 - 1000)/2000 = 1.2$. The scaler is fitted on
+training data only, so a test value beyond the training maximum maps above
+$1$; that correctly signals extrapolation. Refitting on the test set would be
+leakage.
+
+\textbf{Q2.} (a) $540/600 = 90\%$; recall $0$. (b) Accuracy $530/600 =
+0.8833$; precision $45/100 = 0.45$; recall $45/60 = 0.75$; $F_1 =
+2(0.45)(0.75)/1.20 = 0.5625$. Accuracy is \emph{lower} than the useless
+model's, yet it finds $75\%$ of defaulters. (c) Oversampling: $540 + 540 =
+1080$; undersampling: $60 + 60 = 120$. Only on the training data, after the
+split (inside each CV fold).
+
+\textbf{Q3.} $J'(w) = w - 5$. (a) $g = -4 \Rightarrow w = 1 + 2 = 3$;
+$g = -2 \Rightarrow w = 4$. (b) $v_1 = -4$, $w_1 = 3$; $g_2 = -2$,
+$v_2 = 0.5(-4) - 2 = -4$, $w_2 = 3 + 2 = 5$ --- momentum reaches the minimum
+in two steps where GD is at $4$. (c) $\hat m_1 = g_1 = -4$, $\hat v_1 = 16$,
+step $= -0.5(-4)/4 = +0.5$, $w_1 = 1.5$ --- exactly $\eta$.
+
+\textbf{Q4.} (a) Observed: $30, 34, 38, 40, 41, 44, 46, 120$; mean
+$393/8 = 49.125$, median $(40 + 41)/2 = 40.5$. The $120$ drags the mean above
+seven of eight values: impute the \textbf{median}. (b) Lower half $30, 34, 38,
+40 \Rightarrow Q_1 = 36$; upper half $41, 44, 46, 120 \Rightarrow Q_3 = 45$;
+$\IQR = 9$; fences $22.5$ and $58.5$: $120$ is flagged. (c) Clip it to $58.5$,
+log-transform the column, use a robust scaler, or use a robust loss/model.
+
+\textbf{Q5.} (a) $\bar x = 5$, $\bar y = 42$; $x - \bar x = (-4,-2,0,2,4)$,
+$y - \bar y = (-13,-5,0,7,11)$; $S_{xx} = 40$, $S_{xy} = 52 + 10 + 0 + 14 + 44
+= 120$. (b) $b_1 = 3$, $b_0 = 42 - 15 = 27$; $\hat y = 27 + 3x$; fitted
+$30, 36, 42, 48, 54$, residuals $-1, 1, 0, 1, -1$, sum $0$ \checkmark.
+(c) $\hat y(6) = 45$ thousand per month.
+(d) SSE $= 1 + 1 + 0 + 1 + 1 = 4$; SST $= S_{yy} = 169 + 25 + 0 + 49 + 121 =
+364$; $R^2 = 1 - 4/364 = 0.9890$ (check: $r = 120/\sqrt{40 \times 364} =
+0.9945$, $r^2 = 0.9890$); $s = \sqrt{4/3} = 1.1547$ thousand.
+\end{worked}
+%======================================================================
+\section{Answers to the numerical exercises}
+\label{sec:answers}
+
+Rounded to four decimals at the end. Compare the \emph{method} line by line,
+not only the final value. (The short-answer questions have their model
+answers beside them in the grey boxes.)
+
+\ans{Exercises 1}
+\textbf{E1.1} $5 + 0.06 \times 1000 = 65$ lakh.
+\textbf{E1.2} $120 \times 4 = 480$ entries; $X$ is $120 \times 4$, $y$ has
+$120$ entries.
+\textbf{E1.3} Distances $0.1414, 0.2236, 3.3838, 3.2311, 5.0090$: nearest is
+$(1.4, 0.2)$ --- \textbf{setosa}.
+\textbf{E1.4} $94\%$ are not readmitted, so predicting ``not readmitted'' for
+almost everyone scores about $94\%$ while missing most real cases. Recall on the
+readmitted class (here $20\%$), or the confusion matrix, exposes it.
+
+\ans{Exercises 2}
+\textbf{E2.1} $50 - 47 = 3$. $40 - 45 = -5$: over-predicting by $5$.
+\textbf{E2.2} MSE $= (1 + 4 + 16)/3 = 7$; MAE $= 7/3 = 2.3333$; Huber
+$0.5, 1.5, 3.5$, mean $5.5/3 = 1.8333$.
+\textbf{E2.3} $|1| \le 2$: $0.5$; $|-3| > 2$: $2(3 - 1) = 4$; mean $2.25$.
+\textbf{E2.4} MAE $= 3$, MSE $= (16 + 4)/2 = 10$. Squared penalty $9 \to 36$
+($\times 4$); absolute $3 \to 6$ ($\times 2$).
+\textbf{E2.5} $e = (-1, 0, 2, -4)$: MSE $= 21/4 = 5.25$, MAE $= 1.75$,
+RMSE $= 2.2913$; Huber $0.5, 0, 2, 6$, mean $2.125$. Row 4 supplies
+$16/21 = 76.2\%$ of the MSE.
+\textbf{E2.6} MSE: mean $= 4$; MAE: median $= 2$. With $112$: mean $24$
+(moved by $20$), median still $2$.
+
+\ans{Exercises 3}
+\textbf{E3.1} $J'(5) = 2$; $w = 5 - 0.2 = 4.8$.
+\textbf{E3.2} $w_{\text{new}} - 3 = (1 - \eta)(w_{\text{old}} - 3)$:
+converges for $0 < \eta < 2$; one step at $\eta = 1$.
+\textbf{E3.3} $J'(1) = -1$: subtracting a negative gradient moves right,
+towards $2$. From $5$: $g = 3$, $w = 4.7$.
+\textbf{E3.4} Factor $1 - 2(0.2) = 0.6$. $w = 3, 1.4, 0.44, -0.136, -0.4816,
+-0.6890$; $f = 16, 5.76, 2.0736, 0.7465, 0.2687, 0.0967$.
+\textbf{E3.5} $J_0 = 11.6667$; gradient $(-6, -8.6667) \Rightarrow (b, w) =
+(0.6, 0.8667)$, $J = 3.2074$; gradient $(-3.0667, -4.5778) \Rightarrow
+(0.9067, 1.3244)$, $J = 0.8954$.
+
+\ans{Exercises 4}
+\textbf{E4.1} $5$.
+\textbf{E4.2} Row gradients $3$ and $1$; mean $2$.
+\textbf{E4.3} Full gradient $(1 + (-1))/2 = 0$; SGD gradient for $y = 1$ is
+$+1$. Yes: with $\eta = 0.2$, $w \to 1.8$ and the full loss rises $0.5 \to
+0.52$.
+\textbf{E4.4} $g = 3$, $w = 6 - 0.6 = 5.4$.
+\textbf{E4.5} $w^\star = 26/14 = 1.8571$. Batch: mean of $(-16, -6, -30)$ is
+$-17.3333$, $w = 0.8667$. SGD: $0.8, 1.02, 1.602$ --- much nearer.
+\textbf{E4.6} $200$ updates per epoch, $2000$ in all; $500{,}000$
+row-gradients.
+
+\ans{Exercises 5}
+\textbf{E5.1} $v_1 = 2$, $v_2 = 0.9(2) + 2 = 3.8$.
+\textbf{E5.2} $v_t = 2(1 + 0.9 + \dots + 0.9^{t-1}) = 20(1 - 0.9^t) \to 20$.
+\textbf{E5.3} $g = -6, v = -6, w = 0.6$; $g = -4.8, v = -7.8, w = 1.38$;
+$g = -3.24, v = -7.14, w = 2.094$ (GD: $1.464$).
+\textbf{E5.4} $4,\ 6.2,\ 3.96,\ 1.168$.
+
+\ans{Exercises 6}
+\textbf{E6.1} $9 + 16 = 25$; $w = 2 - 0.1 \times 4/5 = 1.92$.
+\textbf{E6.2} $V = 4$, $w = 5 - 0.1 \times 2/2 = 4.9$. From $V = 0$:
+$V = 0.4$, $\sqrt V = 0.6325$ (not $\sqrt4$).
+\textbf{E6.3} $g = 8, G = 64, w = 4.5$; $g = 7, G = 113, \sqrt G = 10.6301,
+w = 4.1707$; $g = 6.3415, G = 153.2146, \sqrt G = 12.3780, w = 3.9146$.
+\textbf{E6.4} Adagrad $G = 16, 20, 21, 21.25$; ratios $1, 0.4472, 0.2182,
+0.1085$. RMSprop $V = 1.6, 1.84, 1.756, 1.6054$; ratios $3.1623, 1.4744,
+0.7546, 0.3946$. RMSprop's stays larger: it forgets the early large gradients.
+\textbf{E6.5} $V = \rho^kV_0$. No: the numerator $g = 0$, so $w$ does not move
+--- only the history changes.
+
+\ans{Exercises 7}
+\textbf{E7.1} $m_1 = 0.2$, $v_1 = 0.004$, $\hat m_1 = 2$, $\hat v_1 = 4$,
+$w_1 = 4.9$. With $g_1 = -2$: $\hat m_1 = -2$, $\hat v_1 = 4$, step $+0.1$.
+\textbf{E7.2} $g = 4$: $m = 0.4$, $v = 0.016$, $\hat m = 4$, $\hat v = 16$,
+$w = 2.9$. $g = 3.8$: $m = 0.74$, $v = 0.030424$, $\hat m = 3.8947$,
+$\hat v = 15.2196$, $\sqrt{\hat v} = 3.9012$, $w = 2.8002$.
+\textbf{E7.3} $\hat m_1 = (1-\beta_1)g_1/(1-\beta_1) = g_1$,
+$\hat v_1 = g_1^2$, step $= -\eta g_1/|g_1|$. For $g_1 = -0.003$: $+0.01$.
+\textbf{E7.4} $(1-\beta_1)/\sqrt{1-\beta_2}$: $0.1/0.0316 = 3.1623\eta$;
+with $\beta_2 = 0.99$, $0.1/0.1 = 1\eta$.
+
+\ans{Exercises 8}
+\textbf{E8.1} $G = 4$, ratio $1/2$, $\Delta w = -1$.
+\textbf{E8.2} $G = 0.9 + 0.4 = 1.3$, $\sqrt G = 1.1402$;
+$\Delta w = -(0.5/1.1402)(-2) = +0.8771$; $U = 0.9(0.25) + 0.1(0.7692) =
+0.3019$.
+
+\ans{Exercises 9}
+\textbf{E9.1} Median of $10, 20, 40$ is $20$.
+\textbf{E9.2} Mean $18000/6 = 3000$; median $(1800 + 2000)/2 = 1900$; impute
+the median --- the 9000 makes the mean unrepresentative.
+\textbf{E9.3} Mean $299.5/11 = 27.23$, median $18$; the $95$ skews the mean,
+so fill with $18$ (add a missing-indicator if missingness may be informative).
+H12 is a modest Prem Nagar house, so $18$ is also plausible --- though Income
+is a leak and should be dropped anyway.
+\textbf{E9.4} Population sd $\times\sqrt{80/100} = 0.8944$; sample sd
+$\times\sqrt{79/99} = 0.8933$.
+
+\ans{Exercises 10}
+\textbf{E10.1} $\IQR = 8$; upper fence $18 + 12 = 30$.
+\textbf{E10.2} $Q_1 = (25 + 30)/2 = 27.5$, $Q_3 = (45 + 50)/2 = 47.5$,
+$\IQR = 20$, fences $-2.5$ and $77.5$: $200$ flagged.
+\textbf{E10.3} Halves $12, 14, 15, 15$ and $17, 18, 19, 60$: $Q_1 = 14.5$,
+$Q_3 = 18.5$, $\IQR = 4$, fences $8.5$ and $24.5$: flagged.
+$\bar x = 20.6667$, $s = 14.8997$, $z = 2.6399 < 3$: not flagged --- and never
+could be, since the ceiling for $n = 9$ is $8/3 = 2.6667$; the $60$ inflates
+the $\bar x$ and $s$ it is judged by. Median $16$, $\MAD = 2$, $M = 0.6745
+\times 44/2 = 14.84$: flagged.
+\textbf{E10.4} $9/\sqrt{10} = 2.8460$; $10/\sqrt{11} = 3.0151$. Only from
+$n = 11$ upwards.
+\textbf{E10.5} $\bar x = 2$, $m_2 = 16$, $m_3 = 96$, $g_1 = 96/64 = 1.5$ ---
+exactly the ceiling $3/\sqrt4$: one point away from four equal ones is as
+skewed as five points can be.
+
+\ans{Exercises 11}
+\textbf{E11.1} $(100 - 80)/20 = 1$; $(40 - 10)/20 = 1.5$.
+\textbf{E11.2} $1500/4500 = 0.3333$.
+\textbf{E11.3} $\mu = 30$, $\sigma = \sqrt{1000/5} = 14.142$,
+$z_{50} = 1.4142$.
+\textbf{E11.4} $(60 - 37.5)/20 = 1.125$.
+\textbf{E11.5} Unscaled: $d_A = 50.04$, $d_B = 400$ --- A. Scaled: Q $(0.4,
+0.5)$, A $(0.425, 0)$, B $(0.2, 0.5)$; $d_A = 0.5006$, $d_B = 0.2$ --- B.
+\textbf{E11.6} Mean $4.6667$, $\sigma = 6.3944$; standard $-1.3553, -0.7298,
+-0.4170, 0.2085, 0.5213, 1.7724$. Min--max $(v + 4)/20$: $0, 0.2, 0.3, 0.5,
+0.6, 1$. Median $4$, $Q_1 = 0$, $Q_3 = 8$, robust $(v - 4)/8$: $-1, -0.5,
+-0.25, 0.25, 0.5, 1.5$. Max-abs $v/16$: $-0.25, 0, 0.125, 0.375, 0.5, 1$.
+
+\ans{Exercises 12}
+\textbf{E12.1} $3$.
+\textbf{E12.2} $6 - 1 + 5 = 10$; with drop-first $9$.
+\textbf{E12.3} $\bar y = 20$, $S_{xy} = -10$, $S_{xx} = 2$: $\hat y = 25 - 5x$,
+fitted $25, 20, 15$; SSE $= 25 + 100 + 25 = 150$ (predicting the mean $20$
+everywhere gives $200$). One-hot fits each mean exactly: SSE $= 0$.
+
+\ans{Exercises 13}
+\textbf{E13.1} $(2 + 2)/\sqrt2 = 2.8284$.
+\textbf{E13.2} $\begin{pmatrix}1 & 0.8\\0.8 & 1\end{pmatrix}$; $\lambda = 1.8,
+0.2$; PC1 explains $90\%$.
+\textbf{E13.3} Mean $(5, 4)$; $S = \begin{pmatrix}6 & 2\\2 & 3\end{pmatrix}$;
+$\lambda^2 - 9\lambda + 14 = 0 \Rightarrow 7, 2$; $u_1 = (2,1)/\sqrt5$,
+$u_2 = (-1, 2)/\sqrt5$; $77.8\%$; scores $(-9,-1,0,3,7)/\sqrt5 =
+(-4.0249, -0.4472, 0, 1.3416, 3.1305)$, variance $7$.
+\textbf{E13.4} Cumulative $0.52, 0.73, 0.84, 0.93, 0.97$: $4$ for $90\%$, $5$
+for $95\%$.
+
+\ans{Exercises 14}
+\textbf{E14.1} $300$.
+\textbf{E14.2} $20$ rows per fold; $5$ fits.
+\textbf{E14.3} Mean $0.80$; deviations $0.01, -0.01, 0.06, -0.06, 0$; sd
+$= \sqrt{0.0074/5} = 0.0385$.
+\textbf{E14.4} $\binom{24}{5}/\binom{30}{5} = 42504/142506 = 0.2983$;
+stratified: $1$ positive and $4$ negatives.
+
+\ans{Exercises 15}
+\textbf{E15.1} $10\%$; accuracy $90\%$.
+\textbf{E15.2} $TP = 30$, $FP = 60$, $FN = 10$, $TN = 1900$; accuracy $0.965$,
+precision $0.3333$, recall $0.75$, $F_1 = 0.4615$.
+\textbf{E15.3} $TP = 60$, $FP = 90$, $FN = 40$, $TN = 9810$; accuracy $0.987$,
+precision $0.40$, recall $0.60$, $F_1 = 0.48$. The rival: accuracy $99\%$,
+recall $0$ --- deploy the first.
+\textbf{E15.4} $2400$ rows; $160$ rows, discarding $1120$.
+\textbf{E15.5} Accuracy $98\%$; recall $0$.
+
+\ans{Exercises 18}
+\textbf{E18.1} $4$; $106/6 = 17.67$.
+\textbf{E18.2} $\bar x = 2$, $\bar y = 3.3333$, $S_{xx} = 2$, $S_{xy} = 3$:
+$b_1 = 1.5$, $b_0 = 0.3333$.
+\textbf{E18.3} $40 - 45 = -5$.
+\textbf{E18.4} $\bar x = 6$, $\bar y = 15$, $S_{xx} = 40$, $S_{xy} = 98$,
+$b_1 = 2.45$, $b_0 = 0.30$; $\hat y(7) = 17.45$. Residuals $-0.2, 0.9, -1.0,
+0.1, 0.2$ (sum $0$); SSE $= 1.90$.
+\textbf{E18.5} $S_{xx} = 310 - 250 = 60$, $S_{xy} = 660 - 600 = 60$, $b_1 = 1$,
+$b_0 = 12 - 5 = 7$, $\hat y(7) = 14$.
+\textbf{E18.6} $w = 35/14 = 2.5$; residuals $1.5, 0, -0.5$, sum $1 \ne 0$.
+$\sum xe = 0$ survives (the normal equation for $w$); ``sum to zero'' is the
+intercept's normal equation, and there is no intercept.
+
+\ans{Exercises 19}
+\textbf{E19.1} $0.2 \times 0.3 = 0.06$; $\ln 0.06 = -2.8134$.
+\textbf{E19.2} Residuals $-0.1, 0.3, -0.3, 0.1$; SSE $= 0.2$;
+$\hat\sigma^2_{\text{ML}} = 0.05$; $s^2 = 0.2/2 = 0.1$; $s = 0.3162$.
+\textbf{E19.3} $S_{yy} = 242$, $S_{xy} = 98$: inverse slope $242/98 = 2.4694$;
+$2.45/2.4694 = 0.9921 = 98^2/(40 \times 242) = r^2$ \checkmark.
+\textbf{E19.4} $\partial\ln L/\partial\sigma^2 = -\frac{n}{2\sigma^2} +
+\frac{\mathrm{SSE}}{2\sigma^4} = 0 \Rightarrow \sigma^2 = \mathrm{SSE}/n$.
+
+\ans{Exercises 20}
+\textbf{E20.1} $1 - 20/100 = 0.8$; $1 - 150/100 = -0.5$ (worse than predicting
+the mean).
+\textbf{E20.2} SSE $= 1.90$; SST $= 100 + 16 + 1 + 25 + 100 = 242$;
+$R^2 = 1 - 1.90/242 = 0.9921$ ($r = 98/\sqrt{9680} = 0.9961$, $r^2 = 0.9921$);
+RMSE $= \sqrt{1.90/5} = 0.6164$; MAE $= 2.40/5 = 0.48$.
+\textbf{E20.3} $R^2 = 0.85$; $R^2_{\text{adj}} = 1 - 0.15 \times 49/43 = 0.8291$;
+$s = \sqrt{7200/43} = 12.94$. With $p = 7$: $1 - 0.142 \times 49/42 = 0.8343$
+--- it rose, so on this criterion the feature earned its place (confirm on
+held-out data).
+\textbf{E20.4} Test mean $5$: SST $= 18$, SSE $= 16 + 0 + 25 = 41$,
+$R^2 = -1.2778$.
+\textbf{E20.5} A: $1 - 0.5 \times 19/18 = 0.4722$; B: $1 - 0.4 \times 19/13 =
+0.4154$. A.
+
+\ans{Exercises 21}
+\textbf{E21.1} Mean $3$; pooled $\sqrt{(4 + 9 + 16)/3} = \sqrt{29/3} = 3.1091$.
+\textbf{E21.2} A under-fits (both low, small gap); B fits well; C over-fits
+(near-perfect training, collapsed test). Deploy B; for A add features or
+flexibility.
+
+\vspace{1em}
+\begin{keyidea}[{{The night before}}]
+\begin{itemize}
+  \item Redo one worked example per section \emph{without looking}: a Huber
+    table, a three-step Adam table, the IQR fences, a KNN distance before and
+    after scaling, a $2\times2$ PCA, a confusion matrix, the six-house fit.
+  \item Rehearse the derivation of $b_0$ and $b_1$, and the step from the
+    Gaussian log-likelihood to least squares, until you can write them
+    unprompted --- both are favourite 4-mark questions.
+  \item For any fitted line, be able to produce SSE, SST, SSR, $R^2$,
+    adjusted $R^2$, $\hat\sigma^2_{\text{ML}}$, $s$, RMSE and MAE in one pass.
+  \item Learn the one-line distinctions: selection cuts columns, sampling cuts
+    rows; normalise to a range, standardise to a mean; an error is wrong, an
+    outlier is rare; validation chooses, test reports once; resample the
+    training set only.
+  \item Out of syllabus for this paper: cross-entropy, hinge and triplet
+    losses, and everything from Lecture 10 on (logistic regression, multiple
+    regression, regularisation).
+\end{itemize}
+\end{keyidea}
+
+\end{document}

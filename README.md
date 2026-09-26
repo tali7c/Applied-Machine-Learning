@@ -39,6 +39,9 @@ assignment.
   - `Txx-Solutions.pdf` — worked solutions for every set
   - `latex/` — the LaTeX sources of those two documents
   - Published only after every group has sat that quiz
+- `Mid-Sem-Study-Material/`
+  - `Mid-Sem-Study-Material.pdf` — the mid-semester syllabus (Lectures 1–9) topic by topic: method, worked examples, common mistakes, numerical and short-answer exercises, two practice papers; full answers at the back
+  - `latex/` — source
 - `test-0/` — the unmarked week-2 diagnostic: paper, worked solutions and sources
 - `theory-assignments/Axx/`
   - `assignment.pdf` — the brief you are marked against
@@ -107,6 +110,7 @@ Material is published as it is delivered, not all at once. Currently released:
 | **Theory Quiz 2 (T02)** | Paper and worked solutions, sets A–H — prerequisites, retained L1–L2, and L3 |
 | **Theory Quiz 3 (T03)** | Paper and worked solutions, sets A–H — prerequisites, retained L1–L3, and L4 |
 | **Theory Assignment 1 (A1)** | The brief, the 314-question Mid-Semester Question Bank, and the bank answers |
+| **Mid-Semester Study Material** | Lectures 1–9: 21 topics, 84 numerical exercises, 71 short-answer questions, two practice papers — all answered |
 | **Projects P01–P08** | Handbook, catalogue and all eight theme briefs — 15 marks, 10 of them individual |
 
 Each theory quiz paper and its worked solutions are published here **after every
