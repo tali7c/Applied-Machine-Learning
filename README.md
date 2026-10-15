@@ -33,6 +33,11 @@ assignment.
   - `assignment.pdf` — the brief you are marked against
   - `AML_LAxx_starter.ipynb` — starter notebook with the questions inlined
   - `latex/assignment.tex` — source
+  - `AML_LAxx_solution.ipynb` — the worked solution, with every cell executed
+  - `AML-LAxx-Walkthrough.mp4` and `.md` — a short screen recording and a written companion
+  - `aml_data.py` — the data loader the notebooks import
+  - `figures/` — the plots the walkthrough refers to
+  - Solutions and walkthroughs appear **only after that assignment has closed and its lab quiz has been sat**
 - `lab-assignments/Anchor-Datasets.pdf` — the three dataset families, with sources and loading snippets
 - `theory-quizzes/Txx/`
   - `Txx-QP.pdf` — the question paper, all sets
@@ -112,6 +117,7 @@ Material is published as it is delivered, not all at once. Currently released:
 | **Theory Quiz 4 (T04)** | Paper and worked solutions, sets A–H — the mid-semester syllabus, L1–L9 |
 | **Theory Assignment 1 (A1)** | The brief, the 314-question Mid-Semester Question Bank, and the bank answers |
 | **Mid-Semester Study Material** | Lectures 1–9: 21 topics, 84 numerical exercises, 71 short-answer questions, two practice papers — all answered |
+| **Lab Assignments 1–5** | Worked solutions, walkthrough videos and written companions — released now those five are closed and LQ1–LQ4 are sat |
 | **Projects P01–P08** | Handbook, catalogue and all eight theme briefs — 15 marks, 10 of them individual |
 
 Each theory quiz paper and its worked solutions are published here **after every
@@ -123,8 +129,12 @@ instead of them. **All ten lab assignments are published up front** too, so you
 can see where the lab is going and get the data in advance — but work them in
 order, and check the release schedule for when each one is due.
 
-What is *not* here, and will not be: marking schemes, answer keys and the
-question papers of assessments still to come.
+Lab solutions and walkthroughs follow the same rule as the quizzes: they are
+published once that assignment has closed and its lab quiz has been sat, never
+while it is still open.
+
+What is *not* here, and will not be: marking schemes, and the question papers
+of assessments still to come.
 
 > **Get your data early.** Several datasets download over the internet on first
 > use and the campus network blocks that download. See *Getting the data* in
