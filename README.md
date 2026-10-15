@@ -109,6 +109,7 @@ Material is published as it is delivered, not all at once. Currently released:
 | **Theory Quiz 1 (T01)** | Paper and worked solutions, sets A–H — prerequisites, L1, L2 |
 | **Theory Quiz 2 (T02)** | Paper and worked solutions, sets A–H — prerequisites, retained L1–L2, and L3 |
 | **Theory Quiz 3 (T03)** | Paper and worked solutions, sets A–H — prerequisites, retained L1–L3, and L4 |
+| **Theory Quiz 4 (T04)** | Paper and worked solutions, sets A–H — the mid-semester syllabus, L1–L9 |
 | **Theory Assignment 1 (A1)** | The brief, the 314-question Mid-Semester Question Bank, and the bank answers |
 | **Mid-Semester Study Material** | Lectures 1–9: 21 topics, 84 numerical exercises, 71 short-answer questions, two practice papers — all answered |
 | **Projects P01–P08** | Handbook, catalogue and all eight theme briefs — 15 marks, 10 of them individual |
