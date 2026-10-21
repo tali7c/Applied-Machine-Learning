@@ -304,13 +304,32 @@ sum of squares. In matrix notation,
   S(b) = \sum_{i=1}^{n}\bigl(y_i - x_i^{\!\top}b\bigr)^2
        = (y - Xb)^{\!\top}(y - Xb).
 \end{equation}
-Expand the product term by term:
+Expand the product. Use $(Xb)^{\!\top} = b^{\!\top}\Xt$ on the left factor,
 \[
-  S(b) = y^{\!\top}y - y^{\!\top}Xb - b^{\!\top}\Xt y
-         + b^{\!\top}\Xt X b .
+  S(b) = \bigl(y^{\!\top} - b^{\!\top}\Xt\bigr)\,(y - Xb),
 \]
-The two middle terms are equal. Each is a $1\times1$ matrix, so each is its
-own transpose, and $(y^{\!\top}Xb)^{\!\top} = b^{\!\top}\Xt y$. Therefore
+and then multiply the two brackets out term by term, keeping every factor in
+the order in which it appears --- matrix multiplication does not commute, so
+nothing may be moved past anything else:
+\[
+  S(b) = \underbrace{y^{\!\top}y}_{(1\times n)(n\times 1)}
+       \;-\; \underbrace{y^{\!\top}Xb}_{(1\times n)(n\times q)(q\times 1)}
+       \;-\; \underbrace{b^{\!\top}\Xt y}_{(1\times q)(q\times n)(n\times 1)}
+       \;+\; \underbrace{b^{\!\top}\Xt X b}_{(1\times q)(q\times q)(q\times 1)},
+\]
+where $q = p+1$. Every one of the four terms is $1\times1$, as it must be:
+$S(b)$ is a single number. Checking the shapes like this is the cheapest way
+to catch an algebra slip, and it costs a few seconds.
+
+The two middle terms are not merely similar --- they are the same number.
+Each is $1\times1$, and a $1\times1$ matrix is its own transpose, so applying
+$(UVW)^{\!\top} = W^{\!\top}V^{\!\top}U^{\!\top}$,
+\[
+  y^{\!\top}Xb \;=\; \bigl(y^{\!\top}Xb\bigr)^{\!\top}
+               \;=\; b^{\!\top}\Xt\,(y^{\!\top})^{\!\top}
+               \;=\; b^{\!\top}\Xt y .
+\]
+Therefore
 \begin{equation}
   \label{eq:expanded}
   S(b) = y^{\!\top}y \;-\; 2\,b^{\!\top}\Xt y \;+\; b^{\!\top}\Xt X\,b .
@@ -318,11 +337,54 @@ own transpose, and $(y^{\!\top}Xb)^{\!\top} = b^{\!\top}\Xt y$. Therefore
 Three terms: a constant, a term \emph{linear} in $b$, and a \textbf{quadratic
 form} in $b$ with the symmetric matrix $\Xt X$.
 
-\subsection{Two derivatives}
+\begin{caution}
+The step $y^{\!\top}Xb = b^{\!\top}\Xt y$ looks like two matrices being
+swapped past each other, and it is not. It is a \emph{transpose}, and it is
+legal only because the object is $1\times1$. The same move applied to a
+general product is simply false: $AB \ne BA$, and $AB \ne B^{\!\top}A^{\!\top}$
+either. Whenever you are tempted to reorder a matrix product, check the shape
+first. If it is not $1\times1$, you may not.
+\end{caution}
+
+\subsection{The matrix calculus behind the gradient}
+\label{sec:matcalc}
 
 We need the gradient of \eqref{eq:expanded} with respect to the vector $b$.
-Only two rules are involved, and both can be checked by writing out one
-component.
+Before the two rules, it is worth being precise about what the notation means,
+because almost every sign and transpose error in this subject comes from
+leaving it vague.
+
+\paragraph{What $\partial/\partial b$ means here.} $S$ is a \emph{scalar} and
+$b$ is a $q$-vector, so $\partial S/\partial b$ is the $q$-vector whose $k$th
+entry is the ordinary partial derivative $\partial S/\partial b_k$. That is
+all. Any identity below can be proved by writing out that one entry, and when
+an identity looks doubtful, writing out that one entry is how you settle it.
+
+\paragraph{Why the objective is a scalar, and why that matters.} You may
+reasonably ask for the derivative of a matrix product such as $AB$ with
+respect to $b$. The answer is a three-index object: if $AB$ is $m \times n$
+and $b$ has $q$ entries, the derivative has $m \times n \times q$ components
+and is not a matrix at all. This is why, in this subject, we only ever
+differentiate a \emph{scalar} with respect to a vector --- and it is why the
+loss is always built to be a single number. The one intermediate case that
+does stay matrix-shaped is a vector differentiated by a vector: with $X$
+constant, $\partial(Xb)/\partial b = X$, a Jacobian whose row $i$ is the
+derivative of output $i$. (That convention, output down the rows, is called
+\emph{numerator layout}. Adopt it and stay in it; switching layout halfway
+through a derivation is what produces a stray transpose at the end.)
+
+\paragraph{The product rule, when both factors depend on $b$.} For
+completeness, if $A$ and $B$ both vary with $b_k$ then
+\[
+  \frac{\partial (AB)}{\partial b_k}
+  = \frac{\partial A}{\partial b_k}\,B \;+\; A\,\frac{\partial B}{\partial b_k},
+\]
+with the \textbf{order of every factor preserved}. We will not need this in
+the present derivation --- here $X$ and $y$ are constant data and only $b$
+varies --- but it is the rule behind backpropagation, and the order is the
+part that matters.
+
+Now the two rules this derivation actually uses.
 
 \paragraph{Linear term.} For a constant vector $c$, $b^{\!\top}c = \sum_j
 b_j c_j$, so $\partial(b^{\!\top}c)/\partial b_k = c_k$, that is
@@ -331,24 +393,127 @@ b_j c_j$, so $\partial(b^{\!\top}c)/\partial b_k = c_k$, that is
   \frac{\partial}{\partial b}\bigl(b^{\!\top}c\bigr) = c .
 \end{equation}
 
-\paragraph{Quadratic form.} For a symmetric matrix $A$,
-$b^{\!\top}Ab = \sum_j\sum_k b_j A_{jk} b_k$. Differentiating with respect to
-$b_m$, the terms containing $b_m$ are $A_{mm}b_m^2$ and, for each $k \ne m$,
-$b_m A_{mk} b_k + b_k A_{km} b_m = 2 A_{mk} b_m b_k$ by symmetry. So
-$\partial/\partial b_m = 2A_{mm}b_m + 2\sum_{k\ne m}A_{mk}b_k
-= 2\sum_k A_{mk}b_k$, that is
+\paragraph{Quadratic form, general $A$.} Write
+$b^{\!\top}Ab = \sum_j\sum_k b_j A_{jk} b_k$. The index $m$ appears in two
+places --- once as $j$ and once as $k$ --- so differentiating with respect to
+$b_m$ picks up one contribution from each:
+\[
+  \frac{\partial}{\partial b_m}\bigl(b^{\!\top}Ab\bigr)
+  = \sum_k A_{mk}b_k \;+\; \sum_j b_j A_{jm}
+  = \bigl(Ab\bigr)_m + \bigl(A^{\!\top}b\bigr)_m ,
+\]
+that is
+\begin{equation}
+  \label{eq:dquadgen}
+  \frac{\partial}{\partial b}\bigl(b^{\!\top}Ab\bigr) = \bigl(A + A^{\!\top}\bigr)b
+  \qquad\text{for \emph{any} square } A .
+\end{equation}
+
+\paragraph{Quadratic form, symmetric $A$.} If and only if $A = A^{\!\top}$ do
+the two contributions coincide, and \eqref{eq:dquadgen} collapses to the form
+you will see quoted everywhere:
 \begin{equation}
   \label{eq:dquad}
   \frac{\partial}{\partial b}\bigl(b^{\!\top}Ab\bigr) = 2Ab
   \qquad (A \text{ symmetric}).
 \end{equation}
+We are entitled to \eqref{eq:dquad} here because $\Xt X$ is symmetric for
+\emph{any} $X$ whatever: $(\Xt X)^{\!\top} = \Xt (\Xt)^{\!\top} = \Xt X$. That
+is a fact we have earned, not an assumption.
 
-Applying \eqref{eq:dlin} and \eqref{eq:dquad} to \eqref{eq:expanded}, and
-noting that $\Xt X$ is symmetric for any $X$ whatever:
+\begin{caution}
+$\partial(b^{\!\top}Ab)/\partial b = 2Ab$ is \textbf{wrong} unless $A$ is
+symmetric. Take $A = \left(\begin{smallmatrix}1 & 2\\ 0 & 1\end{smallmatrix}\right)$ and
+$b = (3,5)^{\!\top}$. Then $b^{\!\top}Ab = b_1^2 + 2b_1b_2 + b_2^2$, whose
+gradient is $(2b_1 + 2b_2,\; 2b_1 + 2b_2)^{\!\top} = (16, 16)^{\!\top}$ ---
+which is $(A + A^{\!\top})b$, and \emph{not} $2Ab = (26, 10)^{\!\top}$. The
+scalar analogy $\mathrm{d}(ax^2)/\mathrm{d}x = 2ax$ is what misleads people
+here. Check symmetry before you use the factor of two.
+\end{caution}
+
+Applying \eqref{eq:dlin} with $c = \Xt y$ and \eqref{eq:dquad} with
+$A = \Xt X$ to the three terms of \eqref{eq:expanded} --- the first is
+constant and contributes nothing --- gives
 \begin{equation}
   \label{eq:gradient}
   \nabla S(b) = -2\,\Xt y + 2\,\Xt X\,b .
 \end{equation}
+
+\subsection{The same gradient, from first principles}
+\label{sec:indexgrad}
+
+The rules above are convenient, not necessary. It is worth doing the whole
+differentiation once in plain summation notation, with no matrix calculus at
+all, both as a check and because the result arrives in a form that hands us
+the next section for free.
+
+Write the $i$th residual as $e_i = y_i - \sum_j X_{ij}b_j$, so that
+$S(b) = \sum_i e_i^2$. Differentiate with respect to a single coefficient
+$b_k$ using the chain rule, noting that $\partial e_i/\partial b_k = -X_{ik}$:
+\[
+  \frac{\partial S}{\partial b_k}
+  = \sum_{i=1}^{n} 2 e_i \frac{\partial e_i}{\partial b_k}
+  = -2\sum_{i=1}^{n} X_{ik}\,e_i
+  = -2\,\bigl(\Xt e\bigr)_k .
+\]
+Collecting the $q$ components into a vector,
+\begin{equation}
+  \label{eq:gradres}
+  \nabla S(b) = -2\,\Xt e = -2\,\Xt\bigl(y - Xb\bigr)
+              = -2\,\Xt y + 2\,\Xt X b ,
+\end{equation}
+which is \eqref{eq:gradient} again. Two things are worth noticing. First, no
+rule was quoted: this is the ordinary chain rule applied $q$ times. Second,
+the middle form $\nabla S = -2\Xt e$ says that \textbf{the gradient is (minus
+twice) the correlation of the residual with each predictor column} --- so
+setting it to zero is literally the statement $\Xt e = 0$, which is the
+geometry of Section~\ref{sec:geometry} arriving a page early.
+
+\begin{tryit}
+Verify the gradient numerically before you trust it. Central differences
+approximate $\partial S/\partial b_k$ by $[S(b + he_k) - S(b - he_k)]/2h$,
+and should agree with the formula to several decimals at \emph{any} $b$, not
+only at the optimum.
+
+\begin{lstlisting}
+import numpy as np
+x1 = np.array([1, 2, 3, 4, 5]); x2 = np.array([2, 3, 4, 3, 4])
+y  = np.array([8, 13, 15, 11, 12])
+X  = np.c_[np.ones(5), x1, x2]
+
+def S(b):    return float((y - X @ b) @ (y - X @ b))
+def grad(b): return -2 * X.T @ y + 2 * X.T @ X @ b
+
+def num_grad(b, h=1e-6):
+    return np.array([(S(b + h*e) - S(b - h*e)) / (2*h) for e in np.eye(3)])
+
+b = np.array([1.0, 1.0, 1.0])          # an arbitrary, non-optimal b
+print("S(b)        =", S(b))
+print("formula     =", grad(b))
+print("finite diff =", np.round(num_grad(b), 6))
+
+bhat = np.linalg.inv(X.T @ X) @ X.T @ y
+print("beta-hat    =", bhat)
+print("grad(bhat)  =", np.round(grad(bhat), 12))
+print("S(bhat)     =", S(bhat))
+\end{lstlisting}
+\begin{codeout}
+S(b)        = 127.0
+formula     = [ -46. -122. -148.]
+finite diff = [ -46. -122. -148.]
+beta-hat    = [ 2. -1.  4.]
+grad(bhat)  = [0.e+00 1.e-12 1.e-12]
+S(bhat)     = 4.0
+\end{codeout}
+
+At $b = (1,1,1)$ the gradient is large and negative in every component: the
+objective falls steeply in all three directions, and $S = 127$. At
+$\hat\beta = (2,-1,4)$ it is zero to twelve decimals and $S = 4$, which is
+the SSE you will reproduce by hand in Section~\ref{sec:hand}. Make this check
+a habit --- a finite-difference comparison catches a dropped factor of two or
+a missing transpose in about a minute, and it works on objectives far too
+awkward to differentiate on paper.
+\end{tryit}
 
 \subsection{Setting the gradient to zero}
 

@@ -33,7 +33,7 @@ inside the cross-validation fold.
 | File | What it is |
 |---|---|
 | `slides.pdf` | 53 frames, 81 overlay pages — for the room |
-| `notes.pdf` | 32 pages — written so you can learn this without attending |
+| `notes.pdf` | 36 pages — written so you can learn this without attending |
 | `latex/` | sources |
 | `figures/` | ten vector figures, every one produced by running code rather than drawn |
 

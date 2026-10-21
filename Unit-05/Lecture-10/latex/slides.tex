@@ -285,6 +285,42 @@ the point least squares now gets wrong: x = [5.]
   \end{columns}
 \end{frame}
 
+\begin{frame}[fragile,shrink=6]{What an odds actually is}
+Not jargon, and not a synonym for probability. An odds is a \textbf{ratio of
+two counts}:
+\[
+  \text{odds} \;=\; \frac{\text{how often it happens}}{\text{how often it does
+  not}} \;=\; \frac{p}{1-p},
+  \qquad\qquad
+  p \;=\; \frac{\text{odds}}{1 + \text{odds}} .
+\]
+\begin{outblk}
+       p odds = p/(1-p)         said aloud  back: o/(1+o)
+    0.10         0.1111     9 to 1 against         0.1000
+    0.20         0.2500     4 to 1 against         0.2000
+    0.50         1.0000          1 to 1 on         0.5000
+    0.80         4.0000          4 to 1 on         0.8000
+    0.90         9.0000          9 to 1 on         0.9000
+\end{outblk}
+\onslide<2->
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \begin{block}{Read it out loud}
+      \small $p = 0.8$ means it happens four times for every once it does
+      not. A bookmaker writes that \textbf{4 to 1 on}; at $p = 0.2$ it is
+      \textbf{4 to 1 against}.
+    \end{block}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \begin{alertblock}{Nothing is lost}
+      \small The last column converts straight back. Odds and probability
+      are \textbf{two spellings of the same number} --- so choosing odds
+      costs you nothing and buys you an unbounded scale.
+    \end{alertblock}
+  \end{column}
+\end{columns}
+\end{frame}
+
 \begin{frame}[fragile,shrink=8]{By hand: the odds table you should be able to write out}
 \begin{outblk}
  p        odds = p/(1-p)      log-odds = ln(odds)
@@ -306,6 +342,29 @@ the point least squares now gets wrong: x = [5.]
   $\operatorname{logit}(0.1) = -\operatorname{logit}(0.9)$. Swapping the two
   classes flips the sign of everything.
 \end{center}
+\end{frame}
+
+\begin{frame}[fragile,shrink=6]{The symmetry that earns odds their place}
+\begin{outblk}
+       p       odds     log-odds        1-p  odds of 1-p
+    0.10     0.1111      -2.1972       0.90       9.0000
+    0.25     0.3333      -1.0986       0.75       3.0000
+    0.50     1.0000      +0.0000       0.50       1.0000
+    0.75     3.0000      +1.0986       0.25       0.3333
+    0.90     9.0000      +2.1972       0.10       0.1111
+\end{outblk}
+Relabelling which class counts as ``success'' \textbf{inverts the odds} and
+\textbf{negates the log-odds}. Nothing about the model changes.
+\onslide<2->
+\begin{alertblock}{Why that matters for a \emph{linear} model}
+  \footnotesize On the probability scale, $0.1 \to 0.9$ is ``$+0.8$'' and the
+  return trip is ``$-0.8$'' --- but $0.1\to0.2$ is also ``$+0.1$'' while
+  $0.8\to0.9$ is ``$+0.1$'', and those two are not remotely the same event.
+  On the odds scale the trip is ``$\times 81$'' one way and ``$\div 81$'' the
+  other; \textbf{on the log-odds scale it is $\pm 2.1972$ either way.} That is
+  the scale on which a constant effect \emph{stays} constant --- which is
+  precisely what adding $\beta_j$ to a sum requires.
+\end{alertblock}
 \end{frame}
 
 \begin{frame}[shrink=8]{Invert it, and the sigmoid appears}
@@ -712,6 +771,228 @@ exp(b1) = 2.8124   -- the ODDS multiply by 2.81 per mm, always
     \textbf{Standardise before you compare coefficients, or you are
     comparing units.}
   \end{center}
+\end{frame}
+
+\begin{frame}[fragile,shrink=8]{An odds ratio is not a relative risk}
+A treatment that multiplies the \textbf{odds} by $2$, applied at six
+baselines. Relative risk is what a patient actually hears:
+$\text{RR} = p_{\text{new}}/p_{\text{old}}$.
+\begin{outblk}
+     p_old   odds_old   odds_new      p_new         RR    OR/RR
+     0.001     0.0010     0.0020     0.0020     1.9980     1.00
+     0.010     0.0101     0.0202     0.0198     1.9802     1.01
+     0.100     0.1111     0.2222     0.1818     1.8182     1.10
+     0.300     0.4286     0.8571     0.4615     1.5385     1.30
+     0.500     1.0000     2.0000     0.6667     1.3333     1.50
+     0.800     4.0000     8.0000     0.8889     1.1111     1.80
+\end{outblk}
+\onslide<2->
+\begin{alertblock}{``An odds ratio of 2'' $\ne$ ``twice the risk''}
+  \footnotesize The OR is $2.00$ in every row. The relative risk falls from
+  $1.998$ to $\mathbf{1.111}$ as the outcome gets common. They agree only
+  when the outcome is \textbf{rare} --- that is the entire content of the
+  ``rare disease assumption'' you will see cited. At $p = 0.8$, calling an OR
+  of $2$ ``twice the risk'' overstates the effect by $\mathbf{1.80\times}$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile,shrink=8]{The same error, run backwards}
+What odds ratio would you need for ``the risk doubles''?
+\begin{outblk}
+     p_old p_new = 2p  required OR
+     0.001      0.002       2.0020
+     0.010      0.020       2.0204
+     0.100      0.200       2.2500
+     0.300      0.600       3.5000
+     0.450      0.900      11.0000
+\end{outblk}
+\onslide<2->
+\begin{center}\small
+  To double the risk of something that already happens $45\%$ of the time you
+  need an odds ratio of \textbf{eleven}, not two.
+\end{center}
+\onslide<3->
+\begin{alertblock}{So why does every medical paper report odds ratios?}
+  \footnotesize Because the odds ratio is the one effect measure
+  \textbf{invariant to how the study was sampled}. Take a population, then
+  resample cases and controls 50/50 as a case-control study must:
+  \begin{center}\ttfamily\scriptsize
+  \begin{tabular}{@{}lll@{}}
+  full population              & OR 4.2609 & RR 4.0000\\
+  50/50 case-control resample  & OR 4.2609 & RR 2.2295\\
+  \end{tabular}
+  \end{center}
+  The OR is unchanged; the RR is not, and in a case-control study it is not
+  even estimable --- \emph{you} chose how many well people to include. The
+  odds ratio survives because it is the only one that can.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile,shrink=8]{The intercept is a coefficient too}
+\begin{outblk}
+   intercept b0 = -15.2521      slope b1 = +1.0340
+   exp(b0) = 2.377e-07  -- the ODDS when radius = 0 mm
+   p at radius 0 = 2.377e-07
+\end{outblk}
+$\beta_0$ is the log-odds when \emph{every} feature is zero. Here that is a
+tumour of radius $0$ mm --- which does not exist. The smallest in the data is
+$6.98$ mm, so the intercept is an extrapolation $7$ mm outside anything
+observed.
+\onslide<2->
+\begin{outblk}
+   centred (subtract the mean 14.1273 mm):
+   intercept -0.6442      slope +1.0335     <- slope unchanged
+   p at the MEAN radius            = 0.3443
+   fraction of patients malignant  = 0.3726
+\end{outblk}
+\onslide<3->
+\begin{alertblock}{Centre the features and the intercept becomes a sentence}
+  \footnotesize Subtracting the mean leaves every slope and every prediction
+  untouched, and turns $\beta_0$ into \textbf{the log-odds for an average
+  patient} --- $p = 0.3443$, close to the $0.3726$ base rate. Uncentred, the
+  intercept is a number you cannot say out loud.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile,shrink=8]{A coefficient has no size of its own}
+The same model, with radius measured four different ways:
+\begin{outblk}
+feature in             beta      exp(beta)  p at 14.75mm
+millimetres          1.0340     2.8124e+00        0.4999
+centimetres         10.3374     3.0867e+04        0.4999
+micrometres          0.0010     1.0010e+00        0.4999
+metres            1026.2287       overflow        0.4985
+\end{outblk}
+\onslide<2->
+\begin{alertblock}{$\beta = 10.34$ and $\beta = 1.034$ are the same model}
+  \footnotesize Change the unit and $\beta$ scales by the same factor while
+  every prediction stays put. So you \textbf{cannot rank features by
+  $|\beta|$} and you cannot call a coefficient large or small --- only large
+  or small \emph{per unit of something}.
+\end{alertblock}
+\onslide<3->
+\begin{center}\footnotesize
+  Two honest caveats from the last two rows. In micrometres a real effect
+  looks like none ($e^\beta = 1.0010$). In metres $e^\beta$
+  \textbf{overflows} and the prediction drifts to $0.4985$ --- absurd units
+  eventually break the fit, not just the reader.
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile,shrink=8]{``Holding the others fixed''}
+\begin{outblk}
+radius alone          : beta_radius = +1.0340   (odds x 2.8124 per mm)
+radius + texture      : beta_radius = +1.0571   (odds x 2.8781 per mm)
+                        beta_texture = +0.2181  (odds x 1.2438 per unit)
+
+correlation between radius and texture: +0.3238
+\end{outblk}
+\vspace{0.2em}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \begin{block}{$\beta$ alone}
+      \small ``Two patients one millimetre apart in radius, texture whatever
+      it happens to be.''
+    \end{block}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \begin{block}{$\beta$ with texture}
+      \small ``Two patients with the \textbf{same} texture, one millimetre
+      apart in radius.''
+    \end{block}
+  \end{column}
+\end{columns}
+\vspace{0.2em}
+\begin{center}\small
+  Both are correct answers --- \textbf{to different questions}. A coefficient
+  is always conditional on exactly the other columns in the model, so quoting
+  one without saying what else was in the fit is meaningless.
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile,shrink=8]{The trap with no analogue in linear regression}
+Simulated, $200\,000$ rows, with $x$ and $w$ \textbf{independent by
+construction} --- so $w$ is \emph{not} a confounder. Truth:
+$\operatorname{logit} p = -0.5 + 1.0\,x + 2.5\,w$.
+\begin{outblk}
+   corr(x, w) = -0.0026
+
+   beta_x WITH w in the model   : +1.0027   (truth 1.0)
+   beta_x WITHOUT w             : +0.5272
+   ratio 0.526
+\end{outblk}
+\onslide<2->
+\begin{alertblock}{Dropping an \emph{independent} predictor halved $\beta_x$}
+  \footnotesize This is not confounding --- there is none to have. It is
+  \textbf{non-collapsibility}: an odds ratio is not an average of subgroup
+  odds ratios, so the marginal and conditional coefficients differ even when
+  the predictors are independent.
+\end{alertblock}
+\onslide<3->
+\begin{outblk}
+   linear, with w   : +1.0038
+   linear, without w: +0.9973
+\end{outblk}
+\begin{center}\footnotesize
+  Linear regression has no such effect. \textbf{This is specific to logistic
+  regression}, and it is why ``adjusted'' and ``unadjusted'' odds ratios
+  differ in every medical paper you will ever read.
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile,shrink=8]{A coefficient is an estimate, not a measurement}
+\begin{outblk}
+term               beta        SE         z        95% CI for beta
+intercept      -19.8500    1.7740    -11.19   [ -23.3271,  -16.3729]
+radius           1.0571    0.1015     10.42   [  +0.8582,   +1.2560]
+texture          0.2181    0.0371      5.89   [  +0.1455,   +0.2908]
+
+   radius    OR 2.8781   95% CI [2.3590, 3.5115]
+   texture   OR 1.2438   95% CI [1.1566, 1.3375]
+\end{outblk}
+Standard errors are the square roots of the diagonal of
+$(X^{\!\top} W X)^{-1}$ with $W = \operatorname{diag}\!\big(p(1-p)\big)$ ---
+three lines of NumPy.
+\onslide<2->
+\begin{alertblock}{scikit-learn does not give you any of this}
+  \footnotesize There is no \texttt{.stderr\_}, no $p$-value and no interval
+  anywhere on a fitted \texttt{LogisticRegression}. For uncertainty use
+  \texttt{statsmodels.Logit}, compute $(X^{\!\top}WX)^{-1}$ yourself, or
+  bootstrap. \textbf{A coefficient without an interval is half a result} ---
+  and note the asymmetry: the odds-ratio interval is \emph{not} symmetric
+  about $2.8781$, because exponentiating a symmetric interval never is.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[shrink=6]{Reading a coefficient: the checklist}
+  \begin{center}\small
+  \begin{tabular}{@{}p{0.36\textwidth}p{0.58\textwidth}@{}}
+    \toprule
+    \textbf{Ask} & \textbf{Because}\\
+    \midrule
+    In what units is $x_j$? & $\beta$ scales with the unit; its size alone
+      means nothing\\[3pt]
+    What else is in the model? & $\beta_j$ is conditional on exactly those
+      columns\\[3pt]
+    Odds or probability? & $e^{\beta_j}$ multiplies odds; the change in $p$
+      depends on where you start\\[3pt]
+    Where on the curve? & at most $\beta/4$ per unit, and far less in the
+      tails\\[3pt]
+    How wide is the interval? & an estimate without one is half a result\\[3pt]
+    Was it standardised? & only then can two coefficients be compared\\[3pt]
+    Is it causal? & \textbf{no} --- it is a conditional association, and
+      nothing in the fit makes it more\\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \vspace{0.2em}
+  \begin{alertblock}{The last row is the one that ends careers}
+    \footnotesize ``Each extra millimetre multiplies the odds by $2.81$'' is a
+    statement about \emph{patients who differ by a millimetre}, not about what
+    would happen if you \emph{grew} a tumour by a millimetre. Logistic
+    regression cannot tell those apart, and neither can any other fit on
+    observational data.
+  \end{alertblock}
 \end{frame}
 
 % =====================================================================
